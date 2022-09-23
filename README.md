@@ -121,7 +121,7 @@ $payment = new PaymobPayment();
 //pay
 $payment->pay($order);
 //verify
-$payment->verify($order);
+$payment->verify($request);
 
 ```
 
