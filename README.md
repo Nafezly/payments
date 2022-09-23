@@ -3,6 +3,16 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 ![payment-gateways.png](https://github.com/nafezly/payments/blob/master/payment-gateways.png?raw=true)
 
 
+## Supported gateways
+
+- [PayPal](https://paypal.com/)
+- [PayMob](https://paymob.com/)
+- [WeAccept](https://paymob.com/)
+- [Kashier](https://kashier.io/)
+- [Fawry](https://fawry.com/)
+- [HyperPay](https://www.hyperpay.com/)
+- [Thawani](https://https://thawani.om/)
+
 ## Installation
 
 ```jsx
