@@ -70,6 +70,8 @@ return [
 ## Put keys in .env File
 ```php
 
+
+
 	PAYMOB_API_KEY=
 	PAYMOB_INTEGRATION_ID=
 	PAYMOB_IFRAME_ID=
@@ -99,6 +101,8 @@ return [
 	THAWANI_API_KEY=
 	THAWANI_URL=
 	THAWANI_PUBLISHABLE_KEY=
+
+	
 
 ```
 ## How To Use
