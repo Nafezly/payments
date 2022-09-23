@@ -102,9 +102,16 @@ return [
 	THAWANI_URL=
 	THAWANI_PUBLISHABLE_KEY=
 
-	
+
 
 ```
+
+## Web.php MUST Have Route with name “payment-verify”
+
+```php
+Route::get('/payments/verify/{payment?}',[FrontController::class,'payment_verify'])->name('payment-verify');
+```
+
 ## How To Use
 
 ```jsx
