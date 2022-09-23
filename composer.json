@@ -1,0 +1,31 @@
+{
+    "name": "nafezly/payments",
+    "license": "MIT",
+    "description":"paymant helper for Paypal,Paymob,Kashier,Hyperpay,Fawry",
+    "autoload": {
+        "psr-4": {
+            "Nafezly\\Payments\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.0",
+        "laravel/framework": ">=6.0",
+        "paypal/paypal-checkout-sdk": "1.0.2"
+    },
+    "authors": [
+        {
+            "name": "nafezly.com",
+            "email": "nafezly.com@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nafezly\\Payments\\NafezlyPaymentsServiceProvider"
+            ],
+            "aliases": {
+                "NafezlyPayments": "Nafezly\\Payments\\Facades"
+            }
+        }
+    }
+}
