@@ -1,6 +1,7 @@
 # Nafezly Payment Gateways
 ### Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay )
-![payment-gateways.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/3552c8e2-65b9-4ca7-b935-f6c74f4c310a/payment-gateways.png)
+![payment-gateways.png](https://github.com/[username]/[reponame]/blob/[branch]/payment-gateways.png?raw=true)
+
 
 ## Installation
 
