@@ -62,7 +62,5 @@ return [
 
 	'verify_route_name'=>"verify-payment"
 
-
-
 	
 ];
