@@ -35,7 +35,6 @@ class ThawaniPayment {
          
 	}
 	public function verify(Request $request){
-
         $order = Order::where('id',$request['payment_id'])->where('status','PENDING')->firstOrFail();
         $response = Http::withHeaders([
                 'content-type' => 'application/json',
