@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ssssssss# Nafezly Payment Gateways
+=======
+# Nafezly Payment Gateways
+>>>>>>> 1e3885241cb82d35a726ac408edb3a64473a8817
 Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay )
 ![payment-gateways.png](https://github.com/nafezly/payments/blob/master/payment-gateways.png?raw=true)
 

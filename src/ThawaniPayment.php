@@ -22,8 +22,8 @@ class ThawaniPayment {
                     "quantity"=> 1
                 ], 
             ],
-            "success_url"=> route('payment-verify',['payment'=>"thawani",'payment_id'=>$order->id]),
-            "cancel_url"=> route('payment-verify',['payment'=>"thawani",'payment_id'=>$order->id]),
+            "success_url"=> route(config('nafezly-payments.verify_route_name'),['payment'=>"thawani",'payment_id'=>$order->id]),
+            "cancel_url"=> route(config('nafezly-payments.verify_route_name'),['payment'=>"thawani",'payment_id'=>$order->id]),
             "metadata"=> [
                 "customer"=> auth()->user()->name,
                 "order_id"=> $order->id,
