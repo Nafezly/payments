@@ -27,22 +27,22 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     {
          
         $this->app->bind('paymob_payment',function(){
-             return new PaymobPayment();
+              new PaymobPayment();
         });
         $this->app->bind('fawry_payment',function(){
-             return new FawryPayment();
+              new FawryPayment();
         });
         $this->app->bind('Thawani_payment',function(){
-             return new ThawaniPayment();
+              new ThawaniPayment();
         });
         $this->app->bind('paypal_payment',function(){
-             return new PaypalPayment();
+              new PaypalPayment();
         });
         $this->app->bind('hyperpay_payment',function(){
-             return new HyperPayPayment();
+              new HyperPayPayment();
         });
         $this->app->bind('kashier_payment',function(){
-             return new KashierPayment();
+              new KashierPayment();
         });
     }
 
