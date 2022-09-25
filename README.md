@@ -151,16 +151,7 @@ $payment = new \Nafezly\Payments\ThawaniPayment();
 
 ## Test Cards
 
-
-#### Thawani 
-[https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card](https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card)
-
-#### Kashier 
-[https://developers.kashier.io/payment/testing](https://developers.kashier.io/payment/testing)
-
-#### Paymob
-[https://docs.paymob.com/docs/card-payments](https://docs.paymob.com/docs/card-payments)
-
-#### Fawry
-[https://developer.fawrystaging.com/docs/testing/testing](https://developer.fawrystaging.com/docs/testing/testing)
-```
+- [Thawani](https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card)
+- [Kashier](https://developers.kashier.io/payment/testing)
+- [Paymob](https://docs.paymob.com/docs/card-payments)
+- [Fawry](https://developer.fawrystaging.com/docs/testing/testing)
