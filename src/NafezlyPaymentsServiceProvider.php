@@ -32,7 +32,7 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         $this->app->bind('fawry_payment',function(){
               new FawryPayment();
         });
-        $this->app->bind('Thawani_payment',function(){
+        $this->app->bind('thawani_payment',function(){
               new ThawaniPayment();
         });
         $this->app->bind('paypal_payment',function(){
