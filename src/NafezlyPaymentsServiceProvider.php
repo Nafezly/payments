@@ -25,11 +25,25 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        
-        return new PaymobPayment();
-        /*$this->app->bind('nafezly-payments',function(){
-             new PaymobPayment();
-        });*/
+         
+        $this->app->bind('paymob_payment',function(){
+             return new PaymobPayment();
+        });
+        $this->app->bind('fawry_payment',function(){
+             return new FawryPayment();
+        });
+        $this->app->bind('Thawani_payment',function(){
+             return new ThawaniPayment();
+        });
+        $this->app->bind('paypal_payment',function(){
+             return new PaypalPayment();
+        });
+        $this->app->bind('hyperpay_payment',function(){
+             return new HyperPayPayment();
+        });
+        $this->app->bind('kashier_payment',function(){
+             return new KashierPayment();
+        });
     }
 
     /**
