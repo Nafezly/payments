@@ -73,7 +73,9 @@ return [
 	#THAWANI
 	'THAWANI_API_KEY'=>env('THAWANI_API_KEY','rRQ26GcsZzoEhbrP2HZvLYDbn9C9et'),
 	'THAWANI_URL'=>env('THAWANI_URL',"https://uatcheckout.thawani.om/"),
-	'THAWANI_PUBLISHABLE_KEY'=>env('THAWANI_PUBLISHABLE_KEY','HGvTMLDssJghr9tlN9gr4DVYt0qyBy')
+	'THAWANI_PUBLISHABLE_KEY'=>env('THAWANI_PUBLISHABLE_KEY','HGvTMLDssJghr9tlN9gr4DVYt0qyBy'),
+
+	'verify_route_name'=>"verify-payment"
 
 ];
 ```
@@ -149,16 +151,16 @@ $payment = new \Nafezly\Payments\ThawaniPayment();
 
 ## Test Cards
 
-```php
-# Thawani 
+
+#### Thawani 
 [https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card](https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card)
 
-# Kashier 
+#### Kashier 
 [https://developers.kashier.io/payment/testing](https://developers.kashier.io/payment/testing)
 
-# Paymob
+#### Paymob
 [https://docs.paymob.com/docs/card-payments](https://docs.paymob.com/docs/card-payments)
 
-# Fawry
+#### Fawry
 [https://developer.fawrystaging.com/docs/testing/testing](https://developer.fawrystaging.com/docs/testing/testing)
 ```
