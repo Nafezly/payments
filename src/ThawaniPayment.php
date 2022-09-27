@@ -26,7 +26,6 @@ class ThawaniPayment
         $this->app_name = config('nafezly-payments.APP_NAME');
         $this->verify_route_name = config('nafezly-payments.verify_route_name');
     }
-
     /**
      * @param Order $order
      * @return Application|RedirectResponse|Redirector
