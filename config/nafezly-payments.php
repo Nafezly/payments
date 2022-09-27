@@ -46,5 +46,11 @@ return [
 
 
     'VERIFY_ROUTE_NAME' => "verify-payment",
-    'APP_NAME'=>env('APP_NAME')
+    'APP_NAME'=>env('APP_NAME'),
+
+    #Paytabs
+    'PAYTAB_PROFILE_ID'  => env('PROFILE_ID'),
+    'PAYTAB_SERVER_KEY' =>  env('SERVER_KEY'),
+    'PAYTAB_BASE_URL' =>   end('BASE_URL'),
+
 ];
