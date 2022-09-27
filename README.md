@@ -94,28 +94,28 @@ $payment = new PaymobPayment();
 
 //pay function
 $payment->pay(
-			$amount, 
-			$user_id = null, 
-			$user_first_name = null, 
-			$user_last_name = null, 
-			$user_email = null, 
-			$user_phone = null, 
-			$source = null
+	$amount, 
+	$user_id = null, 
+	$user_first_name = null, 
+	$user_last_name = null, 
+	$user_email = null, 
+	$user_phone = null, 
+	$source = null
 );
 
 //pay function response 
 [
-		'payment_id'=>"", // refrence code that should stored in your orders table
-		'redirect_url'=>"", // redirect url available for some payment gateways
-		'html'=>"" // rendered html available for some payment gateways
+	'payment_id'=>"", // refrence code that should stored in your orders table
+	'redirect_url'=>"", // redirect url available for some payment gateways
+	'html'=>"" // rendered html available for some payment gateways
 ]
 
 //verify function
 $payment->verify($request);
 [
-		'success'=>true,//or false
-		'message'=>"Done Successfully",//message for client
-		'process_data'=>""//payment response
+	'success'=>true,//or false
+	'message'=>"Done Successfully",//message for client
+	'process_data'=>""//payment response
 ]
 
 ```
