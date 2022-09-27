@@ -41,10 +41,15 @@ class PayTabPayment{
      * @param $amount
      * @param null $user_first_name
      * @param null $user_email
+     * @param null $user_phone
+     * @param null $currency
+     * @param null $paypage_lang
+     * @param null $callback
+     * @param null $return
      * @return string[]
      */
 
-    public function pay($amount , $user_first_name = null , $user_email){
+    public function pay($amount , $user_first_name = null , $user_email , $user_phone ,  $currency , $paypage_lang = "en", $callback , $return){
 
         $order_id = uniqid();
 
@@ -54,16 +59,16 @@ class PayTabPayment{
             "tran_type" => "sale",
             "tran_class" => "ecom",
             "cart_id" => $order_id,
-            "cart_currency" => "SAE",
+            "cart_currency" => $currency,
             "cart_amount" => $amount,
             "cart_description" => "items",
-            "paypage_lang" => "en",
-            "callback" => '/' . "/paytabs-response", 
-            "return" => '/' . "/paytabs-response",
+            "paypage_lang" => $paypage_lang,
+            "callback" => $callback, 
+            "return" => $return,
             "customer_details" => [
                 "name" => $user_first_name,
                 "email" => $user_email,
-                "phone" => "000000",
+                "phone" => $user_phone,
                 "street1" => "delivery_street",
                 "city" => "not given",
                 "state" => "not given",
@@ -92,8 +97,12 @@ class PayTabPayment{
                 'message' => 'mis configuration or data missing'
             ] ;
         }
-        header('Location:' . $page['redirect_url']);
-        exit();
+      
+        return [
+            'payment_id'=>$order_id,
+            'html' => "",
+            'redirect_url'=>$page['redirect_url']
+        ];
     }
 
 }
