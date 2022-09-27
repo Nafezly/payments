@@ -5,7 +5,7 @@
 [![Made With Love](https://img.shields.io/badge/Made%20With-Love-orange.svg)](https://github.com/chetanraj/awesome-github-badges)
 
 Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay )
-![payment-gateways.png](https://github.com/nafezly/payments/blob/master/payment-gateways.png?raw=true)
+![payment-gateways.jpg](https://github.com/nafezly/payments/blob/master/payment-gateways.jpg?raw=true)
 
 ## Supported gateways
 
@@ -15,7 +15,8 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Kashier](https://kashier.io/)
 - [Fawry](https://fawry.com/)
 - [HyperPay](https://www.hyperpay.com/)
-- [Thawani](https://https://thawani.om/)
+- [Thawani](https://thawani.om/)
+- [Tap](https:////www.tap.company/)
 
 ## Installation
 
@@ -130,6 +131,7 @@ use Nafezly\Payments\Classes\KashierPayment;
 use Nafezly\Payments\Classes\PaymobPayment;
 use Nafezly\Payments\Classes\PayPalPayment;
 use Nafezly\Payments\Classes\ThawaniPayment;
+use Nafezly\Payments\Classes\TapPayment;
 ```
 
 ## Test Cards
@@ -138,3 +140,4 @@ use Nafezly\Payments\Classes\ThawaniPayment;
 - [Kashier](https://developers.kashier.io/payment/testing)
 - [Paymob](https://docs.paymob.com/docs/card-payments)
 - [Fawry](https://developer.fawrystaging.com/docs/testing/testing)
+- [Tap](https://www.tap.company/eg/en/developers)
