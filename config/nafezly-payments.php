@@ -1,6 +1,6 @@
 <?php
 return [
-    
+
     #PAYMOB
     'PAYMOB_API_KEY' => env('PAYMOB_API_KEY'),
     'PAYMOB_INTEGRATION_ID' => env('PAYMOB_INTEGRATION_ID'),
@@ -38,9 +38,9 @@ return [
 
 
     #THAWANI
-    'THAWANI_API_KEY' => env('THAWANI_API_KEY', 'rRQ26GcsZzoEhbrP2HZvLYDbn9C9et'),
+    'THAWANI_API_KEY' => env('THAWANI_API_KEY', ''),
     'THAWANI_URL' => env('THAWANI_URL', "https://uatcheckout.thawani.om/"),
-    'THAWANI_PUBLISHABLE_KEY' => env('THAWANI_PUBLISHABLE_KEY', 'HGvTMLDssJghr9tlN9gr4DVYt0qyBy'),
+    'THAWANI_PUBLISHABLE_KEY' => env('THAWANI_PUBLISHABLE_KEY', ''),
 
 
     'verify_route_name' => "verify-payment"

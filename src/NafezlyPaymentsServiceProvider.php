@@ -3,6 +3,12 @@
 namespace Nafezly\Payments;
 
 use Illuminate\Support\ServiceProvider;
+use Nafezly\Payments\Classes\FawryPayment;
+use Nafezly\Payments\Classes\HyperPayPayment;
+use Nafezly\Payments\Classes\KashierPayment;
+use Nafezly\Payments\Classes\PaymobPayment;
+use Nafezly\Payments\Classes\PayPalPayment;
+use Nafezly\Payments\Classes\ThawaniPayment;
 
 class NafezlyPaymentsServiceProvider extends ServiceProvider
 {
@@ -14,8 +20,8 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->configure();
-        $this->registerMigrations();
         $this->registerPublishing();
+
     }
 
     /**
@@ -47,7 +53,7 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Setup the configuration for Cashier.
+     * Setup the configuration for Nafezly Payments.
      *
      * @return void
      */
@@ -56,18 +62,6 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../config/nafezly-payments.php', 'nafezly-payments'
         );
-    }
-
-    /**
-     * Register the package migrations.
-     *
-     * @return void
-     */
-    protected function registerMigrations()
-    {
-
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-
     }
 
     /**
@@ -82,8 +76,8 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         ], 'nafezly-payments-config');
 
         $this->publishes([
-            __DIR__ . '/../database/migrations' => database_path('migrations'),
-        ], 'nafezly-payments-migrations');
+            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/payments'),
+        ], 'lang');
 
     }
 }

@@ -7,7 +7,6 @@
 Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay )
 ![payment-gateways.png](https://github.com/nafezly/payments/blob/master/payment-gateways.png?raw=true)
 
-
 ## Supported gateways
 
 - [PayPal](https://paypal.com/)
@@ -84,7 +83,9 @@ return [
 
 ];
 ```
+
 ## Put keys in .env File
+
 ```php
 
 
@@ -132,7 +133,8 @@ Route::get('/payments/verify/{payment?}',[FrontController::class,'payment_verify
 ## How To Use
 
 ```jsx
-use Nafezly\Payments\ThawaniPayment;
+use
+Nafezly\Payments\ThawaniPayment;
 
 $payment = new PaymobPayment();
 //pay
@@ -146,12 +148,12 @@ $payment->verify($request);
 
 ```php
 
-$payment = new \Nafezly\Payments\FawryPayment();
-$payment = new \Nafezly\Payments\HyperPayPayment();
-$payment = new \Nafezly\Payments\KashierPayment();
-$payment = new \Nafezly\Payments\PaymobPayment();
-$payment = new \Nafezly\Payments\PayPalPayment();
-$payment = new \Nafezly\Payments\ThawaniPayment();
+$payment = new \Nafezly\Payments\Classes\FawryPayment();
+$payment = new \Nafezly\Payments\Classes\HyperPayPayment();
+$payment = new \Nafezly\Payments\Classes\KashierPayment();
+$payment = new \Nafezly\Payments\Classes\PaymobPayment();
+$payment = new \Nafezly\Payments\Classes\PayPalPayment();
+$payment = new \Nafezly\Payments\Classes\ThawaniPayment();
 ```
 
 ## Test Cards
