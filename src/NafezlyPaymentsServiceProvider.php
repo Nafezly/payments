@@ -9,6 +9,7 @@ use Nafezly\Payments\Classes\KashierPayment;
 use Nafezly\Payments\Classes\PaymobPayment;
 use Nafezly\Payments\Classes\PayPalPayment;
 use Nafezly\Payments\Classes\ThawaniPayment;
+use Nafezly\Payments\Classes\TapPayment;
 
 class NafezlyPaymentsServiceProvider extends ServiceProvider
 {
@@ -49,6 +50,9 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         });
         $this->app->bind(KashierPayment::class, function () {
             return new KashierPayment();
+        });
+        $this->app->bind(TapPayment::class, function () {
+            return new TapPayment();
         });
     }
 

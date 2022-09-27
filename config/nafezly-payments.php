@@ -44,6 +44,12 @@ return [
     'THAWANI_URL' => env('THAWANI_URL', "https://uatcheckout.thawani.om/"),
     'THAWANI_PUBLISHABLE_KEY' => env('THAWANI_PUBLISHABLE_KEY', ''),
 
+    #TAP
+    'TAP_CURRENCY' => env('TAP_CURRENCY',"USD"),
+    'TAP_SECRET_KEY'=>env('TAP_SECRET_KEY','sk_test_XKokBfNWv6FIYuTMg5sLPjhJ'),
+    'TAP_PUBLIC_KEY'=>env('TAP_PUBLIC_KEY','pk_test_EtHFV4BuPQokJT6jiROls87Y'),
+    'TAP_LANG_KEY'=>env('TAP_LANG_KEY','ar'),
+
 
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME')
