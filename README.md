@@ -7,7 +7,6 @@
 Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay )
 ![payment-gateways.png](https://github.com/nafezly/payments/blob/master/payment-gateways.png?raw=true)
 
-
 ## Supported gateways
 
 - [PayPal](https://paypal.com/)
@@ -28,14 +27,7 @@ composer require nafezly/payments
 
 ```jsx
 php artisan vendor:publish --tag="nafezly-payments-config"
-php artisan vendor:publish --tag="nafezly-payments-migrations"
-```
-
-## Migrate The Migration File
-
-```jsx
-php artisan migrate
-//it will add status,payment_id,amount,process_data columns if not exists in orders table
+php artisan vendor:publish --tag="nafezly-payments-lang"
 ```
 
 ### nafezly-payments.php file
@@ -44,83 +36,47 @@ php artisan migrate
 <?php
 return [
 
-	#PAYMOB
-	'PAYMOB_API_KEY'=>env('PAYMOB_API_KEY'),
-	'PAYMOB_INTEGRATION_ID'=>env('PAYMOB_INTEGRATION_ID'),
-	'PAYMOB_IFRAME_ID'=>env('PAYMOB_IFRAME_ID'),
-	'PAYMOB_HMAC'=>env('PAYMOB_HMAC'),
+    #PAYMOB
+    'PAYMOB_API_KEY' => env('PAYMOB_API_KEY'),
+    'PAYMOB_INTEGRATION_ID' => env('PAYMOB_INTEGRATION_ID'),
+    'PAYMOB_IFRAME_ID' => env('PAYMOB_IFRAME_ID'),
+    'PAYMOB_HMAC' => env('PAYMOB_HMAC'),
+    'PAYMOB_CURRENCY'=> env('PAYMOB_CURRENCY',"EGP"),
 
-	#HYPERPAY
-	'HYPERPAY_BASE_URL'=>env('HYPERPAY_BASE_URL',"https://eu-test.oppwa.com"),
-	'HYPERPAY_URL'=>env('HYPERPAY_URL',env('HYPERPAY_BASE_URL')."/v1/checkouts"),
-	'HYPERPAY_TOKEN'=>env('HYPERPAY_TOKEN'),
-	'HYPERPAY_CREDIT_ID'=>env('HYPERPAY_CREDIT_ID'),
-	'HYPERPAY_MADA_ID'=>env('HYPERPAY_MADA_ID'),
-	'HYPERPAY_APPLE_ID'=>env('HYPERPAY_APPLE_ID'),
-	'HYPERPAY_CURRENCY'=>env('HYPERPAY_CURRENCY',"SAR"),
+    #HYPERPAY
+    'HYPERPAY_BASE_URL' => env('HYPERPAY_BASE_URL', "https://eu-test.oppwa.com"),
+    'HYPERPAY_URL' => env('HYPERPAY_URL', env('HYPERPAY_BASE_URL') . "/v1/checkouts"),
+    'HYPERPAY_TOKEN' => env('HYPERPAY_TOKEN'),
+    'HYPERPAY_CREDIT_ID' => env('HYPERPAY_CREDIT_ID'),
+    'HYPERPAY_MADA_ID' => env('HYPERPAY_MADA_ID'),
+    'HYPERPAY_APPLE_ID' => env('HYPERPAY_APPLE_ID'),
+    'HYPERPAY_CURRENCY' => env('HYPERPAY_CURRENCY', "SAR"),
 
-	#KASHIER
-	'KASHIER_ACCOUNT_KEY'=>env('KASHIER_ACCOUNT_KEY'),
-	'KASHIER_IFRAME_KEY'=>env('KASHIER_IFRAME_KEY'),
-	'KASHIER_URL'=>env('KASHIER_URL',"https://checkout.kashier.io"),
-	'KASHIER_MODE'=>env('KASHIER_MODE',"test"), //live or test
+    #KASHIER
+    'KASHIER_ACCOUNT_KEY' => env('KASHIER_ACCOUNT_KEY'),
+    'KASHIER_IFRAME_KEY' => env('KASHIER_IFRAME_KEY'),
+    'KASHIER_URL' => env('KASHIER_URL', "https://checkout.kashier.io"),
+    'KASHIER_MODE' => env('KASHIER_MODE', "test"), //live or test
+    'KASHIER_CURRENCY'=>env('KASHIER_CURRENCY',"EGP"),
 
-	#FAWRY
-	'FAWRY_URL'=>env('FAWRY_URL',"https://atfawry.fawrystaging.com/"),//or https://www.atfawry.com/ for production
-	'FAWRY_SECRET'=>env('FAWRY_SECRET'),
-	'FAWRY_MERCHANT'=>env('FAWRY_MERCHANT'),
+    #FAWRY
+    'FAWRY_URL' => env('FAWRY_URL', "https://atfawry.fawrystaging.com/"),//or https://www.atfawry.com/ for production
+    'FAWRY_SECRET' => env('FAWRY_SECRET'),
+    'FAWRY_MERCHANT' => env('FAWRY_MERCHANT'),
 
-	#PayPal
-	'PAYPAL_CLIENT_ID'=>env('PAYPAL_CLIENT_ID'),
-	'PAYPAL_SECRET'=>env('PAYPAL_SECRET'),
-	'PAYPAL_CURRENCY'=>env('PAYPAL_CURRENCY',"USD"),
+    #PayPal
+    'PAYPAL_CLIENT_ID' => env('PAYPAL_CLIENT_ID'),
+    'PAYPAL_SECRET' => env('PAYPAL_SECRET'),
+    'PAYPAL_CURRENCY' => env('PAYPAL_CURRENCY', "USD"),
 
-	#THAWANI
-	'THAWANI_API_KEY'=>env('THAWANI_API_KEY','rRQ26GcsZzoEhbrP2HZvLYDbn9C9et'),
-	'THAWANI_URL'=>env('THAWANI_URL',"https://uatcheckout.thawani.om/"),
-	'THAWANI_PUBLISHABLE_KEY'=>env('THAWANI_PUBLISHABLE_KEY','HGvTMLDssJghr9tlN9gr4DVYt0qyBy'),
+    #THAWANI
+    'THAWANI_API_KEY' => env('THAWANI_API_KEY', ''),
+    'THAWANI_URL' => env('THAWANI_URL', "https://uatcheckout.thawani.om/"),
+    'THAWANI_PUBLISHABLE_KEY' => env('THAWANI_PUBLISHABLE_KEY', ''),
 
-	'verify_route_name'=>"verify-payment"
-
+    'VERIFY_ROUTE_NAME' => "verify-payment",
+    'APP_NAME'=>env('APP_NAME')
 ];
-```
-## Put keys in .env File
-```php
-
-
-
-	PAYMOB_API_KEY=
-	PAYMOB_INTEGRATION_ID=
-	PAYMOB_IFRAME_ID=
-	PAYMOB_HMAC=
-
-	HYPERPAY_BASE_URL=
-	HYPERPAY_URL=
-	HYPERPAY_TOKEN=
-	HYPERPAY_CREDIT_ID=
-	HYPERPAY_MADA_ID=
-	HYPERPAY_APPLE_ID=
-	HYPERPAY_CURRENCY=
-
-	KASHIER_ACCOUNT_KEY=
-	KASHIER_IFRAME_KEY=
-	KASHIER_URL=
-	KASHIER_MODE=
-
-	FAWRY_URL=
-	FAWRY_SECRET=
-	FAWRY_MERCHANT=
-
-	PAYPAL_CLIENT_ID=
-	PAYPAL_SECRET=
-	PAYPAL_CURRENCY=
-
-	THAWANI_API_KEY=
-	THAWANI_URL=
-	THAWANI_PUBLISHABLE_KEY=
-
-
-
 ```
 
 ## Web.php MUST Have Route with name “payment-verify”
@@ -135,10 +91,32 @@ Route::get('/payments/verify/{payment?}',[FrontController::class,'payment_verify
 use Nafezly\Payments\ThawaniPayment;
 
 $payment = new PaymobPayment();
-//pay
-$payment->pay($order);
-//verify
+
+//pay function
+$payment->pay(
+			$amount, 
+			$user_id = null, 
+			$user_first_name = null, 
+			$user_last_name = null, 
+			$user_email = null, 
+			$user_phone = null, 
+			$source = null
+);
+
+//pay function response 
+[
+		'payment_id'=>"", // refrence code that should stored in your orders table
+		'redirect_url'=>"", // redirect url available for some payment gateways
+		'html'=>"" // rendered html available for some payment gateways
+]
+
+//verify function
 $payment->verify($request);
+[
+		'success'=>true,//or false
+		'message'=>"Done Successfully",//message for client
+		'process_data'=>""//payment response
+]
 
 ```
 
@@ -146,12 +124,12 @@ $payment->verify($request);
 
 ```php
 
-$payment = new \Nafezly\Payments\FawryPayment();
-$payment = new \Nafezly\Payments\HyperPayPayment();
-$payment = new \Nafezly\Payments\KashierPayment();
-$payment = new \Nafezly\Payments\PaymobPayment();
-$payment = new \Nafezly\Payments\PayPalPayment();
-$payment = new \Nafezly\Payments\ThawaniPayment();
+use Nafezly\Payments\Classes\FawryPayment;
+use Nafezly\Payments\Classes\HyperPayPayment;
+use Nafezly\Payments\Classes\KashierPayment;
+use Nafezly\Payments\Classes\PaymobPayment;
+use Nafezly\Payments\Classes\PayPalPayment;
+use Nafezly\Payments\Classes\ThawaniPayment;
 ```
 
 ## Test Cards

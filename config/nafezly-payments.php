@@ -1,11 +1,12 @@
 <?php
 return [
-    
+
     #PAYMOB
     'PAYMOB_API_KEY' => env('PAYMOB_API_KEY'),
     'PAYMOB_INTEGRATION_ID' => env('PAYMOB_INTEGRATION_ID'),
     'PAYMOB_IFRAME_ID' => env('PAYMOB_IFRAME_ID'),
     'PAYMOB_HMAC' => env('PAYMOB_HMAC'),
+    'PAYMOB_CURRENCY'=> env('PAYMOB_CURRENCY',"EGP"),
 
 
     #HYPERPAY
@@ -23,6 +24,7 @@ return [
     'KASHIER_IFRAME_KEY' => env('KASHIER_IFRAME_KEY'),
     'KASHIER_URL' => env('KASHIER_URL', "https://checkout.kashier.io"),
     'KASHIER_MODE' => env('KASHIER_MODE', "test"), //live or test
+    'KASHIER_CURRENCY'=>env('KASHIER_CURRENCY',"EGP"),
 
 
     #FAWRY
@@ -38,11 +40,11 @@ return [
 
 
     #THAWANI
-    'THAWANI_API_KEY' => env('THAWANI_API_KEY', 'rRQ26GcsZzoEhbrP2HZvLYDbn9C9et'),
+    'THAWANI_API_KEY' => env('THAWANI_API_KEY', ''),
     'THAWANI_URL' => env('THAWANI_URL', "https://uatcheckout.thawani.om/"),
-    'THAWANI_PUBLISHABLE_KEY' => env('THAWANI_PUBLISHABLE_KEY', 'HGvTMLDssJghr9tlN9gr4DVYt0qyBy'),
+    'THAWANI_PUBLISHABLE_KEY' => env('THAWANI_PUBLISHABLE_KEY', ''),
 
 
-    'verify_route_name' => "verify-payment",
-    'APP_NAME'=>"مشروع"
+    'VERIFY_ROUTE_NAME' => "verify-payment",
+    'APP_NAME'=>env('APP_NAME')
 ];

@@ -1,23 +1,23 @@
 <?php
 
-namespace Nafezly\Payments;
+namespace Nafezly\Payments\Classes;
 
-use App\Models\Order;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Nafezly\Payments\Interfaces\PaymentInterface;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 
-class PayPalPayment
+class PayPalPayment implements PaymentInterface
 {
 
     private $paypal_client_id;
     private $paypal_secret;
-    private $app_name;
     private $verify_route_name;
 
 
@@ -25,16 +25,21 @@ class PayPalPayment
     {
         $this->paypal_client_id = config('nafezly-payments.PAYPAL_CLIENT_ID');
         $this->paypal_secret = config('nafezly-payments.PAYPAL_SECRET');
-        $this->app_name = config('nafezly-payments.APP_NAME');
-        $this->verify_route_name = config('nafezly-payments.verify_route_name');
+        $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
 
     }
 
     /**
-     * @param Order $order
+     * @param $amount
+     * @param null $user_id
+     * @param null $user_first_name
+     * @param null $user_last_name
+     * @param null $user_email
+     * @param null $user_phone
+     * @param null $source
      * @return array|Application|RedirectResponse|Redirector
      */
-    public function pay(Order $order)
+    public function pay($amount, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
         $environment = new SandboxEnvironment($this->paypal_client_id, $this->paypal_secret);
         $client = new PayPalHttpClient($environment);
@@ -46,7 +51,7 @@ class PayPalPayment
             "purchase_units" => [[
                 "reference_id" => uniqid(),
                 "amount" => [
-                    "value" => $order->amount,
+                    "value" => $amount,
                     "currency_code" => config('nafezly-payments.PAYPAL_CURRENCY')
                 ]
             ]],
@@ -58,12 +63,16 @@ class PayPalPayment
 
         try {
             $response = json_decode(json_encode($client->execute($request)), true);
-            $order->update(['payment_id' => $response['result']['id']]);
-            return redirect(collect($response['result']['links'])->where('rel', 'approve')->firstOrFail()['href']);
-        } catch (\Exception $e) {
+            return [
+                'payment_id'=>$response['result']['id'],
+                'html' => "",
+                'redirect_url'=>collect($response['result']['links'])->where('rel', 'approve')->firstOrFail()['href']
+            ];
+        } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => "حدث خطأ أثناء تنفيذ العملية"
+                'message' => __('messages.PAYMENT_FAILED'),
+                'process_data' => $e
             ];
         }
     }
@@ -74,7 +83,6 @@ class PayPalPayment
      */
     public function verify(Request $request): array
     {
-        $order = Order::where('payment_id', $request['token'])->firstOrFail();
         $environment = new SandboxEnvironment($this->paypal_client_id, $this->paypal_secret);
         $client = new PayPalHttpClient($environment);
 
@@ -82,36 +90,24 @@ class PayPalPayment
             $response = $client->execute(new OrdersGetRequest($request['token']));
             $result = json_decode(json_encode($response), true);
             if ($result['result']['intent'] == "CAPTURE" && $result['result']['status'] == "APPROVED") {
-                Order::where('payment_id', $request['token'])->where('status', 'PENDING')->update([
-                    'status' => "DONE",
-                    'process_data' => json_encode($result)
-                ]);
                 return [
                     'success' => true,
-                    'message' => "تمت العملية بنجاح",
-                    'order' => $order
+                    'message' => __('messages.PAYMENT_DONE'),
+                    'process_data' => $result
                 ];
 
             } else {
-                Order::where('payment_id', $request['token'])->where('status', 'PENDING')->update([
-                    'status' => "FAILED",
-                    'process_data' => json_encode($result)
-                ]);
                 return [
                     'success' => false,
-                    'message' => 'حدث خطأ أثناء تنفيذ العملية',
-                    'order' => $order
+                    'message' => __('messages.PAYMENT_FAILED'),
+                    'process_data' => $result
                 ];
             }
-        } catch (\Exception $e) {
-            Order::where('payment_id', $request['token'])->where('status', 'PENDING')->update([
-                'status' => "FAILED",
-                'process_data' => json_encode($e)
-            ]);
+        } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'حدث خطأ أثناء تنفيذ العملية',
-                'order' => $order
+                'message' => __('messages.PAYMENT_FAILED'),
+                'process_data' => $e
             ];
         }
     }
