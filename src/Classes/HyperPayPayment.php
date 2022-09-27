@@ -1,9 +1,10 @@
 <?php
 
-namespace Nafezly\Payments;
+namespace Nafezly\Payments\Classes;
 
-use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 
 class HyperPayPayment
 {
@@ -29,15 +30,26 @@ class HyperPayPayment
     }
 
     /**
-     * @param Order $order
+     * @param $amount
+     * @param null $user_id
+     * @param null $user_name
+     * @param null $user_email
+     * @param null $user_phone
+     * @param null $source
      * @return array|string
+     * @throws MissingPaymentInfoException
      */
-    public function pay(Order $order)
+    public function pay($amount, $user_id = null, $user_name = null, $user_email = null, $user_phone = null, $source = null)
     {
-        $entityId = $this->getEntityId($order);
-        $data = "entityId=" . $entityId . "&amount=" . $order->amount . "&currency=" . $this->hyperpay_currency . "&paymentType=DB&merchantTransactionId=" . $order->payment_id . "&billing.street1=riyadh" . "&billing.city=riyadh" . "&billing.state=riyadh" . "&billing.country=SA" . "&billing.postcode=123456" . "&customer.email=" . auth()
-                ->user()->email . "&customer.givenName=" . auth()->user()->name
-            . "&customer.surname=" . auth()->user()->name;
+        if (is_null($user_name)) throw new MissingPaymentInfoException('user_name', 'HyperPay');
+        if (is_null($user_email)) throw new MissingPaymentInfoException('user_email', 'HyperPay');
+        if (is_null($user_phone)) throw new MissingPaymentInfoException('user_phone', 'HyperPay');
+        if (is_null($source)) throw new MissingPaymentInfoException('source', 'HyperPay');
+
+        $unique_id = uniqid();
+        $entityId = $this->getEntityId($source);
+        $data = "entityId=" . $entityId . "&amount=" . $amount . "&currency=" . $this->hyperpay_currency . "&paymentType=DB&merchantTransactionId=" . $unique_id . "&billing.street1=riyadh" . "&billing.city=riyadh" . "&billing.state=riyadh" . "&billing.country=SA" . "&billing.postcode=123456" . "&customer.email=" . $user_email . "&customer.givenName=" . auth()->user()->name
+            . "&customer.surname=" . $user_name;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->hyperpay_url);
@@ -54,9 +66,8 @@ class HyperPayPayment
         }
         curl_close($ch);
         $payment_id = json_decode($responseData)->id;
-        $order->update(['payment_id' => $payment_id]);
-
-        return ['payment_id' => $payment_id, 'html' => $this->generate_html($order, $payment_id)];
+        Cache::forever($payment_id . '_source', $source);
+        return ['payment_id' => $payment_id, 'html' => $this->generate_html($source, $amount, $payment_id)];
     }
 
     /**
@@ -65,11 +76,10 @@ class HyperPayPayment
      */
     public function verify(Request $request)
     {
-        $order = Order::where('payment_id', $request['id'])->where('status', 'PENDING')->firstOrFail();
-        $entityId = $this->getEntityId($order);
-
+        $source = Cache::get($request['id'] . '_source');
+        Cache::forget($request['id'] . '_source');
+        $entityId = $this->getEntityId($source);
         $url = $this->hyperpay_url . "/" . $request['id'] . "/payment" . "?entityId=" . $entityId;
-
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -86,41 +96,33 @@ class HyperPayPayment
         curl_close($ch);
         $final_result = (array)json_decode($responseData, true);
         if (in_array($final_result["result"]["code"], ["000.000.000", "000.100.110", "000.100.111", "000.100.112"])) {
-            Order::where('payment_id', $request['id'])->where('status', 'PENDING')->update([
-                'status' => "DONE",
-                'process_data' => json_encode(json_decode($responseData, true))
-            ]);
             return [
                 'success' => true,
-                'message' => "تمت العملية بنجاح",
-                'order' => $order
+                'message' => __('messages.PAYMENT_DONE'),
+                'process_data' => $final_result
             ];
         } else {
-            Order::where('payment_id', $request['id'])->where('status', 'PENDING')->update([
-                'status' => "FAILED",
-                'process_data' => json_encode(json_decode($responseData, true))
-            ]);
             return [
                 'success' => false,
-                'message' => "حدث خطأ أثناء تنفيذ العملية ، كود الخطأ : " . $final_result["result"]["code"],
-                'order' => $order
+                'message' => __('messages.PAYMENT_FAILED_WITH_CODE', ['CODE' => $final_result["result"]["code"]]),
+                'process_data' => $final_result
             ];
         }
     }
 
-    public function generate_html(Order $order, $payment_id): string
+    private function generate_html($source, $amount, $payment_id): string
     {
 
         $form_brands = "VISA MASTER";
-        if ($order->source == "MADA")
+        if ($source == "MADA")
             $form_brands = "MADA";
-        elseif ($order->source == "APPLE")
+        elseif ($source == "APPLE")
             $form_brands = "APPLEPAY";
 
         return "<form action='" . route($this->verify_route_name, ['payment' => 'hyperpay']) . "' class='paymentWidgets' data-brands='" . $form_brands . "'></form>
 			<script src=" . $this->verify_route_name . "/v1/paymentWidgets.js?checkoutId=" . $payment_id . "></script>
 			<script type='text/javascript'>
-			const subTotalAmount = parseFloat(\" . $order->amount . \");
+			const subTotalAmount = parseFloat(\" . $amount . \");
 			const shippingAmount = 0;
 			const taxAmount = 0;
 			const currency = '" . $this->hyperpay_currency . "';
@@ -163,10 +165,10 @@ class HyperPayPayment
 			</script>";
     }
 
-    private function getEntityId(Order $order)
+    private function getEntityId($source)
     {
 
-        switch ($order->source) {
+        switch ($source) {
             case "CREDIT":
                 return $this->hyperpay_credit_id;
             case "MADA":

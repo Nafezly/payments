@@ -1,11 +1,12 @@
 <?php
 
-namespace Nafezly\Payments;
+namespace Nafezly\Payments\Classes;
 
-use App\Models\Order;
 use Illuminate\Http\Request;
+use Nafezly\Payments\Interfaces\PaymentInterface;
+use Nafezly\Payments\Order;
 
-class KashierPayment
+class KashierPayment implements PaymentInterface
 {
 
 
@@ -27,26 +28,29 @@ class KashierPayment
     }
 
     /**
-     * @param Order $order
+     * @param $amount
+     * @param null $user_id
+     * @param null $user_name
+     * @param null $user_email
+     * @param null $user_phone
+     * @param null $source
      * @return string[]
      */
-    public function pay(Order $order): array
+    public function pay($amount, $user_id = null, $user_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
 
         $payment_id = uniqid();
-        $order->update(['payment_id' => $payment_id]);
 
         $mid = $this->kashier_account_key;
-        $amount = $order->amount;
         $currency = "EGP";
         $order_id = $payment_id;
         $secret = $this->kashier_iframe_key;
-        $path = "/?payment=${mid}.${order_id}.${amount}.${currency}";
+        $path = "/?payment=$mid.$order_id.$amount.$currency";
         $hash = hash_hmac('sha256', $path, $secret);
 
         $data = [
             'mid' => $mid,
-            'amount' => $order->amount,
+            'amount' => $amount,
             'currency' => $currency,
             'order_id' => $order_id,
             'path' => $path,
@@ -54,7 +58,7 @@ class KashierPayment
             'redirect_back' => route($this->verify_route_name, ['payment' => "kashier"])
         ];
 
-        return ['html' => $this->generate_html($order, $data)];
+        return ['html' => $this->generate_html($amount, $data)];
 
     }
 
@@ -66,10 +70,7 @@ class KashierPayment
     {
         $order = Order::where('payment_id', $request["merchantOrderId"])->firstOrFail();
         if ($request["paymentStatus"] == "SUCCESS") {
-
             $queryString = "";
-            $secret = config("nafezly-payments.KASHIER_IFRAME_KEY");
-
             foreach ($request->all() as $key => $value) {
 
                 if ($key == "signature" || $key == "mode") {
@@ -79,50 +80,39 @@ class KashierPayment
             }
 
             $queryString = ltrim($queryString, $queryString[0]);
-            $signature = hash_hmac('sha256', $queryString, $secret, false);
+            $signature = hash_hmac('sha256', $queryString, $this->kashier_iframe_key);
             if ($signature == $request["signature"]) {
-                Order::where('payment_id', $request["merchantOrderId"])->where('status', 'PENDING')->update([
-                    'status' => "DONE",
-                    'process_data' => json_encode($request->all())
-                ]);
                 return [
                     'success' => true,
-                    'message' => "تمت العملية بنجاح",
-                    'order' => $order
+                    'message' => __('messages.PAYMENT_DONE'),
+                    'process_data' => $request->all()
                 ];
             } else {
-                Order::where('payment_id', $request["merchantOrderId"])->where('status', 'PENDING')->update([
-                    'status' => "FAILED",
-                    'process_data' => json_encode($request->all())
-                ]);
                 return [
                     'success' => false,
-                    'message' => "حدث خطأ أثناء تنفيذ العملية",
-                    'order' => $order
+                    'message' => __('messages.PAYMENT_FAILED'),
+                    'process_data' => $request->all()
                 ];
             }
         } else {
-
             return [
                 'success' => false,
-                'message' => "حدث خطأ أثناء تنفيذ العملية",
-                'order' => $order
+                'message' => __('messages.PAYMENT_FAILED'),
+                'process_data' => $request->all()
             ];
-
         }
-
     }
 
     /**
-     * @param Order $order
+     * @param $amount
      * @param $data
      * @return string
      */
-    public function generate_html(Order $order, $data): string
+    private function generate_html($amount, $data): string
     {
         return '<body><script id="kashier-iFrame"
          src="' . $this->kashier_url . '/kashier-checkout.js"
-        data-amount="' . $order->amount . '"
+        data-amount="' . $amount . '"
         data-description="Credit"
         data-mode="' . $this->kashier_mode . '"
         data-hash="' . $data["hash"] . '"
