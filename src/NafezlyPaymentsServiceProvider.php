@@ -25,24 +25,24 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-         
-        $this->app->bind('paymob_payment',function(){
-              new PaymobPayment();
+
+        $this->app->bind(PaymobPayment::class, function () {
+            return new PaymobPayment();
         });
-        $this->app->bind('fawry_payment',function(){
-              new FawryPayment();
+        $this->app->bind(FawryPayment::class, function () {
+            return new FawryPayment();
         });
-        $this->app->bind('thawani_payment',function(){
-              new ThawaniPayment();
+        $this->app->bind(ThawaniPayment::class, function () {
+            return new ThawaniPayment();
         });
-        $this->app->bind('paypal_payment',function(){
-              new PaypalPayment();
+        $this->app->bind(PaypalPayment::class, function () {
+            return new PaypalPayment();
         });
-        $this->app->bind('hyperpay_payment',function(){
-              new HyperPayPayment();
+        $this->app->bind(HyperPayPayment::class, function () {
+            return new HyperPayPayment();
         });
-        $this->app->bind('kashier_payment',function(){
-              new KashierPayment();
+        $this->app->bind(KashierPayment::class, function () {
+            return new KashierPayment();
         });
     }
 
@@ -54,7 +54,7 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     protected function configure()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/nafezly-payments.php', 'nafezly-payments'
+            __DIR__ . '/../config/nafezly-payments.php', 'nafezly-payments'
         );
     }
 
@@ -65,9 +65,9 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
      */
     protected function registerMigrations()
     {
-      
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-       
+
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
     }
 
     /**
@@ -78,12 +78,12 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     protected function registerPublishing()
     {
         $this->publishes([
-            __DIR__.'/../config/nafezly-payments.php' => config_path('nafezly-payments.php'),
+            __DIR__ . '/../config/nafezly-payments.php' => config_path('nafezly-payments.php'),
         ], 'nafezly-payments-config');
 
         $this->publishes([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
+            __DIR__ . '/../database/migrations' => database_path('migrations'),
         ], 'nafezly-payments-migrations');
-         
+
     }
 }
