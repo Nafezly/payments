@@ -60,17 +60,21 @@ return [
     'OPAY_BASE_URL'=>env('OPAY_BASE_URL',"https://sandboxapi.opaycheckout.com"),//https://api.opaycheckout.com for production
 
 
-    #PAYMOB_WALLET ()
+    #PAYMOB_WALLET (vodaphone-cash,orange-money,etisalat-cash,we-cash,meza-wallet)
     'PAYMOB_WALLET_INTEGRATION_ID'=>env('PAYMOB_WALLET_INTEGRATION_ID'),
     'PAYMOB_WALLET_PHONE'=>env('PAYMOB_WALLET_PHONE'),
 
 
+    #Paytabs
+    'PAYTABS_PROFILE_ID'  => env('PAYTABS_PROFILE_ID'),
+    'PAYTABS_SERVER_KEY' =>  env('PAYTABS_SERVER_KEY'),
+    'PAYTABS_BASE_URL' =>   env('PAYTABS_BASE_URL',"https://secure-egypt.paytabs.com"),
+    'PAYTABS_CHECKOUT_LANG' => env('PAYTABS_CHECKOUT_LANG',"AR"),
+    'PAYTABS_CURRENCY'=>env('PAYTABS_CURRENCY',"EGP"),
+
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME'),
 
-    #Paytabs
-    'PAYTAB_PROFILE_ID'  => env('PROFILE_ID'),
-    'PAYTAB_SERVER_KEY' =>  env('SERVER_KEY'),
-    'PAYTAB_BASE_URL' =>   end('BASE_URL'),
+    
 
 ];
