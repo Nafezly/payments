@@ -1,6 +1,10 @@
 <?php 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
-class PayTabPayment{
+use Nafezly\Payments\Interfaces\PaymentInterface;
+
+class PayTabPayment implements PaymentInterface{
 
     private $paytab_profile_id;
     private $paytab_base_url;
@@ -52,7 +56,7 @@ class PayTabPayment{
     public function pay($amount , $user_first_name = null , $user_email , $user_phone ,  $currency , $paypage_lang = "en", $callback , $return){
 
         $order_id = uniqid();
-
+        $get_url_token = Http::withHeaders(['content-type' => 'application/json'])
         $plugin = new PayTabPayment();
         $request_url = 'payment/request';
         $data = [
@@ -101,7 +105,7 @@ class PayTabPayment{
         return [
             'payment_id'=>$order_id,
             'html' => "",
-            'redirect_url'=>$page['redirect_url']
+            'redirect_url'=>$page['redirect_url'] . $this->paytab_profile_id . "?payment_token=" . $get_url_token['token']
         ];
     }
 
@@ -149,14 +153,19 @@ class PayTabPayment{
             $order->save();
         
             if ($order->callback != null) {
-                return [
-                    'success' => true,
-                    'process_data' => $order->callback
-                ];
+         
+                 
+                    return [
+                        'success' => true,
+                        'message' => __('messages.PAYMENT_DONE'),
+    
+                        'process_data' => $order->callback
+                    ];
+              
             }else{
                 return [
                     'success' => true,
-                    'message' => __('messages.PAYMENT_SUCCESS'),
+                    'message' => __('messages.PAYMENT_DONE'),
                     'process_data' => $request->all()
                 ];
             }
