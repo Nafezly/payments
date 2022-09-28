@@ -60,8 +60,9 @@ return [
     'OPAY_BASE_URL'=>env('OPAY_BASE_URL',"https://sandboxapi.opaycheckout.com"),//https://api.opaycheckout.com for production
 
 
-
-
+    #PAYMOB_WALLET ()
+    'PAYMOB_WALLET_INTEGRATION_ID'=>env('PAYMOB_WALLET_INTEGRATION_ID'),
+    'PAYMOB_WALLET_PHONE'=>env('PAYMOB_WALLET_PHONE'),
 
 
     'VERIFY_ROUTE_NAME' => "verify-payment",

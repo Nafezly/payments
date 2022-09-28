@@ -10,6 +10,8 @@ use Nafezly\Payments\Classes\PaymobPayment;
 use Nafezly\Payments\Classes\PayPalPayment;
 use Nafezly\Payments\Classes\ThawaniPayment;
 use Nafezly\Payments\Classes\TapPayment;
+use Nafezly\Payments\Classes\OpayPayment;
+use Nafezly\Payments\Classes\PaymobWalletPayment;
 
 class NafezlyPaymentsServiceProvider extends ServiceProvider
 {
@@ -54,6 +56,13 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         $this->app->bind(TapPayment::class, function () {
             return new TapPayment();
         });
+        $this->app->bind(OpayPayment::class, function () {
+            return new OpayPayment();
+        });
+        $this->app->bind(PaymobWalletPayment::class, function () {
+            return new PaymobWalletPayment();
+        });
+        
     }
 
     /**
