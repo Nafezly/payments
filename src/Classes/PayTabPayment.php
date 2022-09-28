@@ -105,4 +105,107 @@ class PayTabPayment{
         ];
     }
 
+    public function verify(Request $request ) : array {
+        
+
+        $order = $request['order_id'];
+        $plugin = new PayTabPayment();
+
+        $response_data = $_POST;
+
+        $transRef = filter_input(INPUT_POST, 'tranRef');
+
+        if (!$transRef) {
+          
+            return [
+                'success' => false,
+                'message' => 'Transaction reference is not set. return url must be HTTPs with POST method to can retrieve data',
+                ];
+
+        }
+
+        $is_valid = $plugin->is_valid_redirect($response_data);
+        if (!$is_valid) {
+         
+            return [
+                'success' => false,
+                'message' => 'Not a valid PayTabs response',
+                ];
+        }
+
+        $request_url = 'payment/query';
+        $data = [
+            "tran_ref" => $transRef
+        ];
+        $verify_result = $plugin->sendRequest($request_url, $data);
+        $is_success = $verify_result['payment_result']['response_status'] === 'A';
+
+        if ($is_success) {
+            $order->transaction_reference = $transRef;
+            $order->payment_method = 'Paytabs';
+            $order->payment_status = 'paid';
+            $order->order_status = 'confirmed';
+
+            $order->save();
+        
+            if ($order->callback != null) {
+                return [
+                    'success' => true,
+                    'process_data' => $order->callback
+                ];
+            }else{
+                return [
+                    'success' => true,
+                    'message' => __('messages.PAYMENT_SUCCESS'),
+                    'process_data' => $request->all()
+                ];
+            }
+        }
+        // payment faild 
+
+        $order->order_status = 'failed';
+        $order->save();
+            if ($order->callback != null) {
+            return [
+            'success' => false,
+            'message' => __('messages.PAYMENT_FAILED'),
+            'process_data' => $request->all()
+            ];
+            }else{
+            return [
+            'success' => false,
+            'message' => __('messages.PAYMENT_FAILED'),
+            'process_data' => $request->all()
+            ];      
+            }
+
+    }
+    function is_valid_redirect($post_values)
+    {
+
+        $serverKey = $this->paytab_server_key;
+
+        // Request body include a signature post Form URL encoded field
+        // 'signature' (hexadecimal encoding for hmac of sorted post form fields)
+        $requestSignature = $post_values["signature"];
+        unset($post_values["signature"]);
+        $fields = array_filter($post_values);
+
+        // Sort form fields
+        ksort($fields);
+
+        // Generate URL-encoded query string of Post fields except signature field.
+        $query = http_build_query($fields);
+
+        $signature = hash_hmac('sha256', $query, $serverKey);
+        if (hash_equals($signature, $requestSignature) === TRUE) {
+            // VALID Redirect
+            return true;
+        } else {
+            // INVALID Redirect
+            return false;
+        }
+    }
+
+
 }
