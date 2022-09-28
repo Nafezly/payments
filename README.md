@@ -4,7 +4,7 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Made With Love](https://img.shields.io/badge/Made%20With-Love-orange.svg)](https://github.com/chetanraj/awesome-github-badges)
 
-Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay )
+Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay - Tap - Opay )
 ![payment-gateways.jpg](https://github.com/nafezly/payments/blob/master/payment-gateways.jpg?raw=true)
 
 ## Supported gateways
@@ -16,7 +16,8 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Fawry](https://fawry.com/)
 - [HyperPay](https://www.hyperpay.com/)
 - [Thawani](https://thawani.om/)
-- [Tap](https:////www.tap.company/)
+- [Tap](https://www.tap.company/)
+- [Opay](https://www.opaycheckout.com/)
 
 ## Installation
 
@@ -75,6 +76,23 @@ return [
     'THAWANI_URL' => env('THAWANI_URL', "https://uatcheckout.thawani.om/"),
     'THAWANI_PUBLISHABLE_KEY' => env('THAWANI_PUBLISHABLE_KEY', ''),
 
+
+    #TAP
+    'TAP_CURRENCY' => env('TAP_CURRENCY',"USD"),
+    'TAP_SECRET_KEY'=>env('TAP_SECRET_KEY','sk_test_XKokBfNWv6FIYuTMg5sLPjhJ'),
+    'TAP_PUBLIC_KEY'=>env('TAP_PUBLIC_KEY','pk_test_EtHFV4BuPQokJT6jiROls87Y'),
+    'TAP_LANG_KEY'=>env('TAP_LANG_KEY','ar'),
+
+
+    #OPAY
+    'OPAY_CURRENCY'=>env('OPAY_CURRENCY',"EGP"),
+    'OPAY_SECRET_KEY'=>env('OPAY_SECRET_KEY'),
+    'OPAY_PUBLIC_KEY'=>env('OPAY_PUBLIC_KEY'),
+    'OPAY_MERCHANT_ID'=>env('OPAY_MERCHANT_ID'),
+    'OPAY_COUNTRY_CODE'=>env('OPAY_COUNTRY_CODE',"EG"),
+    'OPAY_BASE_URL'=>env('OPAY_BASE_URL',"https://sandboxapi.opaycheckout.com"),//https://api.opaycheckout.com for production
+
+
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME')
 ];
@@ -132,6 +150,7 @@ use Nafezly\Payments\Classes\PaymobPayment;
 use Nafezly\Payments\Classes\PayPalPayment;
 use Nafezly\Payments\Classes\ThawaniPayment;
 use Nafezly\Payments\Classes\TapPayment;
+use Nafezly\Payments\Classes\OpayPayment;
 ```
 
 ## Test Cards
@@ -141,3 +160,4 @@ use Nafezly\Payments\Classes\TapPayment;
 - [Paymob](https://docs.paymob.com/docs/card-payments)
 - [Fawry](https://developer.fawrystaging.com/docs/testing/testing)
 - [Tap](https://www.tap.company/eg/en/developers)
+- [Opay](https://doc.opaycheckout.com/end-to-end-testing)

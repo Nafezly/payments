@@ -28,7 +28,7 @@ return [
 
 
     #FAWRY
-    'FAWRY_URL' => env('FAWRY_URL', "https://atfawry.fawrystaging.com/"),//or https://www.atfawry.com/ for production
+    'FAWRY_URL' => env('FAWRY_URL', "https://atfawry.fawrystaging.com/"),//https://www.atfawry.com/ for production
     'FAWRY_SECRET' => env('FAWRY_SECRET'),
     'FAWRY_MERCHANT' => env('FAWRY_MERCHANT'),
 
@@ -49,6 +49,19 @@ return [
     'TAP_SECRET_KEY'=>env('TAP_SECRET_KEY','sk_test_XKokBfNWv6FIYuTMg5sLPjhJ'),
     'TAP_PUBLIC_KEY'=>env('TAP_PUBLIC_KEY','pk_test_EtHFV4BuPQokJT6jiROls87Y'),
     'TAP_LANG_KEY'=>env('TAP_LANG_KEY','ar'),
+
+
+    #OPAY
+    'OPAY_CURRENCY'=>env('OPAY_CURRENCY',"EGP"),
+    'OPAY_SECRET_KEY'=>env('OPAY_SECRET_KEY'),
+    'OPAY_PUBLIC_KEY'=>env('OPAY_PUBLIC_KEY'),
+    'OPAY_MERCHANT_ID'=>env('OPAY_MERCHANT_ID'),
+    'OPAY_COUNTRY_CODE'=>env('OPAY_COUNTRY_CODE',"EG"),
+    'OPAY_BASE_URL'=>env('OPAY_BASE_URL',"https://sandboxapi.opaycheckout.com"),//https://api.opaycheckout.com for production
+
+
+
+
 
 
     'VERIFY_ROUTE_NAME' => "verify-payment",
