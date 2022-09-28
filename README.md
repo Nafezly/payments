@@ -4,8 +4,11 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Made With Love](https://img.shields.io/badge/Made%20With-Love-orange.svg)](https://github.com/chetanraj/awesome-github-badges)
 
-Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay - Tap - Opay )
+Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay - Tap - Opay - Paytabs - Vodaphone Cash - Orange Money - Meza Wallet - Etisalat Cash)
 ![payment-gateways.jpg](https://github.com/nafezly/payments/blob/master/payment-gateways.jpg?raw=true&v=2)
+
+PaytabsPayment
+PaymobWalletPayment
 
 ## Supported gateways
 
@@ -18,6 +21,8 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Thawani](https://thawani.om/)
 - [Tap](https://www.tap.company/)
 - [Opay](https://www.opaycheckout.com/)
+- [Paytabs](https://site.paytabs.com/)
+- [E Wallets (Vodaphone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 
 ## Installation
 
@@ -93,6 +98,19 @@ return [
     'OPAY_BASE_URL'=>env('OPAY_BASE_URL',"https://sandboxapi.opaycheckout.com"),//https://api.opaycheckout.com for production
 
 
+    #PAYMOB_WALLET (vodaphone-cash,orange-money,etisalat-cash,we-cash,meza-wallet)
+    'PAYMOB_WALLET_INTEGRATION_ID'=>env('PAYMOB_WALLET_INTEGRATION_ID'),
+    'PAYMOB_WALLET_PHONE'=>env('PAYMOB_WALLET_PHONE'),
+
+
+    #Paytabs
+    'PAYTABS_PROFILE_ID'  => env('PAYTABS_PROFILE_ID'),
+    'PAYTABS_SERVER_KEY' =>  env('PAYTABS_SERVER_KEY'),
+    'PAYTABS_BASE_URL' =>   env('PAYTABS_BASE_URL',"https://secure-egypt.paytabs.com"),
+    'PAYTABS_CHECKOUT_LANG' => env('PAYTABS_CHECKOUT_LANG',"AR"),
+    'PAYTABS_CURRENCY'=>env('PAYTABS_CURRENCY',"EGP"),
+
+
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME')
 ];
@@ -151,6 +169,8 @@ use Nafezly\Payments\Classes\PayPalPayment;
 use Nafezly\Payments\Classes\ThawaniPayment;
 use Nafezly\Payments\Classes\TapPayment;
 use Nafezly\Payments\Classes\OpayPayment;
+use Nafezly\Payments\Classes\PaytabsPayment;
+use Nafezly\Payments\Classes\PaymobWalletPayment;
 ```
 
 ## Test Cards
@@ -161,3 +181,5 @@ use Nafezly\Payments\Classes\OpayPayment;
 - [Fawry](https://developer.fawrystaging.com/docs/testing/testing)
 - [Tap](https://www.tap.company/eg/en/developers)
 - [Opay](https://doc.opaycheckout.com/end-to-end-testing)
+- [PayTabs](https://support.paytabs.com/en/support/solutions/articles/60000712315-what-are-the-test-cards-available-to-perform-payments-)
+
