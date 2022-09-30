@@ -5,13 +5,15 @@ namespace Nafezly\Payments\Classes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
+use Nafezly\Payments\Traits\SetVariables;
+use Nafezly\Payments\Traits\SetRequiredFields;
 
 class HyperPayPayment
 {
+    use SetVariables, SetRequiredFields;
     private $hyperpay_url;
     private $hyperpay_base_url;
     private $hyperpay_token;
-    private $hyperpay_currency;
     private $hyperpay_credit_id;
     private $hyperpay_mada_id;
     private $hyperpay_apple_id;
@@ -23,7 +25,7 @@ class HyperPayPayment
         $this->hyperpay_url = config('nafezly-payments.HYPERPAY_URL');
         $this->hyperpay_base_url = config('nafezly-payments.HYPERPAY_BASE_URL');
         $this->hyperpay_token = config('nafezly-payments.HYPERPAY_TOKEN');
-        $this->hyperpay_currency = config('nafezly-payments.HYPERPAY_CURRENCY');
+        $this->currency = config('nafezly-payments.HYPERPAY_CURRENCY');
         $this->hyperpay_credit_id = config('nafezly-payments.HYPERPAY_CREDIT_ID');
         $this->hyperpay_mada_id = config('nafezly-payments.HYPERPAY_MADA_ID');
         $this->hyperpay_apple_id = config('nafezly-payments.HYPERPAY_APPLE_ID');
@@ -42,18 +44,26 @@ class HyperPayPayment
      * @return array|string
      * @throws MissingPaymentInfoException
      */
-    public function pay($amount, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
+    public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
-        if (is_null($user_first_name)) throw new MissingPaymentInfoException('user_first_name', 'HyperPay');
-        if (is_null($user_last_name)) throw new MissingPaymentInfoException('user_last_name', 'HyperPay');
-        if (is_null($user_email)) throw new MissingPaymentInfoException('user_email', 'HyperPay');
-        if (is_null($user_phone)) throw new MissingPaymentInfoException('user_phone', 'HyperPay');
-        if (is_null($source)) throw new MissingPaymentInfoException('source', 'HyperPay');
+        $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
+        $this->checkRequiredFields($required_fields, 'HYPERPAY', func_get_args());
 
-        $unique_id = uniqid();
-        $entityId = $this->getEntityId($source);
-        $data = "entityId=" . $entityId . "&amount=" . $amount . "&currency=" . $this->hyperpay_currency . "&paymentType=DB&merchantTransactionId=" . $unique_id . "&billing.street1=riyadh" . "&billing.city=riyadh" . "&billing.state=riyadh" . "&billing.country=SA" . "&billing.postcode=123456" . "&customer.email=" . $user_email . "&customer.givenName=" . auth()->user()->user_first_name
-            . "&customer.surname=" . $user_last_name;
+        $data = http_build_query([
+            'entityId' => $this->getEntityId($source),
+            'amount' => $this->amount,
+            'currency' => $this->currency,
+            'paymentType' => 'DB',
+            'merchantTransactionId' => uniqid(),
+            'billing.street1' => 'riyadh',
+            'billing.city' => 'riyadh',
+            'billing.state' => 'riyadh',
+            'billing.country' => 'SA',
+            'billing.postcode' => '123456',
+            'customer.email' => $this->user_email,
+            'customer.givenName' => $this->user_first_name,
+            'customer.surname' => $this->user_last_name,
+        ]);
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->hyperpay_url);
@@ -133,7 +143,7 @@ class HyperPayPayment
 			const subTotalAmount = parseFloat(\" . $amount . \");
 			const shippingAmount = 0;
 			const taxAmount = 0;
-			const currency = '" . $this->hyperpay_currency . "';
+			const currency = '" . $this->currency . "';
 			const applePayTotalLabel = '" . $this->app_name . "';
 
 			function getAmount() {

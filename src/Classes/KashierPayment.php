@@ -5,16 +5,16 @@ namespace Nafezly\Payments\Classes;
 use Illuminate\Http\Request;
 use Nafezly\Payments\Interfaces\PaymentInterface;
 use Nafezly\Payments\Order;
+use Nafezly\Payments\Traits\SetVariables;
+use Nafezly\Payments\Traits\SetRequiredFields;
 
 class KashierPayment implements PaymentInterface
 {
-
-
+    use SetVariables, SetRequiredFields;
     private $kashier_url;
     private $kashier_mode;
     private $kashier_account_key;
     private $kashier_iframe_key;
-    private $kashier_currency;
     private $app_name;
     private $verify_route_name;
 
@@ -24,7 +24,7 @@ class KashierPayment implements PaymentInterface
         $this->kashier_mode = config("nafezly-payments.KASHIER_MODE");
         $this->kashier_account_key = config("nafezly-payments.KASHIER_ACCOUNT_KEY");
         $this->kashier_iframe_key = config("nafezly-payments.KASHIER_IFRAME_KEY");
-        $this->kashier_currency = config('nafezly-payments.KASHIER_CURRENCY');
+        $this->currency = config('nafezly-payments.KASHIER_CURRENCY');
         $this->app_name = config('nafezly-payments.APP_NAME');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
     }
@@ -40,22 +40,24 @@ class KashierPayment implements PaymentInterface
      * @param null $source
      * @return string[]
      */
-    public function pay($amount, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
+    public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
+
+        $required_fields = ['amount'];
+        $this->checkRequiredFields($required_fields, 'KASHIER', func_get_args());
 
         $payment_id = uniqid();
 
         $mid = $this->kashier_account_key;
-        $currency = $this->kashier_currency;
         $order_id = $payment_id;
         $secret = $this->kashier_iframe_key;
-        $path = "/?payment=$mid.$order_id.$amount.$currency";
+        $path = "/?payment={$mid}.{$order_id}.{$this->amount}.{$this->currency}";
         $hash = hash_hmac('sha256', $path, $secret);
 
         $data = [
             'mid' => $mid,
-            'amount' => $amount,
-            'currency' => $currency,
+            'amount' => $this->amount,
+            'currency' => $this->currency,
             'order_id' => $order_id,
             'path' => $path,
             'hash' => $hash,
@@ -63,7 +65,7 @@ class KashierPayment implements PaymentInterface
         ];
 
         return [
-            'payment_id'=>$payment_id,
+            'payment_id' => $payment_id,
             'html' => $this->generate_html($amount, $data),
             'redirect_url'=>""
         ];

@@ -10,14 +10,16 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
+use Nafezly\Payments\Traits\SetVariables;
+use Nafezly\Payments\Traits\SetRequiredFields;
 
-class PaytabsPayment implements PaymentInterface{
-
+class PaytabsPayment implements PaymentInterface
+{
+    use SetVariables, SetRequiredFields;
     private $paytabs_profile_id;
     private $paytabs_base_url;
     private $paytabs_server_key;
     private $paytabs_checkout_lang;
-    private $paytabs_currency;
     private $verify_route_name;
 
 
@@ -27,7 +29,7 @@ class PaytabsPayment implements PaymentInterface{
         $this->paytabs_base_url = config('nafezly-payments.PAYTABS_BASE_URL');
         $this->paytabs_server_key = config('nafezly-payments.PAYTABS_SERVER_KEY');
         $this->paytabs_checkout_lang = config('nafezly-payments.PAYTABS_CHECKOUT_LANG');
-        $this->paytabs_currency = config('nafezly-payments.PAYTABS_CURRENCY');
+        $this->currency = config('nafezly-payments.PAYTABS_CURRENCY');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
  
     } 
@@ -44,8 +46,10 @@ class PaytabsPayment implements PaymentInterface{
      */
 
     public function pay(
-        $amount, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null
+        $amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null
     ){
+        $required_fields = ['amount'];
+        $this->checkRequiredFields($required_fields, 'PayPal', func_get_args());
         $unique_id = uniqid();
 
         $response = Http::withHeaders([
@@ -56,8 +60,8 @@ class PaytabsPayment implements PaymentInterface{
             "tran_type" => "sale",
             "tran_class" => "ecom",
             "cart_id" => $unique_id,
-            "cart_currency" => $this->paytabs_currency,
-            "cart_amount" => $amount,
+            "cart_currency" => $this->currency,
+            "cart_amount" => $this->amount,
             "hide_shipping"=>true,
             "cart_description" => "items",
             "paypage_lang" => $this->paytabs_checkout_lang,
@@ -65,9 +69,9 @@ class PaytabsPayment implements PaymentInterface{
             "return" => "http://localhost?customer_ref=".$unique_id,
             "customer_ref"=>$unique_id,
             "customer_details" => [
-                "name" => $user_first_name.' '.$user_last_name,
-                "email" => $user_email,
-                "phone" => $user_phone,
+                "name" => $this->user_first_name.' '.$user_last_name,
+                "email" => $this->user_email,
+                "phone" => $this->user_phone,
                 "street1" => "Not Available Data",
                 "city" => "Not Available Data",
                 "state" => "Not Available Data",
@@ -84,6 +88,7 @@ class PaytabsPayment implements PaymentInterface{
             'html' => "",
         ];
     }
+    
     public function verify(Request $request ) : array {
         $response = Http::withHeaders([
             'Authorization'=>$this->paytabs_server_key,
