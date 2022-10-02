@@ -1,6 +1,5 @@
 <?php
 return [
-
     #PAYMOB
     'PAYMOB_API_KEY' => env('PAYMOB_API_KEY'),
     'PAYMOB_INTEGRATION_ID' => env('PAYMOB_INTEGRATION_ID'),
