@@ -37,6 +37,7 @@ return [
     'PAYPAL_CLIENT_ID' => env('PAYPAL_CLIENT_ID'),
     'PAYPAL_SECRET' => env('PAYPAL_SECRET'),
     'PAYPAL_CURRENCY' => env('PAYPAL_CURRENCY', "USD"),
+    'PAYPAL_MODE' => env('PAYPAL_MODE',"sandbox"),//sandbox or live
 
 
     #THAWANI
@@ -60,10 +61,8 @@ return [
     'OPAY_BASE_URL'=>env('OPAY_BASE_URL',"https://sandboxapi.opaycheckout.com"),//https://api.opaycheckout.com for production
 
 
-    #PAYMOB_WALLET (vodaphone-cash,orange-money,etisalat-cash,we-cash,meza-wallet)
+    #PAYMOB_WALLET (vodaphone-cash,orange-money,etisalat-cash,we-cash,meza-wallet) - test phone 01010101010 ,PIN & OTP IS 123456
     'PAYMOB_WALLET_INTEGRATION_ID'=>env('PAYMOB_WALLET_INTEGRATION_ID'),
-    'PAYMOB_WALLET_PHONE'=>env('PAYMOB_WALLET_PHONE',"01010101010"),//PIN & OTP IS 123456
-
 
     #Paytabs
     'PAYTABS_PROFILE_ID'  => env('PAYTABS_PROFILE_ID'),

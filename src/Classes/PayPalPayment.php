@@ -21,6 +21,8 @@ class PayPalPayment implements PaymentInterface
     private $paypal_client_id;
     private $paypal_secret;
     private $verify_route_name;
+    private $paypal_mode;
+    private $currency;
 
 
     public function __construct()
@@ -28,6 +30,7 @@ class PayPalPayment implements PaymentInterface
         $this->paypal_client_id = config('nafezly-payments.PAYPAL_CLIENT_ID');
         $this->paypal_secret = config('nafezly-payments.PAYPAL_SECRET');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
+        $this->paypal_mode = config('nafezly-payments.PAYPAL_MODE');
         $this->currency = config('nafezly-payments.PAYPAL_CURRENCY');
     }
 
@@ -46,7 +49,12 @@ class PayPalPayment implements PaymentInterface
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'PayPal', func_get_args());
 
-        $environment = new SandboxEnvironment($this->paypal_client_id, $this->paypal_secret);
+        if($this->paypal_mode=="live")
+            $environment = new ProductionEnvironment($this->paypal_client_id, $this->paypal_secret);
+        else
+            $environment = new SandboxEnvironment($this->paypal_client_id, $this->paypal_secret);
+
+        
         $client = new PayPalHttpClient($environment);
 
         $request = new OrdersCreateRequest();
