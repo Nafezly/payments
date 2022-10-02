@@ -97,7 +97,12 @@ class PayPalPayment implements PaymentInterface
      */
     public function verify(Request $request): array
     {
-        $environment = new SandboxEnvironment($this->paypal_client_id, $this->paypal_secret);
+
+        if($this->paypal_mode=="live")
+            $environment = new ProductionEnvironment($this->paypal_client_id, $this->paypal_secret);
+        else
+            $environment = new SandboxEnvironment($this->paypal_client_id, $this->paypal_secret);
+            
         $client = new PayPalHttpClient($environment);
 
         try {
