@@ -7,8 +7,6 @@
 Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay - Tap - Opay - Paytabs - Vodaphone Cash - Orange Money - Meza Wallet - Etisalat Cash)
 ![payment-gateways.jpg](https://github.com/nafezly/payments/blob/master/payment-gateways.jpg?raw=true&v=2)
 
-PaytabsPayment
-PaymobWalletPayment
 
 ## Supported gateways
 
