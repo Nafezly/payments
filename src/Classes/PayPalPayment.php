@@ -10,6 +10,7 @@ use Illuminate\Routing\Redirector;
 use Nafezly\Payments\Interfaces\PaymentInterface;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
+use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use Nafezly\Payments\Traits\SetVariables;
