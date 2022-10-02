@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
+use Nafezly\Payments\Traits\SetVariables;
+use Nafezly\Payments\Traits\SetRequiredFields;
 
 class ThawaniPayment implements PaymentInterface
 {
-
+    use SetVariables, SetRequiredFields;
     private $thawani_url;
     private $thawani_api_key;
     private $thawani_publishable_key;
@@ -38,12 +40,10 @@ class ThawaniPayment implements PaymentInterface
      * @return Application|RedirectResponse|Redirector
      * @throws MissingPaymentInfoException
      */
-    public function pay($amount, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
+    public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
-        if (is_null($user_first_name)) throw new MissingPaymentInfoException('user_first_name', 'Thawani');
-        if (is_null($user_last_name)) throw new MissingPaymentInfoException('user_last_name', 'Thawani');
-        if (is_null($user_phone)) throw new MissingPaymentInfoException('user_phone', 'Thawani');
-
+        $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
+        $this->checkRequiredFields($required_fields, 'Thawani', func_get_args());
         $unique_id = uniqid();
         $response = Http::withHeaders([
             'Content-Type' => "application/json",
@@ -53,16 +53,16 @@ class ThawaniPayment implements PaymentInterface
             "products" => [
                 [
                     "name" => "credit",
-                    "unit_amount" => $amount * 1000,
+                    "unit_amount" => $this->amount * 1000,
                     "quantity" => 1
                 ],
             ],
             "success_url" => route($this->verify_route_name, ['payment' => "thawani", 'payment_id' => $unique_id]),
             "cancel_url" => route($this->verify_route_name, ['payment' => "thawani", 'payment_id' => $unique_id]),
             "metadata" => [
-                "customer" => $user_first_name.' '.$user_last_name,
+                "customer" => $this->user_first_name.' '.$this->user_last_name,
                 "order_id" => $unique_id,
-                "phone" => $user_phone
+                "phone" => $this->user_phone
             ]
         ])->json();
         Cache::forever($unique_id, $response['data']['session_id']);
