@@ -116,12 +116,14 @@ class HyperPayPayment
         if (in_array($final_result["result"]["code"], ["000.000.000", "000.100.110", "000.100.111", "000.100.112"])) {
             return [
                 'success' => true,
+                'payment_id'=>$request['id'],
                 'message' => __('messages.PAYMENT_DONE'),
                 'process_data' => $final_result
             ];
         } else {
             return [
                 'success' => false,
+                'payment_id'=>$request['id'],
                 'message' => __('messages.PAYMENT_FAILED_WITH_CODE', ['CODE' => $final_result["result"]["code"]]),
                 'process_data' => $final_result
             ];

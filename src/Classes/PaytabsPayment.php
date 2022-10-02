@@ -101,6 +101,7 @@ class PaytabsPayment implements PaymentInterface
         if(isset($response['payment_result']['response_status']) && $response['payment_result']['response_status']=="A"){
             return [
                 'success' => true,
+                'payment_id'=>Cache::get('tran_ref'),
                 'message' => __('messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
@@ -108,6 +109,7 @@ class PaytabsPayment implements PaymentInterface
         }else{
             return [
                 'success' => false,
+                'payment_id'=>Cache::get('tran_ref'),
                 'message' => __('messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];

@@ -98,12 +98,14 @@ class PaymobPayment implements PaymentInterface
             if ($request['success'] == "true") {
                 return [
                     'success' => true,
+                    'payment_id'=>$request['order'],
                     'message' => __('messages.PAYMENT_DONE'),
                     'process_data' => $request->all()
                 ];
             } else {
                 return [
                     'success' => false,
+                    'payment_id'=>$request['order'],
                     'message' => __('messages.PAYMENT_FAILED'),
                     'process_data' => $request->all()
                 ];
@@ -112,6 +114,7 @@ class PaymobPayment implements PaymentInterface
         } else {
             return [
                 'success' => false,
+                'payment_id'=>$request['order'],
                 'message' => __('messages.PAYMENT_FAILED'),
                 'process_data' => $request->all()
             ];

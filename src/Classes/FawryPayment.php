@@ -86,12 +86,14 @@ class FawryPayment implements PaymentInterface
         if ($response->offsetGet('statusCode') == 200 && $response->offsetGet('paymentStatus') == "PAID") {
             return [
                 'success' => true,
+                'payment_id'=>$reference_id,
                 'message' => __('messages.PAYMENT_DONE'),
                 'process_data' => $request->all()
             ];
         } else if ($response->offsetGet('statusCode') != 200) {
             return [
                 'success' => false,
+                'payment_id'=>$reference_id,
                 'message' => __('messages.PAYMENT_FAILED'),
                 'process_data' => $request->all()
             ];

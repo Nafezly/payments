@@ -91,12 +91,14 @@ class ThawaniPayment implements PaymentInterface
         if ($response['data']['payment_status'] == "paid") {
             return [
                 'success' => true,
+                'payment_id'=>$request['payment_id'],
                 'message' => __('messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
         } else {
             return [
                 'success' => false,
+                'payment_id'=>$request['payment_id'],
                 'message' => __('messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];

@@ -111,6 +111,7 @@ class PayPalPayment implements PaymentInterface
             if ($result['result']['intent'] == "CAPTURE" && $result['result']['status'] == "APPROVED") {
                 return [
                     'success' => true,
+                    'payment_id'=>$request['token'],
                     'message' => __('messages.PAYMENT_DONE'),
                     'process_data' => $result
                 ];
@@ -118,6 +119,7 @@ class PayPalPayment implements PaymentInterface
             } else {
                 return [
                     'success' => false,
+                    'payment_id'=>$request['token'],
                     'message' => __('messages.PAYMENT_FAILED'),
                     'process_data' => $result
                 ];
@@ -125,6 +127,7 @@ class PayPalPayment implements PaymentInterface
         } catch (Exception $e) {
             return [
                 'success' => false,
+                'payment_id'=>$request['token'],
                 'message' => __('messages.PAYMENT_FAILED'),
                 'process_data' => $e
             ];

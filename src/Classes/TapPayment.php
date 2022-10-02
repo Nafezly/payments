@@ -100,12 +100,14 @@ class TapPayment implements PaymentInterface
         if(isset($response['status']) && $response['status']=="CAPTURED"){
             return [
                 'success' => true,
+                'payment_id'=>$request->tap_id,
                 'message' => __('messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
         }else{
             return [
                 'success' => false,
+                'payment_id'=>$request->tap_id,
                 'message' => __('messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];

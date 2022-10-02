@@ -118,6 +118,7 @@ class OpayPayment implements PaymentInterface
         if($response['code']=="00000" && isset($response['data']['status']) && $response['data']['status']){
             return [
                 'success' => true,
+                'payment_id'=>$request->reference_id,
                 'message' => __('messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
@@ -125,6 +126,7 @@ class OpayPayment implements PaymentInterface
         }else{
             return [
                 'success' => false,
+                'payment_id'=>$request->reference_id,
                 'message' => __('messages.PAYMENT_FAILED_WITH_CODE',['CODE'=>$response['message']]),
                 'process_data' => $response
             ];
