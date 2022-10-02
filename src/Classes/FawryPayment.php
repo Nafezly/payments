@@ -4,11 +4,14 @@ namespace Nafezly\Payments\Classes;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
+
 use Nafezly\Payments\Interfaces\PaymentInterface;
+use Nafezly\Payments\Traits\SetVariables;
+use Nafezly\Payments\Traits\SetRequiredFields;
 
 class FawryPayment implements PaymentInterface
 {
+    use SetVariables, SetRequiredFields;
     private $fawry_url;
     private $fawry_secret;
     private $fawry_merchant;
@@ -34,13 +37,10 @@ class FawryPayment implements PaymentInterface
      * @return string[]
      * @throws MissingPaymentInfoException
      */
-    public function pay($amount, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
+    public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
-        if (is_null($user_id)) throw new MissingPaymentInfoException('user_id', 'FAWRY');
-        if (is_null($user_first_name)) throw new MissingPaymentInfoException('user_first_name', 'FAWRY');
-        if (is_null($user_last_name)) throw new MissingPaymentInfoException('user_last_name', 'FAWRY');
-        if (is_null($user_email)) throw new MissingPaymentInfoException('user_email', 'FAWRY');
-        if (is_null($user_phone)) throw new MissingPaymentInfoException('user_phone', 'FAWRY');
+        $required_fields = ['amount', 'user_id', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
+        $this->checkRequiredFields($required_fields, 'FAWRY', func_get_args());
 
         $unique_id = uniqid();
 
@@ -48,10 +48,10 @@ class FawryPayment implements PaymentInterface
             'fawry_url' => $this->fawry_url,
             'fawry_merchant' => $this->fawry_merchant,
             'fawry_secret' => $this->fawry_secret,
-            'user_id' => $user_id,
-            'user_name' => $user_first_name.' '.$user_last_name,
-            'user_email' => $user_email,
-            'user_phone' => $user_phone,
+            'user_id' => $this->user_id,
+            'user_name' => "{$this->user_first_name} {$this->user_last_name}",
+            'user_email' => $this->user_email,
+            'user_phone' => $this->user_phone,
             'unique_id' => $unique_id,
             'item_id' => 1,
             'item_quantity' => 1,

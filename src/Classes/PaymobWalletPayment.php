@@ -6,12 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
+use Nafezly\Payments\Traits\SetVariables;
+use Nafezly\Payments\Traits\SetRequiredFields;
 
 class PaymobWalletPayment implements PaymentInterface
 {
-
+    use SetVariables, SetRequiredFields;
     private $paymob_api_key;
-    private $paymob_currency;
     private $paymob_wallet_integration_id;
     private $paymob_wallet_phone;
 
@@ -20,11 +21,10 @@ class PaymobWalletPayment implements PaymentInterface
     public function __construct()
     {
         $this->paymob_api_key = config('nafezly-payments.PAYMOB_API_KEY');
-        $this->paymob_currency = config("nafezly-payments.PAYMOB_CURRENCY");
+        $this->currency = config("nafezly-payments.PAYMOB_CURRENCY");
         $this->paymob_wallet_integration_id = config("nafezly-payments.PAYMOB_WALLET_INTEGRATION_ID");
         $this->paymob_wallet_phone = config("nafezly-payments.PAYMOB_WALLET_PHONE");
     }
-
 
     /**
      * @param $amount
@@ -37,12 +37,10 @@ class PaymobWalletPayment implements PaymentInterface
      * @return void
      * @throws MissingPaymentInfoException
      */
-    public function pay($amount, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
+    public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
-        if (is_null($user_first_name)) throw new MissingPaymentInfoException('user_first_name', 'PayMob');
-        if (is_null($user_last_name)) throw new MissingPaymentInfoException('user_last_name', 'PayMob');
-        if (is_null($user_email)) throw new MissingPaymentInfoException('user_email', 'PayMob');
-        if (is_null($user_phone)) throw new MissingPaymentInfoException('user_phone', 'PayMob');
+        $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
+        $this->checkRequiredFields($required_fields, 'PayMob', func_get_args());
 
         $request_new_token = Http::withHeaders(['content-type' => 'application/json'])
             ->post('https://accept.paymobsolutions.com/api/auth/tokens', [
@@ -53,7 +51,7 @@ class PaymobWalletPayment implements PaymentInterface
             ->post('https://accept.paymobsolutions.com/api/ecommerce/orders', [
                 "auth_token" => $request_new_token['token'],
                 "delivery_needed" => "false",
-                "amount_cents" => $amount * 100,
+                "amount_cents" => $this->amount * 100,
                 "items" => []
             ])->json();
 
@@ -67,20 +65,20 @@ class PaymobWalletPayment implements PaymentInterface
                 "order_id" => $get_order['id'],
                 "billing_data" => [
                     "apartment" => "NA",
-                    "email" => $user_email,
+                    "email" => $this->user_email,
                     "floor" => "NA",
-                    "first_name" => $user_first_name,
+                    "first_name" => $this->user_first_name,
                     "street" => "NA",
                     "building" => "NA",
-                    "phone_number" => $user_phone,
+                    "phone_number" => $this->user_phone,
                     "shipping_method" => "NA",
                     "postal_code" => "NA",
                     "city" => "NA",
                     "country" => "NA",
-                    "last_name" => $user_last_name,
+                    "last_name" => $this->user_last_name,
                     "state" => "NA"
                 ],
-                "currency" => $this->paymob_currency,
+                "currency" => $this->currency,
                 "integration_id" => $this->paymob_wallet_integration_id,
                 'lock_order_when_paid'=>true
             ])->json();

@@ -12,10 +12,12 @@ use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
+use Nafezly\Payments\Traits\SetVariables;
+use Nafezly\Payments\Traits\SetRequiredFields;
 
 class PayPalPayment implements PaymentInterface
 {
-
+    use SetVariables, SetRequiredFields;
     private $paypal_client_id;
     private $paypal_secret;
     private $verify_route_name;
@@ -26,7 +28,7 @@ class PayPalPayment implements PaymentInterface
         $this->paypal_client_id = config('nafezly-payments.PAYPAL_CLIENT_ID');
         $this->paypal_secret = config('nafezly-payments.PAYPAL_SECRET');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
-
+        $this->currency = config('nafezly-payments.PAYPAL_CURRENCY');
     }
 
     /**
@@ -39,8 +41,11 @@ class PayPalPayment implements PaymentInterface
      * @param null $source
      * @return array|Application|RedirectResponse|Redirector
      */
-    public function pay($amount, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
+    public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
+        $required_fields = ['amount'];
+        $this->checkRequiredFields($required_fields, 'PayPal', func_get_args());
+
         $environment = new SandboxEnvironment($this->paypal_client_id, $this->paypal_secret);
         $client = new PayPalHttpClient($environment);
 
@@ -51,8 +56,8 @@ class PayPalPayment implements PaymentInterface
             "purchase_units" => [[
                 "reference_id" => uniqid(),
                 "amount" => [
-                    "value" => $amount,
-                    "currency_code" => config('nafezly-payments.PAYPAL_CURRENCY')
+                    "value" => $this->amount,
+                    "currency_code" => $this->currency
                 ]
             ]],
             "application_context" => [

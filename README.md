@@ -138,6 +138,16 @@ $payment->pay(
 	$source = null
 );
 
+//or use
+$payment->setUserId($id)
+        ->setUserFirstName($first_name)
+        ->setUserLastName($last_name)
+        ->setUserEmail($email)
+        ->setUserPhone($phone)
+        ->setCurrency($currency)
+        ->setAmmount($amount)
+        ->pay();
+
 //pay function response 
 [
 	'payment_id'=>"", // refrence code that should stored in your orders table
@@ -147,6 +157,8 @@ $payment->pay(
 
 //verify function
 $payment->verify($request);
+
+//outputs
 [
 	'success'=>true,//or false
 	'message'=>"Done Successfully",//message for client
