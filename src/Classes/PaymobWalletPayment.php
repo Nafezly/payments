@@ -90,12 +90,11 @@ class PaymobWalletPayment implements PaymentInterface
                     'subtype'=>"WALLET"
                 ],
                 "payment_token"=>$get_url_token['token']
-        ])->json();
-
+        ])->json(); 
         return [
             'payment_id'=>$get_order['id'],
             'html' => "",
-            'redirect_url'=>$get_pay_link
+            'redirect_url'=>$get_pay_link['redirect_url']
         ];
         
     }
