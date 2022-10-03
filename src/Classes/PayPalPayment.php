@@ -12,8 +12,8 @@ use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
-use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
+use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use Nafezly\Payments\Traits\SetVariables;
 use Nafezly\Payments\Traits\SetRequiredFields;
 
@@ -108,7 +108,7 @@ class PayPalPayment implements PaymentInterface
         $client = new PayPalHttpClient($environment);
 
         try {
-            $response = $client->execute(new OrdersCaptureRequest($request['token']) );
+            $response = $client->execute(new PayPalCheckoutSdk\Orders\OrdersCaptureRequest($request['token']) );
             $result = json_decode(json_encode($response), true);
             if ($result['result']['intent'] == "CAPTURE" && $result['result']['status'] == "APPROVED") {
                 return [
