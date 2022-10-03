@@ -7,7 +7,6 @@ return [
     'PAYMOB_HMAC' => env('PAYMOB_HMAC'),
     'PAYMOB_CURRENCY'=> env('PAYMOB_CURRENCY',"EGP"),
 
-
     #HYPERPAY
     'HYPERPAY_BASE_URL' => env('HYPERPAY_BASE_URL', "https://eu-test.oppwa.com"),
     'HYPERPAY_URL' => env('HYPERPAY_URL', env('HYPERPAY_BASE_URL') . "/v1/checkouts"),
