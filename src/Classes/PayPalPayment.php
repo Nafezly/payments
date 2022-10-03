@@ -13,8 +13,10 @@ use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
+use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use Nafezly\Payments\Traits\SetVariables;
 use Nafezly\Payments\Traits\SetRequiredFields;
+
 
 class PayPalPayment implements PaymentInterface
 {
