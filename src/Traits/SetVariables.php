@@ -30,7 +30,7 @@ trait SetVariables
      * @param  string  $value
      * @return $this
      */
-    public function setUserFisrtName($value)
+    public function setUserFirstName($value)
     {
         $this->user_first_name = $value;
         return $this;
