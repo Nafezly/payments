@@ -147,7 +147,7 @@ $payment->setUserId($id)
         ->setUserEmail($email)
         ->setUserPhone($phone)
         ->setCurrency($currency)
-        ->setAmmount($amount)
+        ->setAmount($amount)
         ->pay();
 
 //pay function response 
