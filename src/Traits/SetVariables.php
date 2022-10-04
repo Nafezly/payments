@@ -10,7 +10,7 @@ trait SetVariables
     private $user_phone = null;
     private $source = null;
     private $currency = null;
-    private $ammount = null;
+    private $amount = null;
 
     /**
      * Sets user ID
@@ -30,7 +30,7 @@ trait SetVariables
      * @param  string  $value
      * @return $this
      */
-    public function setUserFisrtName($value)
+    public function setUserFirstName($value)
     {
         $this->user_first_name = $value;
         return $this;
@@ -104,7 +104,7 @@ trait SetVariables
      */
     public function setAmount($value)
     {
-        $this->ammount = $value;
+        $this->amount = $value;
         return $this;
     }
 
