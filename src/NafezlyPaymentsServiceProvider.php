@@ -8,6 +8,7 @@ use Nafezly\Payments\Classes\HyperPayPayment;
 use Nafezly\Payments\Classes\KashierPayment;
 use Nafezly\Payments\Classes\PaymobPayment;
 use Nafezly\Payments\Classes\PayPalPayment;
+use Nafezly\Payments\Classes\PaytabsPayment;
 use Nafezly\Payments\Classes\ThawaniPayment;
 use Nafezly\Payments\Classes\TapPayment;
 use Nafezly\Payments\Classes\OpayPayment;
@@ -61,6 +62,9 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         });
         $this->app->bind(PaymobWalletPayment::class, function () {
             return new PaymobWalletPayment();
+        });
+        $this->app->bind(PaytabsPayment::class, function () {
+            return new PaytabsPayment();
         });
         
     }
