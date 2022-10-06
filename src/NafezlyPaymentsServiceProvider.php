@@ -25,7 +25,10 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     {
         $this->configure();
         $this->registerPublishing();
-
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'nafezly');
+        $this->publishes([
+            __DIR__.'/../resources/views' => resource_path('views/vendor/nafezly'),
+        ]);
     }
 
     /**
