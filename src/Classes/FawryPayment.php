@@ -55,7 +55,7 @@ class FawryPayment implements PaymentInterface
             'unique_id' => $unique_id,
             'item_id' => 1,
             'item_quantity' => 1,
-            'amount' => $amount,
+            'amount' => $this->amount,
             'payment_id'=>$unique_id
         ];
 
