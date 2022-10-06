@@ -12,10 +12,10 @@ use Nafezly\Payments\Traits\SetRequiredFields;
 class FawryPayment implements PaymentInterface
 {
     use SetVariables, SetRequiredFields;
-    private $fawry_url;
-    private $fawry_secret;
-    private $fawry_merchant;
-    private $verify_route_name;
+    public $fawry_url;
+    public $fawry_secret;
+    public $fawry_merchant;
+    public $verify_route_name;
 
     public function __construct()
     {
@@ -102,7 +102,7 @@ class FawryPayment implements PaymentInterface
 
     private function generate_html($data): string
     {
-        return view('nafezly::html.fawry', ['data' => $data, 'verify_route_name' => $this->verify_route_name]);
+        return view('nafezly::html.fawry', ['model' => $this, 'data' => $data])->render();
     }
 
 }

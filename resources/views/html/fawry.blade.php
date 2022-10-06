@@ -22,6 +22,6 @@
     chargeRequest.order.orderItems.push(item); 
     chargeRequest.signature = "{{ $data['secret'] }}";
     setTimeout(function(){
-        FawryPay.checkout(chargeRequest,'{{ route($verify_route_name, ["payment" => "fawry"]) }}', '{{ route($verify_route_name, ["payment" => "fawry"]) }}');
+        FawryPay.checkout(chargeRequest,'{{ route($this->verify_route_name, ["payment" => "fawry"]) }}', '{{ route($this->verify_route_name, ["payment" => "fawry"]) }}');
     },100); 
 </script>
