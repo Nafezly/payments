@@ -14,18 +14,15 @@ use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
-use Nafezly\Payments\Traits\SetVariables;
-use Nafezly\Payments\Traits\SetRequiredFields;
+use Nafezly\Payments\Classes\BaseController;
 
-
-class PayPalPayment implements PaymentInterface
+class PayPalPayment extends BaseController implements PaymentInterface
 {
-    use SetVariables, SetRequiredFields;
     private $paypal_client_id;
     private $paypal_secret;
     private $verify_route_name;
-    private $paypal_mode;
-    private $currency;
+    public $paypal_mode;
+    public $currency;
 
 
     public function __construct()
@@ -49,6 +46,7 @@ class PayPalPayment implements PaymentInterface
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
+        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'PayPal', func_get_args());
 

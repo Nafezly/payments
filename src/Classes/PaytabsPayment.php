@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
-use Nafezly\Payments\Traits\SetVariables;
-use Nafezly\Payments\Traits\SetRequiredFields;
+use Nafezly\Payments\Classes\BaseController;
 
-class PaytabsPayment implements PaymentInterface
+
+class PaytabsPayment extends BaseController implements PaymentInterface
 {
-    use SetVariables, SetRequiredFields;
 
     private $paytabs_profile_id;
     private $paytabs_base_url;
@@ -50,6 +49,7 @@ class PaytabsPayment implements PaymentInterface
         $amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null
     )
     {
+        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'PayTabs', func_get_args());
         $unique_id = uniqid();

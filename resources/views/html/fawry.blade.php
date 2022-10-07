@@ -13,7 +13,9 @@
     chargeRequest.order = {};
     chargeRequest.order.description = "Credit";
     chargeRequest.order.expiry = '';
+    chargeRequest.paymentMethod='{{$model->fawry_pay_mode}}';
     chargeRequest.order.orderItems = [];
+    chargeRequest.returnUrl= "{{ route($model->verify_route_name, ["payment" => "fawry"]) }}";
     const item = {};
     item.productSKU = 1;
     item.description = 'Credit';
@@ -22,6 +24,12 @@
     chargeRequest.order.orderItems.push(item); 
     chargeRequest.signature = "{{ $data['secret'] }}";
     setTimeout(function(){
-        FawryPay.checkout(chargeRequest,'{{ route($model->verify_route_name, ["payment" => "fawry"]) }}', '{{ route($model->verify_route_name, ["payment" => "fawry"]) }}');
+        FawryPay.checkout(
+        chargeRequest, {
+            locale : "ar",  //default en
+            mode: DISPLAY_MODE.{{$model->fawry_display_mode}},  //required allowed values [POPUP, INSIDE_PAGE, SIDE_PAGE , SEPARATED]
+        });
     },100); 
 </script>
+
+SEPARATED

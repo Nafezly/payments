@@ -29,7 +29,8 @@ return [
     'FAWRY_URL' => env('FAWRY_URL', "https://atfawry.fawrystaging.com/"),//https://www.atfawry.com/ for production
     'FAWRY_SECRET' => env('FAWRY_SECRET'),
     'FAWRY_MERCHANT' => env('FAWRY_MERCHANT'),
-
+    'FAWRY_DISPLAY_MODE' => env('FAWRY_DISPLAY_MODE',"POPUP"),//required allowed values [POPUP, INSIDE_PAGE, SIDE_PAGE , SEPARATED]
+    'FAWRY_PAY_MODE'=>env('FAWRY_PAY_MODE',"CARD"),//allowed values ['CashOnDelivery', 'PayAtFawry', 'MWALLET', 'CARD' , 'VALU']
 
     #PayPal
     'PAYPAL_CLIENT_ID' => env('PAYPAL_CLIENT_ID'),

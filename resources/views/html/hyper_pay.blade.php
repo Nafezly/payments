@@ -1,5 +1,5 @@
 <form action="{{ route($model->verify_route_name, ['payment' => 'hyperpay']) }}" class='paymentWidgets' data-brands="{{ $brand }}"></form>
-<script src="{{ $model->hyperpay_base_url }}"/v1/paymentWidgets.js?checkoutId="{{ $model->payment_id }}"></script>
+<script src="{{ $model->hyperpay_base_url }}/v1/paymentWidgets.js?checkoutId={{ $model->payment_id }}"></script>
 <script type='text/javascript'>
 const subTotalAmount = parseFloat({{ $model->amount }});
 const shippingAmount = 0;

@@ -25,9 +25,17 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     {
         $this->configure();
         $this->registerPublishing();
+        
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'nafezly');
+
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/nafezly'),
+        ]);
+        $this->publishes([
+            __DIR__ . '/../config/nafezly-payments.php' => config_path('nafezly-payments.php'),
+        ]);
+        $this->publishes([
+            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/payments'),
         ]);
     }
 
@@ -94,10 +102,12 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/nafezly-payments.php' => config_path('nafezly-payments.php'),
         ], 'nafezly-payments-config');
-
         $this->publishes([
             __DIR__ . '/../resources/lang' => resource_path('lang/vendor/payments'),
         ], 'nafezly-payments-lang');
+        $this->publishes([
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/payments'),
+        ], 'nafezly-payments-views');
 
     }
 }

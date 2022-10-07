@@ -6,12 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
-use Nafezly\Payments\Traits\SetVariables;
-use Nafezly\Payments\Traits\SetRequiredFields;
+use Nafezly\Payments\Classes\BaseController;
 
-class PaymobPayment implements PaymentInterface
+class PaymobPayment extends BaseController implements PaymentInterface
 {
-    use SetVariables, SetRequiredFields;
     private $paymob_api_key;
     private $paymob_integration_id;
     private $paymob_iframe_id;
@@ -38,6 +36,7 @@ class PaymobPayment implements PaymentInterface
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
+        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'PayMob', func_get_args());
 
@@ -50,7 +49,7 @@ class PaymobPayment implements PaymentInterface
             ->post('https://accept.paymobsolutions.com/api/ecommerce/orders', [
                 "auth_token" => $request_new_token['token'],
                 "delivery_needed" => "false",
-                "amount_cents" => $amount * 100,
+                "amount_cents" => $this->amount * 100,
                 "items" => []
             ])->json();
 

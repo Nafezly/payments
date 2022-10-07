@@ -5,12 +5,12 @@ namespace Nafezly\Payments\Classes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
-use Nafezly\Payments\Traits\SetVariables;
-use Nafezly\Payments\Traits\SetRequiredFields;
+use Nafezly\Payments\Interfaces\PaymentInterface;
+use Nafezly\Payments\Classes\BaseController;
 
-class HyperPayPayment
+
+class HyperPayPayment extends BaseController implements PaymentInterface
 {
-    use SetVariables, SetRequiredFields;
     private $hyperpay_url;
     public $hyperpay_base_url;
     private $hyperpay_token;
@@ -47,6 +47,7 @@ class HyperPayPayment
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
+        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'HYPERPAY', func_get_args());
 

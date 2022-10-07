@@ -6,15 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
-use Nafezly\Payments\Traits\SetVariables;
-use Nafezly\Payments\Traits\SetRequiredFields;
+use Nafezly\Payments\Classes\BaseController;
 
-class PaymobWalletPayment implements PaymentInterface
+class PaymobWalletPayment extends BaseController implements PaymentInterface
 {
-    use SetVariables, SetRequiredFields;
     private $paymob_api_key;
     private $paymob_wallet_integration_id;
-    private $paymob_wallet_phone;
 
 
 
@@ -23,7 +20,6 @@ class PaymobWalletPayment implements PaymentInterface
         $this->paymob_api_key = config('nafezly-payments.PAYMOB_API_KEY');
         $this->currency = config("nafezly-payments.PAYMOB_CURRENCY");
         $this->paymob_wallet_integration_id = config("nafezly-payments.PAYMOB_WALLET_INTEGRATION_ID");
-        $this->paymob_wallet_phone = config("nafezly-payments.PAYMOB_WALLET_PHONE");
     }
 
     /**
@@ -39,6 +35,7 @@ class PaymobWalletPayment implements PaymentInterface
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
+        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'PayMob', func_get_args());
 
@@ -86,7 +83,7 @@ class PaymobWalletPayment implements PaymentInterface
         $get_pay_link = Http::withHeaders(['content-type' => 'application/json'])
             ->post('https://accept.paymob.com/api/acceptance/payments/pay', [
                 'source'=>[
-                    "identifier"=>$this->paymob_wallet_phone,
+                    "identifier"=>$this->user_phone,
                     'subtype'=>"WALLET"
                 ],
                 "payment_token"=>$get_url_token['token']

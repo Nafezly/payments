@@ -6,22 +6,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 use Nafezly\Payments\Interfaces\PaymentInterface;
-use Nafezly\Payments\Traits\SetVariables;
-use Nafezly\Payments\Traits\SetRequiredFields;
+use Nafezly\Payments\Classes\BaseController;
 
-class FawryPayment implements PaymentInterface
+class FawryPayment extends BaseController implements PaymentInterface 
 {
-    use SetVariables, SetRequiredFields;
     public $fawry_url;
     public $fawry_secret;
     public $fawry_merchant;
     public $verify_route_name;
+    public $fawry_display_mode;
+    public $fawry_pay_mode;
 
     public function __construct()
     {
         $this->fawry_url = config('nafezly-payments.FAWRY_URL');
         $this->fawry_merchant = config('nafezly-payments.FAWRY_MERCHANT');
         $this->fawry_secret = config('nafezly-payments.FAWRY_SECRET');
+        $this->fawry_display_mode = config('nafezly-payments.FAWRY_DISPLAY_MODE');
+        $this->fawry_pay_mode = config('nafezly-payments.FAWRY_PAY_MODE');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
     }
 
@@ -39,6 +41,7 @@ class FawryPayment implements PaymentInterface
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
+        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount', 'user_id', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'FAWRY', func_get_args());
 

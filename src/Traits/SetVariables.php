@@ -108,4 +108,28 @@ trait SetVariables
         return $this;
     }
 
+
+    /**
+     * set passed vaiables to pay function to be global
+     * @param $amount
+     * @param null $user_id
+     * @param null $user_first_name
+     * @param null $user_last_name
+     * @param null $user_email
+     * @param null $user_phone
+     * @param null $source
+     * @return void
+     */
+    public function setPassedVariablesToGlobal($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
+    {
+        $this->setAmount($amount);
+        $this->setUserId($user_id);
+        $this->setUserFirstName($user_first_name);
+        $this->setUserLastName($user_last_name);
+        $this->setUserEmail($user_email);
+        $this->setUserPhone($user_phone);
+        $this->setSource($source);
+    }
+    
+
 }

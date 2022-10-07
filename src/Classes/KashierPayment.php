@@ -4,13 +4,10 @@ namespace Nafezly\Payments\Classes;
 
 use Illuminate\Http\Request;
 use Nafezly\Payments\Interfaces\PaymentInterface;
-use Nafezly\Payments\Order;
-use Nafezly\Payments\Traits\SetVariables;
-use Nafezly\Payments\Traits\SetRequiredFields;
+use Nafezly\Payments\Classes\BaseController;
 
-class KashierPayment implements PaymentInterface
+class KashierPayment extends BaseController implements PaymentInterface
 {
-    use SetVariables, SetRequiredFields;
     public  $kashier_url;
     public  $kashier_mode;
     private $kashier_account_key;
@@ -42,7 +39,7 @@ class KashierPayment implements PaymentInterface
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
-
+        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'KASHIER', func_get_args());
 
