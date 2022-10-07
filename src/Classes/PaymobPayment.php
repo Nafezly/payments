@@ -15,6 +15,7 @@ class PaymobPayment implements PaymentInterface
     private $paymob_api_key;
     private $paymob_integration_id;
     private $paymob_iframe_id;
+    private $expiration = 36000;
 
 
     public function __construct()
@@ -23,6 +24,7 @@ class PaymobPayment implements PaymentInterface
         $this->paymob_integration_id = config('nafezly-payments.PAYMOB_INTEGRATION_ID');
         $this->paymob_iframe_id = config("nafezly-payments.PAYMOB_IFRAME_ID");
         $this->currency = config("nafezly-payments.PAYMOB_CURRENCY");
+        $this->expiration = config("nafezly-payments.EXPIRATION",36000);
     }
 
     /**
@@ -57,7 +59,7 @@ class PaymobPayment implements PaymentInterface
         $get_url_token = Http::withHeaders(['content-type' => 'application/json'])
             ->post('https://accept.paymobsolutions.com/api/acceptance/payment_keys', [
                 "auth_token" => $request_new_token['token'],
-                "expiration" => 36000,
+                "expiration" => $this->expiration,
                 "amount_cents" => $get_order['amount_cents'],
                 "order_id" => $get_order['id'],
                 "billing_data" => [

@@ -15,6 +15,7 @@ class PaymobWalletPayment implements PaymentInterface
     private $paymob_api_key;
     private $paymob_wallet_integration_id;
     private $paymob_wallet_phone;
+    private $expiration = 36000;
 
 
 
@@ -24,6 +25,7 @@ class PaymobWalletPayment implements PaymentInterface
         $this->currency = config("nafezly-payments.PAYMOB_CURRENCY");
         $this->paymob_wallet_integration_id = config("nafezly-payments.PAYMOB_WALLET_INTEGRATION_ID");
         $this->paymob_wallet_phone = config("nafezly-payments.PAYMOB_WALLET_PHONE");
+        $this->expiration = config("nafezly-payments.EXPIRATION",36000);
     }
 
     /**
@@ -60,7 +62,7 @@ class PaymobWalletPayment implements PaymentInterface
         $get_url_token = Http::withHeaders(['content-type' => 'application/json'])
             ->post('https://accept.paymobsolutions.com/api/acceptance/payment_keys', [
                 "auth_token" => $request_new_token['token'],
-                "expiration" => 36000,
+                "expiration" => $this->expiration,
                 "amount_cents" => $get_order['amount_cents'],
                 "order_id" => $get_order['id'],
                 "billing_data" => [
