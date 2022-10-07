@@ -11,11 +11,11 @@ use Nafezly\Payments\Traits\SetRequiredFields;
 class KashierPayment implements PaymentInterface
 {
     use SetVariables, SetRequiredFields;
-    private $kashier_url;
-    private $kashier_mode;
+    public  $kashier_url;
+    public  $kashier_mode;
     private $kashier_account_key;
     private $kashier_iframe_key;
-    private $app_name;
+    public  $app_name;
     private $verify_route_name;
 
     public function __construct()
@@ -66,7 +66,7 @@ class KashierPayment implements PaymentInterface
 
         return [
             'payment_id' => $payment_id,
-            'html' => $this->generate_html($amount, $data),
+            'html' => $this->generate_html($data),
             'redirect_url'=>""
         ];
 
@@ -120,21 +120,9 @@ class KashierPayment implements PaymentInterface
      * @param $data
      * @return string
      */
-    private function generate_html($amount, $data): string
+    private function generate_html($data): string
     {
-        return '<body><script id="kashier-iFrame"
-         src="' . $this->kashier_url . '/kashier-checkout.js"
-        data-amount="' . $amount . '"
-        data-description="Credit"
-        data-mode="' . $this->kashier_mode . '"
-        data-hash="' . $data["hash"] . '"
-        data-currency="' . $data["currency"] . '"
-        data-orderId="' . $data["order_id"] . '"
-        data-allowedMethods="card"
-        data-merchantId="' . $data["mid"] . '"
-        data-merchantRedirect="' . $data["redirect_back"] . '" 
-        data-store="' . $this->app_name . '"
-        data-type="external" data-display="ar"></script></body>';
+        return view('nafezly::html.kashier', ['model' => $this, 'data' => $data])->render();
     }
 
 }

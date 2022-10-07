@@ -12,13 +12,14 @@ class HyperPayPayment
 {
     use SetVariables, SetRequiredFields;
     private $hyperpay_url;
-    private $hyperpay_base_url;
+    public $hyperpay_base_url;
     private $hyperpay_token;
     private $hyperpay_credit_id;
     private $hyperpay_mada_id;
     private $hyperpay_apple_id;
-    private $app_name;
-    private $verify_route_name;
+    public $app_name;
+    public $verify_route_name;
+    public $payment_id;
 
     public function __construct()
     {
@@ -50,7 +51,7 @@ class HyperPayPayment
         $this->checkRequiredFields($required_fields, 'HYPERPAY', func_get_args());
 
         $data = http_build_query([
-            'entityId' => $this->getEntityId($source),
+            'entityId' => $this->getEntityId($this->source),
             'amount' => $this->amount,
             'currency' => $this->currency,
             'paymentType' => 'DB',
@@ -79,11 +80,11 @@ class HyperPayPayment
             return curl_error($ch);
         }
         curl_close($ch);
-        $payment_id = json_decode($responseData)->id;
-        Cache::forever($payment_id . '_source', $source);
+        $this->payment_id = json_decode($responseData)->id;
+        Cache::forever($this->payment_id . '_source', $this->source);
         return [
-            'payment_id' => $payment_id, 
-            'html' => $this->generate_html($source, $amount, $payment_id),
+            'payment_id' => $this->payment_id, 
+            'html' => $this->generate_html(),
             'redirect_url'=>""
         ];
     }
@@ -130,59 +131,9 @@ class HyperPayPayment
         }
     }
 
-    private function generate_html($source, $amount, $payment_id): string
+    public function generate_html(): string
     {
-
-        $form_brands = "VISA MASTER";
-        if ($source == "MADA")
-            $form_brands = "MADA";
-        elseif ($source == "APPLE")
-            $form_brands = "APPLEPAY";
-
-        return "<form action='" . route($this->verify_route_name, ['payment' => 'hyperpay']) . "' class='paymentWidgets' data-brands='" . $form_brands . "'></form>
-			<script src=" . $this->hyperpay_base_url . "/v1/paymentWidgets.js?checkoutId=" . $payment_id . "></script>
-			<script type='text/javascript'>
-			const subTotalAmount = parseFloat(\" . $amount . \");
-			const shippingAmount = 0;
-			const taxAmount = 0;
-			const currency = '" . $this->currency . "';
-			const applePayTotalLabel = '" . $this->app_name . "';
-
-			function getAmount() {
-			    return ((subTotalAmount + shippingAmount + taxAmount)).toFixed(2);
-			}
-			function getLineItems() {
-			    return [{
-			        label: 'Subtotal',
-			        amount: (subTotalAmount).toFixed(2)
-			    }, {
-			        label: 'Shipping',
-			        amount: (shippingAmount).toFixed(2)
-			    }, {
-			        label: 'Tax',
-			        amount: (taxAmount).toFixed(2)
-			    }];
-			}
-
-			const wpwlOptions = {
-			    applePay: {
-			        displayName: '" . $this->app_name . "',
-			        total: { 
-			            label: '" . $this->app_name . ".'
-			        },
-			        paymentTarget:'_top', 
-			        merchantCapabilities: ['supports3DS'],
-			        supportedNetworks: ['mada','masterCard', 'visa' ],
-			        supportedCountries: ['SA'],   
-			    }
-			};
-			wpwlOptions.createCheckout = function() {
-			    return $.post('" . route($this->verify_route_name, ['payment' => 'hyperpay']) . "')
-			    .then(function(response) {
-			        return response.checkoutId;
-			    });
-			};
-			</script>";
+        return view('nafezly::html.hyper_pay', ['model' => $this, 'brand' => $this->getBrand()])->render();
     }
 
     private function getEntityId($source)
@@ -198,6 +149,17 @@ class HyperPayPayment
             default:
                 return "";
         }
+    }
+
+    private function getBrand()
+    {
+        $form_brands = "VISA MASTER";
+        if ($this->source == "MADA"){
+            $form_brands = "MADA";
+        }elseif ($this->source == "APPLE"){
+            $form_brands = "APPLEPAY";
+        }
+        return $form_brands;
     }
 }
 

@@ -3,14 +3,14 @@ namespace Nafezly\Payments\Traits;
 
 trait SetVariables
 {
-    private $user_id = null;
-    private $user_first_name = null;
-    private $user_last_name = null;
-    private $user_email = null;
-    private $user_phone = null;
-    private $source = null;
-    private $currency = null;
-    private $amount = null;
+    public $user_id = null;
+    public $user_first_name = null;
+    public $user_last_name = null;
+    public $user_email = null;
+    public $user_phone = null;
+    public $source = null;
+    public $currency = null;
+    public $amount = null;
 
     /**
      * Sets user ID

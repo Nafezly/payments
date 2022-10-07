@@ -12,10 +12,10 @@ use Nafezly\Payments\Traits\SetRequiredFields;
 class FawryPayment implements PaymentInterface
 {
     use SetVariables, SetRequiredFields;
-    private $fawry_url;
-    private $fawry_secret;
-    private $fawry_merchant;
-    private $verify_route_name;
+    public $fawry_url;
+    public $fawry_secret;
+    public $fawry_merchant;
+    public $verify_route_name;
 
     public function __construct()
     {
@@ -55,7 +55,7 @@ class FawryPayment implements PaymentInterface
             'unique_id' => $unique_id,
             'item_id' => 1,
             'item_quantity' => 1,
-            'amount' => $amount,
+            'amount' => $this->amount,
             'payment_id'=>$unique_id
         ];
 
@@ -102,31 +102,7 @@ class FawryPayment implements PaymentInterface
 
     private function generate_html($data): string
     {
-        return "<link rel='stylesheet' href='https://atfawry.fawrystaging.com/atfawry/plugin/assets/payments/css/fawrypay-payments.css'><script type='text/javascript' src='" . $data['fawry_url'] . "atfawry/plugin/assets/payments/js/fawrypay-payments.js'></script><script>  
-            const chargeRequest = {};
-            chargeRequest.language= 'ar-eg';
-            chargeRequest.merchantCode= '" . $data['fawry_merchant'] . "';
-            chargeRequest.merchantRefNumber= '" . $data['payment_id'] . "';
-            chargeRequest.customer = {};
-            chargeRequest.customer.name = '" . $data['user_name'] . "';
-            chargeRequest.customer.mobile = '" . $data['user_phone'] . "';
-            chargeRequest.customer.email = '" . $data['user_email'] . "';
-            chargeRequest.customer.customerProfileId = '" . $data['user_id'] . "';
-            chargeRequest.order = {};
-            chargeRequest.order.description = 'Credit';
-            chargeRequest.order.expiry = '';
-            chargeRequest.order.orderItems = [];
-            const item = {};
-            item.productSKU =1;
-            item.description ='Credit';
-            item.price =" . $data['amount'] . ";
-            item.quantity =" . $data['item_quantity'] . ";
-            chargeRequest.order.orderItems.push(item); 
-            chargeRequest.signature = '" . $data['secret'] . "';  
-            setTimeout(function(){
-                FawryPay.checkout(chargeRequest,'" . route($this->verify_route_name, ['payment' => "fawry"]) . "','" . route($this->verify_route_name, ['payment' => "fawry"]) . "');
-            },100); 
-        </script>";
+        return view('nafezly::html.fawry', ['model' => $this, 'data' => $data])->render();
     }
 
 }
