@@ -43,6 +43,7 @@ return [
 
     #PAYMOB
     'PAYMOB_API_KEY' => env('PAYMOB_API_KEY'),
+    'EXPIRATION' => (int)env('EXPIRATION',36000),
     'PAYMOB_INTEGRATION_ID' => env('PAYMOB_INTEGRATION_ID'),
     'PAYMOB_IFRAME_ID' => env('PAYMOB_IFRAME_ID'),
     'PAYMOB_HMAC' => env('PAYMOB_HMAC'),
