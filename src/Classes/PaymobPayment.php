@@ -105,7 +105,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
                 return [
                     'success' => false,
                     'payment_id'=>$request['order'],
-                    'message' => __('messages.PAYMENT_FAILED'),
+                    'message' => __('nafezly::messages.PAYMENT_FAILED_WITH_CODE',['CODE'=>$this->getErrorMessage($request['txn_response_code'])]),
                     'process_data' => $request->all()
                 ];
             }
@@ -118,5 +118,23 @@ class PaymobPayment extends BaseController implements PaymentInterface
                 'process_data' => $request->all()
             ];
         }
+    }
+    public function getErrorMessage($code){
+        $errors=[
+            'BLOCKED'=>__('nafezly::messages.Process_Has_Been_Blocked_From_System'),
+            'B'=>__('nafezly::messages.Process_Has_Been_Blocked_From_System'),
+            '5'=>__('nafezly::messages.Security_checks_are_not_passed_by_the_system'),
+            'F'=>__('nafezly::messages.Balance_is_not_enough'),
+            '7'=>__('nafezly::messages.Your_card_is_not_secured_with_3D_protection._Check_with_the_bank'),
+            '2'=>__('nafezly::messages.Incorrect_card_expiration_date'),
+            '6051'=>__('nafezly::messages.Balance_is_not_enough'),
+            '637'=>__('nafezly::messages.The_OTP_number_was_entered_incorrectly'),
+            '11'=>__('nafezly::messages.Security_checks_are_not_passed_by_the_system'),
+        ];
+        if(isset($errors[$code]))
+            return $errors[$code];
+        else
+            return __('nafezly::messages.An_error_occurred_while_executing_the_operation');
+        //data_message,txn_response_code
     }
 }
