@@ -13,8 +13,6 @@ class PaymobWalletPayment extends BaseController implements PaymentInterface
     private $paymob_api_key;
     private $paymob_wallet_integration_id;
 
-
-
     public function __construct()
     {
         $this->paymob_api_key = config('nafezly-payments.PAYMOB_API_KEY');
@@ -51,9 +49,6 @@ class PaymobWalletPayment extends BaseController implements PaymentInterface
                 "amount_cents" => $this->amount * 100,
                 "items" => []
             ])->json();
-
- 
-
         $get_url_token = Http::withHeaders(['content-type' => 'application/json'])
             ->post('https://accept.paymobsolutions.com/api/acceptance/payment_keys', [
                 "auth_token" => $request_new_token['token'],
