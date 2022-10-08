@@ -116,7 +116,7 @@ class PaymobWalletPayment extends BaseController implements PaymentInterface
                 return [
                     'success' => false,
                     'payment_id'=>$request['order'],
-                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                    'message' => __('nafezly::messages.PAYMENT_FAILED_WITH_CODE',['CODE'=>$this->getErrorMessage($request['txn_response_code'])]),
                     'process_data' => $request->all()
                 ];
             }
