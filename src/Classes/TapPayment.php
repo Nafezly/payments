@@ -101,14 +101,14 @@ class TapPayment extends BaseController implements PaymentInterface
             return [
                 'success' => true,
                 'payment_id'=>$request->tap_id,
-                'message' => __('messages.PAYMENT_DONE'),
+                'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
         }else{
             return [
                 'success' => false,
                 'payment_id'=>$request->tap_id,
-                'message' => __('messages.PAYMENT_FAILED'),
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];
         }

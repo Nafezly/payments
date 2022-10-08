@@ -85,7 +85,7 @@ class PayPalPayment extends BaseController implements PaymentInterface
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => __('messages.PAYMENT_FAILED'),
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $e
             ];
         }
@@ -112,7 +112,7 @@ class PayPalPayment extends BaseController implements PaymentInterface
                 return [
                     'success' => true,
                     'payment_id'=>$request['token'],
-                    'message' => __('messages.PAYMENT_DONE'),
+                    'message' => __('nafezly::messages.PAYMENT_DONE'),
                     'process_data' => $result
                 ];
 
@@ -120,7 +120,7 @@ class PayPalPayment extends BaseController implements PaymentInterface
                 return [
                     'success' => false,
                     'payment_id'=>$request['token'],
-                    'message' => __('messages.PAYMENT_FAILED'),
+                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
                     'process_data' => $result
                 ];
             }
@@ -128,7 +128,7 @@ class PayPalPayment extends BaseController implements PaymentInterface
             return [
                 'success' => false,
                 'payment_id'=>$request['token'],
-                'message' => __('messages.PAYMENT_FAILED'),
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $e
             ];
         }

@@ -67,8 +67,8 @@ class PaytabsPayment extends BaseController implements PaymentInterface
             "hide_shipping" => true,
             "cart_description" => "items",
             "paypage_lang" => $this->paytabs_checkout_lang,
-            "callback" => config('nafezly-payments.APP_URL') . '/' . $this->verify_route_name . '/' . $unique_id, //Post end point  -the payment status will be sent to server
-            "return" => config('nafezly-payments.APP_URL') . '/' . $this->verify_route_name . '/' . $unique_id, //Get end point - The link to which the user will be redirected
+            "callback" => route($this->verify_route_name,['payment_id'=>$unique_id]), //Post end point  -the payment status will be sent to server
+            "return" => route($this->verify_route_name,['payment_id'=>$unique_id]), //Get end point - The link to which the user will be redirected
             "customer_ref" => $unique_id,
             "customer_details" => [
                 "name" => $this->user_first_name . ' ' . $this->user_last_name,
@@ -85,7 +85,7 @@ class PaytabsPayment extends BaseController implements PaymentInterface
         ])->json();
 
         if (!isset($response['code'])) {
-            Cache::forever('tran_ref', $response['tran_ref']);
+            Cache::forever($unique_id, $response['tran_ref']);
             return [
                 'payment_id' => $response['tran_ref'],
                 'redirect_url' => $response['redirect_url'],
@@ -100,27 +100,30 @@ class PaytabsPayment extends BaseController implements PaymentInterface
 
     public function verify(Request $request): array
     {
+        $payment_id = $request->payment_id!=null?$request->payment_id:Cache::get($request['payment_id']);
+        Cache::forget($request['payment_id']);
+
         $response = Http::withHeaders([
             'Authorization' => $this->paytabs_server_key,
             'Content-Type' => "application/json"
         ])->post($this->paytabs_base_url . "/payment/query", [
             'profile_id' => $this->paytabs_profile_id,
-            'tran_ref' => Cache::get('tran_ref')
+            'tran_ref' => $payment_id
         ])->json();
 
         if (isset($response['payment_result']['response_status']) && $response['payment_result']['response_status'] == "A") {
             return [
                 'success' => true,
-                'payment_id' => Cache::get('tran_ref'),
-                'message' => __('messages.PAYMENT_DONE'),
+                'payment_id' => $payment_id,
+                'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
 
         } else {
             return [
                 'success' => false,
-                'payment_id' => Cache::get('tran_ref'),
-                'message' => __('messages.PAYMENT_FAILED'),
+                'payment_id' => $payment_id,
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];
         }

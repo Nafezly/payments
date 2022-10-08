@@ -90,14 +90,14 @@ class FawryPayment extends BaseController implements PaymentInterface
             return [
                 'success' => true,
                 'payment_id'=>$reference_id,
-                'message' => __('messages.PAYMENT_DONE'),
+                'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $request->all()
             ];
         } else if ($response->offsetGet('statusCode') != 200) {
             return [
                 'success' => false,
                 'payment_id'=>$reference_id,
-                'message' => __('messages.PAYMENT_FAILED'),
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $request->all()
             ];
         }

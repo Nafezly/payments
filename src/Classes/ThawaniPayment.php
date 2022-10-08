@@ -80,7 +80,7 @@ class ThawaniPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request): array
     {
-        $payment_id = Cache::get($request['payment_id']);
+        $payment_id = $request->payment_id!=null?$request->payment_id:Cache::get($request['payment_id']);
         Cache::forget($request['payment_id']);
         $response = Http::withHeaders([
             'content-type' => 'application/json',
@@ -91,14 +91,14 @@ class ThawaniPayment extends BaseController implements PaymentInterface
             return [
                 'success' => true,
                 'payment_id'=>$request['payment_id'],
-                'message' => __('messages.PAYMENT_DONE'),
+                'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
         } else {
             return [
                 'success' => false,
                 'payment_id'=>$request['payment_id'],
-                'message' => __('messages.PAYMENT_FAILED'),
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];
         }
