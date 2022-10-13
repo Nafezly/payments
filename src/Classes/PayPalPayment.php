@@ -106,7 +106,7 @@ class PayPalPayment extends BaseController implements PaymentInterface
         $client = new PayPalHttpClient($environment);
 
         try {
-            $response = $client->execute(new PayPalCheckoutSdk\Orders\OrdersCaptureRequest($request['token']) );
+            $response = $client->execute(new OrdersCaptureRequest($request['token']) );
             $result = json_decode(json_encode($response), true);
             if ($result['result']['intent'] == "CAPTURE" && $result['result']['status'] == "APPROVED") {
                 return [
