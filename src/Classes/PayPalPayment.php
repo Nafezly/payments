@@ -108,7 +108,7 @@ class PayPalPayment extends BaseController implements PaymentInterface
         try {
             $response = $client->execute(new OrdersCaptureRequest($request['token']) );
             $result = json_decode(json_encode($response), true);
-            if ($result['result']['intent'] == "CAPTURE" && $result['result']['status'] == "APPROVED") {
+            if ($result['result']['status'] == "COMPLETED" && $result['statusCode']==201) {
                 return [
                     'success' => true,
                     'payment_id'=>$request['token'],
