@@ -62,6 +62,7 @@ return [
     #KASHIER
     'KASHIER_ACCOUNT_KEY' => env('KASHIER_ACCOUNT_KEY'),
     'KASHIER_IFRAME_KEY' => env('KASHIER_IFRAME_KEY'),
+    'KASHIER_TOKEN' => env('KASHIER_TOKEN'),
     'KASHIER_URL' => env('KASHIER_URL', "https://checkout.kashier.io"),
     'KASHIER_MODE' => env('KASHIER_MODE', "test"), //live or test
     'KASHIER_CURRENCY'=>env('KASHIER_CURRENCY',"EGP"),
@@ -163,6 +164,7 @@ $payment->verify($request);
 //outputs
 [
 	'success'=>true,//or false
+    'payment_id'=>"PID",
 	'message'=>"Done Successfully",//message for client
 	'process_data'=>""//payment response
 ]

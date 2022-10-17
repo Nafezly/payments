@@ -3,6 +3,7 @@
 namespace Nafezly\Payments\Classes;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Interfaces\PaymentInterface;
 use Nafezly\Payments\Classes\BaseController;
 
@@ -12,6 +13,7 @@ class KashierPayment extends BaseController implements PaymentInterface
     public  $kashier_mode;
     private $kashier_account_key;
     private $kashier_iframe_key;
+    private $kashier_token;
     public  $app_name;
     private $verify_route_name;
 
@@ -21,6 +23,7 @@ class KashierPayment extends BaseController implements PaymentInterface
         $this->kashier_mode = config("nafezly-payments.KASHIER_MODE");
         $this->kashier_account_key = config("nafezly-payments.KASHIER_ACCOUNT_KEY");
         $this->kashier_iframe_key = config("nafezly-payments.KASHIER_IFRAME_KEY");
+        $this->kashier_token = config("nafezly-payments.KASHIER_TOKEN");
         $this->currency = config('nafezly-payments.KASHIER_CURRENCY');
         $this->app_name = config('nafezly-payments.APP_NAME');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
@@ -90,22 +93,43 @@ class KashierPayment extends BaseController implements PaymentInterface
             if ($signature == $request["signature"]) {
                 return [
                     'success' => true,
-                    'payment_id'=>$request['transactionId'],
+                    'payment_id'=>$request['merchantOrderId'],
                     'message' => __('nafezly::messages.PAYMENT_DONE'),
                     'process_data' => $request->all()
                 ];
             } else {
                 return [
                     'success' => false,
-                    'payment_id'=>$request['transactionId'],
+                    'payment_id'=>$request['merchantOrderId'],
                     'message' => __('nafezly::messages.PAYMENT_FAILED'),
                     'process_data' => $request->all()
                 ];
             }
+        }else if($request['signature']==null){
+            $url_mode = $this->kashier_mode == "live"?'':'test-';
+            $response = Http::withHeaders([
+                'Authorization' => $this->kashier_token
+            ])->get('https://'.$url_mode.'api.kashier.io/payments/orders/'.$request['merchantOrderId'])->json();
+            if(isset($response['response']['status']) && $response['response']['status']=="CAPTURED"){
+                return [
+                    'success' => true,
+                    'payment_id'=>$request['merchantOrderId'],
+                    'message' => __('nafezly::messages.PAYMENT_DONE'),
+                    'process_data' => $request->all()
+                ];
+            }else{
+                return [
+                    'success' => false,
+                    'payment_id'=>$request['merchantOrderId'],
+                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                    'process_data' => $request->all()
+                ];
+            }
+            
         } else {
             return [
                 'success' => false,
-                'payment_id'=>$request['transactionId'],
+                'payment_id'=>$request['merchantOrderId'],
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $request->all()
             ];
