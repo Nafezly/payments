@@ -21,6 +21,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Opay](https://www.opaycheckout.com/)
 - [Paytabs](https://site.paytabs.com/)
 - [E Wallets (Vodaphone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
+- [NoonPayment](https://docs.noonpayments.com)
 
 ## Installation
 
