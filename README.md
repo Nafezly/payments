@@ -114,6 +114,26 @@ return [
 
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME'),
+
+    #NOON_PAYMENT
+    "NOON_PAYMENT_BUSINESS_ID" => env('NOON_PAYMENT_BUSINESS_ID'),
+    "NOON_PAYMENT_APP_NAME" => env('NOON_PAYMENT_APP_NAME'),
+    "NOON_PAYMENT_APP_KEY" => env('NOON_PAYMENT_APP_KEY'),
+    /**
+     *  Base64(BusinessIdentifier.ApplicationIdentifier:ApplicationKey)
+     */
+    "NOON_PAYMENT_AUTH_KEY" => base64_encode(env('NOON_PAYMENT_BUSINESS_ID').".".env("NOON_PAYMENT_APP_NAME").":".env("NOON_PAYMENT_APP_KEY")),
+    "NOON_PAYMENT_RETURN_URL" => env('NOON_PAYMENT_RETURN_URL'),
+    /*  Change the mode to Live for the Production */
+    "NOON_PAYMENT_MODE" => env('NOON_PAYMENT_MODE'),
+    /*  Pre-configured order route categories (the categories will be mentioned also in the initial setup email) */
+    "NOON_PAYMENT_ORDER_CATEGORY" => env('NOON_PAYMENT_ORDER_CATEGORY'),
+    /*  Channels are pre-defined and limited to Web / Mobile (the channels will be mentioned also in the initial setup email) */
+    "NOON_PAYMENT_CHANNEL" => env('NOON_PAYMENT_CHANNEL'),
+    /*  Default value - Payment API Endpoint - Chooses 
+        https://api.noonpayments.com/payment/v1/
+        https://api-test.noonpayments.com/payment/v1/ */
+    "NOON_PAYMENT_PAYMENT_API" => env('NOON_PAYMENT_PAYMENT_API'),
 ];
 ```
 
@@ -171,6 +191,47 @@ $payment->verify($request);
 
 ```
 
+## How To Use NoonPayment
+
+```jsx
+use Nafezly\Payments\NoonPayment;
+
+$payment = new NoonPayment();
+
+// by fluent interface
+$response = $payment->setUserId($id)
+            ->setCurrency($currency)
+            ->setOrderName($order_name)
+            ->setConfigurationLocal($local)
+            ->setAmount($amount)
+            ->pay();
+// example
+$response = $payment->setUserId(1)
+            ->setCurrency("SAR")
+            ->setOrderName("Sample order name")
+            ->setConfigurationLocal("en")
+            ->setAmount($amount)
+            ->pay();
+
+//pay function response 
+[
+	'payment_id'=>"", // refrence code that should stored in your orders table
+	'redirect_url'=>"", // redirect url available for some payment gateways
+]
+
+//verify function
+$payment->verify($request);
+
+//outputs
+[
+	'success'=>true,//or false
+    'payment_id'=>"PID",
+	'message'=>"Done Successfully",//message for client
+	'process_data'=>""//payment response
+]
+
+```
+
 ## Available Classes
 
 ```php
@@ -185,6 +246,7 @@ use Nafezly\Payments\Classes\TapPayment;
 use Nafezly\Payments\Classes\OpayPayment;
 use Nafezly\Payments\Classes\PaytabsPayment;
 use Nafezly\Payments\Classes\PaymobWalletPayment;
+use Nafezly\Payments\Classes\NoonPayment;
 ```
 
 ## Test Cards
@@ -196,4 +258,5 @@ use Nafezly\Payments\Classes\PaymobWalletPayment;
 - [Tap](https://www.tap.company/eg/en/developers)
 - [Opay](https://doc.opaycheckout.com/end-to-end-testing)
 - [PayTabs](https://support.paytabs.com/en/support/solutions/articles/60000712315-what-are-the-test-cards-available-to-perform-payments-)
+- [NoonPayment](https://docs.noonpayments.com/test/cards)
 
