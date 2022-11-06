@@ -25,6 +25,8 @@ class NoonPayment extends BaseController implements PaymentInterface
 
     protected $noon_payment_payment_action;
 
+    protected $unique_id;
+
     public function __construct()
     {
         $this->noon_payment_api = config("nafezly-payments.NOON_PAYMENT_PAYMENT_API");
@@ -32,7 +34,7 @@ class NoonPayment extends BaseController implements PaymentInterface
         $this->order_payment_order_category = config("nafezly-payments.NOON_PAYMENT_ORDER_CATEGORY");
         $this->noon_payment_return_url = config('nafezly-payments.NOON_PAYMENT_RETURN_URL');
         $this->noon_payment_tokenizeCc = "true";
-        $this->noon_payment_payment_action = "SALE";
+        $this->noon_payment_payment_action = "AUTHORIZE,SALE";
     }
 
     /**
@@ -48,19 +50,7 @@ class NoonPayment extends BaseController implements PaymentInterface
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
-        $paymentInfo['apiOperation'] = "INITIATE";
-        $paymentInfo['order']['reference'] = $unique_id = uniqid();;
-        $paymentInfo['order']['amount'] = $this->amount;
-        $paymentInfo['order']['currency'] = $this->currency;
-        $paymentInfo['order']['name'] = $this->order_name;
-        $paymentInfo['order']['channel'] = $this->noon_payment_channel;
-        $paymentInfo['order']['category'] = $this->order_payment_order_category;
-        // Options for tokenize cc are (true - false)
-        $paymentInfo['configuration']['tokenizeCc'] = $this->noon_payment_tokenizeCc;
-        $paymentInfo['configuration']['returnUrl'] = $this->noon_payment_return_url;
-        // Options for payment action are (AUTHORIZE - SALE)
-        $paymentInfo['configuration']['paymentAction'] = $this->noon_payment_payment_action;
-        $paymentInfo['configuration']['locale'] = $this->configuration_local;
+        $paymentInfo = $this->setPaymentBasicInfo();
 
         $response = json_decode(CurlHelper::post(
             $this->noon_payment_api . "order",
@@ -69,8 +59,55 @@ class NoonPayment extends BaseController implements PaymentInterface
         ));
 
         return [
-            'payment_id' => $unique_id,
-            'redirect_url' => $response->result->checkoutData->postUrl
+            'payment_id' => $this->unique_id,
+            'redirect_url' => $response->result->checkoutData->postUrl,
+            'process_data' => $response
+        ];
+    }
+
+    public function subscriptionPay(): array
+    {
+        $paymentInfo = $this->setPaymentSubscriptionInfo();
+
+        $response = json_decode(CurlHelper::post(
+            $this->noon_payment_api . "order",
+            $paymentInfo,
+            $this->getHeaders()
+        ));
+
+        return [
+            'payment_id' => $this->unique_id,
+            'subscription_identifier' => $response->result->subscription->identifier,
+            'redirect_url' => $response->result->checkoutData->postUrl,
+            'process_data' => $response
+        ];
+    }
+
+
+    public function subsequentTransactionPay(): array
+    {
+        $paymentInfo = $this->setSubsequentTransactionInfo();
+
+        $response = json_decode(CurlHelper::post(
+            $this->noon_payment_api . "order",
+            $paymentInfo,
+            $this->getHeaders()
+        ));
+
+        if ($this->isSubsequentTransactionSuccess($response)) {
+            return [
+                'success' => true,
+                'payment_id' => $this->unique_id,
+                'message' => __('nafezly::messages.PAYMENT_DONE'),
+                'process_data' => $response
+            ];
+        }
+
+        return [
+            'success' => false,
+            'payment_id' => $this->unique_id,
+            'message' => __('nafezly::messages.PAYMENT_FAILED'),
+            'process_data' => $response
         ];
     }
 
@@ -99,6 +136,47 @@ class NoonPayment extends BaseController implements PaymentInterface
         ];
     }
 
+    private function setPaymentBasicInfo() {
+        $paymentInfo['apiOperation'] = "INITIATE";
+        $paymentInfo['order']['reference'] = $this->unique_id = uniqid();
+        $paymentInfo['order']['amount'] = $this->amount;
+        $paymentInfo['order']['currency'] = $this->currency;
+        $paymentInfo['order']['name'] = $this->order_name;
+        $paymentInfo['order']['channel'] = $this->noon_payment_channel;
+        $paymentInfo['order']['category'] = $this->order_payment_order_category;
+        // Options for tokenize cc are (true - false)
+        $paymentInfo['configuration']['tokenizeCc'] = $this->noon_payment_tokenizeCc;
+        $paymentInfo['configuration']['returnUrl'] = $this->noon_payment_return_url;
+        // Options for payment action are (AUTHORIZE - SALE)
+        $paymentInfo['configuration']['paymentAction'] = $this->noon_payment_payment_action;
+        $paymentInfo['configuration']['locale'] = $this->configuration_local;
+        return $paymentInfo;
+    }
+
+    private function setPaymentSubscriptionInfo() {
+        $paymentInfo['subscription']['type'] = 'Recurring';
+        $paymentInfo['subscription']['amount'] = $this->subscription_amount;
+        $paymentInfo['subscription']['name'] = $this->subscription_name;
+        if($this->subscription_valid_till) {
+            $paymentInfo['subscription']['validTill'] = $this->subscription_valid_till;
+        }
+        return array_merge($this->setPaymentBasicInfo(), $paymentInfo);
+    }
+
+
+    private function setSubsequentTransactionInfo() {
+        $paymentInfo['apiOperation'] = "INITIATE";
+        $paymentInfo['order']['reference'] = $this->unique_id = uniqid();
+        $paymentInfo['order']['name'] = $this->order_name;
+        $paymentInfo['order']['channel'] = $this->noon_payment_channel;
+        // Options for payment action are (AUTHORIZE - SALE)
+        $paymentInfo['configuration']['paymentAction'] = $this->noon_payment_payment_action;
+
+        $paymentInfo['paymentData']['type'] = 'Subscription';
+        $paymentInfo['paymentData']['data']['subscriptionIdentifier'] = $this->subscription_identifier;
+        return $paymentInfo;
+    }
+
     private function getHeaders()
     {
         return [
@@ -113,5 +191,10 @@ class NoonPayment extends BaseController implements PaymentInterface
             is_array($response->result->transactions) &&
             $response->result->transactions[0]->type == "SALE" &&
             $response->result->transactions[0]->status == "SUCCESS";
+    }
+
+    private function isSubsequentTransactionSuccess($response)
+    {
+        return $response->resultClass == 0;
     }
 }

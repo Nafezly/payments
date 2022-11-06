@@ -199,15 +199,20 @@ use Nafezly\Payments\NoonPayment;
 
 $payment = new NoonPayment();
 
+/////////////////////////////////////////
+////////// Normal Payment////////////////
+/////////////////////////////////////////
+
 // by fluent interface
-$response = $payment->setUserId($id)
+$response = $payment
             ->setCurrency($currency)
             ->setOrderName($order_name)
             ->setConfigurationLocal($local)
             ->setAmount($amount)
             ->pay();
+
 // example
-$response = $payment->setUserId(1)
+$response = $payment
             ->setCurrency("SAR")
             ->setOrderName("Sample order name")
             ->setConfigurationLocal("en")
@@ -218,6 +223,7 @@ $response = $payment->setUserId(1)
 [
 	'payment_id'=>"", // refrence code that should stored in your orders table
 	'redirect_url'=>"", // redirect url available for some payment gateways
+    'process_data'=>""//payment response
 ]
 
 //verify function
@@ -231,6 +237,74 @@ $payment->verify($request);
 	'process_data'=>""//payment response
 ]
 
+////////////////////////////////////////
+////////// Subscription ////////////////
+////////////////////////////////////////
+
+// by fluent interface
+$response = $payment
+            ->setCurrency($currency)
+            ->setOrderName($order_name)
+            ->setConfigurationLocal($local)
+            ->setAmount($amount)
+            ->setSubscriptionAmount($subscriptionAmount)
+            ->setSubscriptionName($subscriptionName)
+            ->setSubscriptionValidTill($subscriptionValidTill)
+            ->subscriptionPay();
+
+//example
+$response = $payment
+            ->setCurrency("SAR")
+            ->setOrderName("Sample order name")
+            ->setConfigurationLocal("en")
+            ->setAmount(200)
+            ->setSubscriptionAmount(200)
+            ->setSubscriptionName('Sample order name')
+            ->setSubscriptionValidTill('2025-09-25')
+            ->subscriptionPay();
+
+//subscription pay function response 
+[
+	'payment_id'=>"", // refrence code that should stored in your orders table
+    'subscription_identifier' => "", // subscription identifier to use in subsequent transactions
+	'redirect_url'=>"", // redirect url available for some payment gateways
+    'process_data'=>""//payment response
+]
+
+//verify function
+$payment->verify($request);
+
+//outputs
+[
+	'success'=>true,//or false
+    'payment_id'=>"PID",
+	'message'=>"Done Successfully",//message for client
+	'process_data'=>""//payment response
+]
+
+//////////////////////////////////////////////////
+////////// Subsequent Transaction ////////////////
+//////////////////////////////////////////////////
+
+// by fluent interface
+$result = $payment
+            ->setOrderName($order_name)
+            ->setSubscriptionIdentifier($subscriptionIdentifier) 
+            ->subsequentTransactionPay();
+
+//example
+$result = $payment
+            ->setOrderName("Sample order name")
+            ->setSubscriptionIdentifier("055dbdd0-6391-43f5-a6c6-4f10babb0f88")
+            ->subsequentTransactionPay();
+
+//outputs
+[
+	'success'=>true,//or false
+    'payment_id'=>"PID",
+	'message'=>"Done Successfully",//message for client
+	'process_data'=>""//payment response
+]
 ```
 
 ## Available Classes
