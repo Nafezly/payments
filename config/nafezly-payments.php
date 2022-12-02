@@ -74,6 +74,23 @@ return [
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME'),
 
-    
-
+    #NOON_PAYMENT
+    "NOON_PAYMENT_BUSINESS_ID" => env('NOON_PAYMENT_BUSINESS_ID'),
+    "NOON_PAYMENT_APP_NAME" => env('NOON_PAYMENT_APP_NAME'),
+    "NOON_PAYMENT_APP_KEY" => env('NOON_PAYMENT_APP_KEY'),
+    /**
+     *  Base64(BusinessIdentifier.ApplicationIdentifier:ApplicationKey)
+     */
+    "NOON_PAYMENT_AUTH_KEY" => base64_encode(env('NOON_PAYMENT_BUSINESS_ID').".".env("NOON_PAYMENT_APP_NAME").":".env("NOON_PAYMENT_APP_KEY")),
+    "NOON_PAYMENT_RETURN_URL" => env('NOON_PAYMENT_RETURN_URL'),
+    /*  Change the mode to Live for the Production */
+    "NOON_PAYMENT_MODE" => env('NOON_PAYMENT_MODE'),
+    /*  Pre-configured order route categories (the categories will be mentioned also in the initial setup email) */
+    "NOON_PAYMENT_ORDER_CATEGORY" => env('NOON_PAYMENT_ORDER_CATEGORY'),
+    /*  Channels are pre-defined and limited to Web / Mobile (the channels will be mentioned also in the initial setup email) */
+    "NOON_PAYMENT_CHANNEL" => env('NOON_PAYMENT_CHANNEL'),
+    /*  Default value - Payment API Endpoint - Chooses 
+        https://api.noonpayments.com/payment/v1/
+        https://api-test.noonpayments.com/payment/v1/ */
+    "NOON_PAYMENT_PAYMENT_API" => env('NOON_PAYMENT_PAYMENT_API'),
 ];

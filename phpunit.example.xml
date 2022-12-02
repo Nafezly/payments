@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    bootstrap="vendor/autoload.php"
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    colors="true"
+    verbose="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnFailure="true"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+	<coverage>
+		<include>
+			<directory suffix=".php">
+				src/
+			</directory>
+		</include>
+	</coverage>
+	<testsuites>
+		<testsuite name="Unit">
+			<directory suffix="Test.php">
+				./tests/Unit
+			</directory>
+		</testsuite>
+	</testsuites>
+	<php>
+		<env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10=" />
+		<env name="APP_ENV" value="testing" />
+		<env name="DB_CONNECTION" value="sqlite" />
+		<env name="DB_DATABASE" value=":memory:" />
+		<env name="CACHE_DRIVER" value="array" />
+		<env name="SESSION_DRIVER" value="array" />
+		<env name="QUEUE_DRIVER" value="sync" />
+		<env name="MAIL_DRIVER" value="array" />
+        <env name="NOON_PAYMENT_BUSINESS_ID" value="Test" />
+        <env name="NOON_PAYMENT_APP_NAME" value="" />
+        <env name="NOON_PAYMENT_APP_KEY" value="" />
+        <env name="NOON_PAYMENT_TOKEN_IDENTIFIER" value="" />
+        <env name="NOON_PAYMENT_RETURN_URL" value="http://127.0.0.1:8000/noon_payment_response" />
+        <env name="NOON_PAYMENT_MODE" value="Test" />
+	</php>
+</phpunit>

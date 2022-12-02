@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Nafezly\Payments\Classes\FawryPayment;
 use Nafezly\Payments\Classes\HyperPayPayment;
 use Nafezly\Payments\Classes\KashierPayment;
+use Nafezly\Payments\Classes\NoonPayment;
 use Nafezly\Payments\Classes\PaymobPayment;
 use Nafezly\Payments\Classes\PayPalPayment;
 use Nafezly\Payments\Classes\PaytabsPayment;
@@ -78,6 +79,9 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         });
         $this->app->bind(PaytabsPayment::class, function () {
             return new PaytabsPayment();
+        });
+        $this->app->bind(NoonPayment::class, function () {
+            return new NoonPayment();
         });
         
     }

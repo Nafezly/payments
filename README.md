@@ -21,6 +21,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Opay](https://www.opaycheckout.com/)
 - [Paytabs](https://site.paytabs.com/)
 - [E Wallets (Vodaphone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
+- [NoonPayment](https://docs.noonpayments.com)
 
 ## Installation
 
@@ -114,6 +115,26 @@ return [
 
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME'),
+
+    #NOON_PAYMENT
+    "NOON_PAYMENT_BUSINESS_ID" => env('NOON_PAYMENT_BUSINESS_ID'),
+    "NOON_PAYMENT_APP_NAME" => env('NOON_PAYMENT_APP_NAME'),
+    "NOON_PAYMENT_APP_KEY" => env('NOON_PAYMENT_APP_KEY'),
+    /**
+     *  Base64(BusinessIdentifier.ApplicationIdentifier:ApplicationKey)
+     */
+    "NOON_PAYMENT_AUTH_KEY" => base64_encode(env('NOON_PAYMENT_BUSINESS_ID').".".env("NOON_PAYMENT_APP_NAME").":".env("NOON_PAYMENT_APP_KEY")),
+    "NOON_PAYMENT_RETURN_URL" => env('NOON_PAYMENT_RETURN_URL'),
+    /*  Change the mode to Live for the Production */
+    "NOON_PAYMENT_MODE" => env('NOON_PAYMENT_MODE'),
+    /*  Pre-configured order route categories (the categories will be mentioned also in the initial setup email) */
+    "NOON_PAYMENT_ORDER_CATEGORY" => env('NOON_PAYMENT_ORDER_CATEGORY'),
+    /*  Channels are pre-defined and limited to Web / Mobile (the channels will be mentioned also in the initial setup email) */
+    "NOON_PAYMENT_CHANNEL" => env('NOON_PAYMENT_CHANNEL'),
+    /*  Default value - Payment API Endpoint - Chooses 
+        https://api.noonpayments.com/payment/v1/
+        https://api-test.noonpayments.com/payment/v1/ */
+    "NOON_PAYMENT_PAYMENT_API" => env('NOON_PAYMENT_PAYMENT_API'),
 ];
 ```
 
@@ -171,6 +192,121 @@ $payment->verify($request);
 
 ```
 
+## How To Use NoonPayment
+
+```jsx
+use Nafezly\Payments\NoonPayment;
+
+$payment = new NoonPayment();
+
+/////////////////////////////////////////
+////////// Normal Payment////////////////
+/////////////////////////////////////////
+
+// by fluent interface
+$response = $payment
+            ->setCurrency($currency)
+            ->setOrderName($order_name)
+            ->setConfigurationLocal($local)
+            ->setAmount($amount)
+            ->pay();
+
+// example
+$response = $payment
+            ->setCurrency("SAR")
+            ->setOrderName("Sample order name")
+            ->setConfigurationLocal("en")
+            ->setAmount($amount)
+            ->pay();
+
+//pay function response 
+[
+	'payment_id'=>"", // refrence code that should stored in your orders table
+	'redirect_url'=>"", // redirect url available for some payment gateways
+    'process_data'=>""//payment response
+]
+
+//verify function
+$payment->verify($request);
+
+//outputs
+[
+	'success'=>true,//or false
+    'payment_id'=>"PID",
+	'message'=>"Done Successfully",//message for client
+	'process_data'=>""//payment response
+]
+
+////////////////////////////////////////
+////////// Subscription ////////////////
+////////////////////////////////////////
+
+// by fluent interface
+$response = $payment
+            ->setCurrency($currency)
+            ->setOrderName($order_name)
+            ->setConfigurationLocal($local)
+            ->setAmount($amount)
+            ->setSubscriptionAmount($subscriptionAmount)
+            ->setSubscriptionName($subscriptionName)
+            ->setSubscriptionValidTill($subscriptionValidTill)
+            ->subscriptionPay();
+
+//example
+$response = $payment
+            ->setCurrency("SAR")
+            ->setOrderName("Sample order name")
+            ->setConfigurationLocal("en")
+            ->setAmount(200)
+            ->setSubscriptionAmount(200)
+            ->setSubscriptionName('Sample order name')
+            ->setSubscriptionValidTill('2025-09-25')
+            ->subscriptionPay();
+
+//subscription pay function response 
+[
+	'payment_id'=>"", // refrence code that should stored in your orders table
+    'subscription_identifier' => "", // subscription identifier to use in subsequent transactions
+	'redirect_url'=>"", // redirect url available for some payment gateways
+    'process_data'=>""//payment response
+]
+
+//verify function
+$payment->verify($request);
+
+//outputs
+[
+	'success'=>true,//or false
+    'payment_id'=>"PID",
+	'message'=>"Done Successfully",//message for client
+	'process_data'=>""//payment response
+]
+
+//////////////////////////////////////////////////
+////////// Subsequent Transaction ////////////////
+//////////////////////////////////////////////////
+
+// by fluent interface
+$result = $payment
+            ->setOrderName($order_name)
+            ->setSubscriptionIdentifier($subscriptionIdentifier) 
+            ->subsequentTransactionPay();
+
+//example
+$result = $payment
+            ->setOrderName("Sample order name")
+            ->setSubscriptionIdentifier("055dbdd0-6391-43f5-a6c6-4f10babb0f88")
+            ->subsequentTransactionPay();
+
+//outputs
+[
+	'success'=>true,//or false
+    'payment_id'=>"PID",
+	'message'=>"Done Successfully",//message for client
+	'process_data'=>""//payment response
+]
+```
+
 ## Available Classes
 
 ```php
@@ -185,6 +321,7 @@ use Nafezly\Payments\Classes\TapPayment;
 use Nafezly\Payments\Classes\OpayPayment;
 use Nafezly\Payments\Classes\PaytabsPayment;
 use Nafezly\Payments\Classes\PaymobWalletPayment;
+use Nafezly\Payments\Classes\NoonPayment;
 ```
 
 ## Test Cards
@@ -196,4 +333,5 @@ use Nafezly\Payments\Classes\PaymobWalletPayment;
 - [Tap](https://www.tap.company/eg/en/developers)
 - [Opay](https://doc.opaycheckout.com/end-to-end-testing)
 - [PayTabs](https://support.paytabs.com/en/support/solutions/articles/60000712315-what-are-the-test-cards-available-to-perform-payments-)
+- [NoonPayment](https://docs.noonpayments.com/test/cards)
 

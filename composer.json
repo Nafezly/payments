@@ -15,12 +15,21 @@
       "Nafezly\\Payments\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
   "require": {
     "php": ">=7.0",
     "laravel/framework": ">=6.0",
     "paypal/paypal-checkout-sdk": "1.0.2",
     "ext-json": "*",
     "ext-curl": "*"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^7.0",
+    "orchestra/canvas": "^7.0"
   },
   "authors": [
     {
@@ -37,5 +46,12 @@
         "NafezlyPayments": "Nafezly\\Payments\\Facades"
       }
     }
+  },
+  "scripts": {
+    "test": "./vendor/bin/phpunit --testdox",
+    "test-f": "./vendor/bin/phpunit --testdox --filter",
+    "post-autoload-dump": [
+      "@php ./vendor/bin/testbench package:discover --ansi"
+    ]
   }
 }
