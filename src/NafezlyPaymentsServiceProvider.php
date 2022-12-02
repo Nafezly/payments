@@ -37,7 +37,7 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
             __DIR__ . '/../config/nafezly-payments.php' => config_path('nafezly-payments.php'),
         ]);
         $this->publishes([
-            __DIR__ . '/../resources/lang' => lang_path('vendor/payments'),
+            __DIR__ . '/../resources/lang' => app()->getLocale('vendor/payments'),
         ]);
     }
 
@@ -105,7 +105,7 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
             __DIR__ . '/../config/nafezly-payments.php' => config_path('nafezly-payments.php'),
         ], 'nafezly-payments-config');
         $this->publishes([
-            __DIR__ . '/../resources/lang' => lang_path('vendor/payments'),
+            __DIR__ . '/../resources/lang' => app()->getLocale('vendor/payments'),
         ], 'nafezly-payments-lang');
         $this->publishes([
             __DIR__ . '/../resources/views' => resource_path('views/vendor/payments'),
