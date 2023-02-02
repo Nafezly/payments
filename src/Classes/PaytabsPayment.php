@@ -100,8 +100,8 @@ class PaytabsPayment extends BaseController implements PaymentInterface
 
     public function verify(Request $request): array
     {
-        $payment_id = $request->payment_id!=null?$request->payment_id:Cache::get($request['payment_id']);
-        Cache::forget($request['payment_id']);
+        $payment_id = $request->tranRef!=null?$request->tranRef:Cache::get($request['tranRef']);
+        Cache::forget($request['tranRef']);
 
         $response = Http::withHeaders([
             'Authorization' => $this->paytabs_server_key,
@@ -110,7 +110,6 @@ class PaytabsPayment extends BaseController implements PaymentInterface
             'profile_id' => $this->paytabs_profile_id,
             'tran_ref' => $payment_id
         ])->json();
-
         if (isset($response['payment_result']['response_status']) && $response['payment_result']['response_status'] == "A") {
             return [
                 'success' => true,
