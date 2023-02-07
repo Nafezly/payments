@@ -4,7 +4,7 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Made With Love](https://img.shields.io/badge/Made%20With-Love-orange.svg)](https://github.com/chetanraj/awesome-github-badges)
 
-Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay - Tap - Opay - Paytabs - Vodaphone Cash - Orange Money - Meza Wallet - Etisalat Cash)
+Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay - Tap - Opay - Paytabs - Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)
 ![payment-gateways.jpg](https://github.com/nafezly/payments/blob/master/payment-gateways.jpg?raw=true&v=2)
 
 
@@ -20,7 +20,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Tap](https://www.tap.company/)
 - [Opay](https://www.opaycheckout.com/)
 - [Paytabs](https://site.paytabs.com/)
-- [E Wallets (Vodaphone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
+- [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 
 ## Installation
 
@@ -102,7 +102,7 @@ return [
     'OPAY_BASE_URL'=>env('OPAY_BASE_URL',"https://sandboxapi.opaycheckout.com"),//https://api.opaycheckout.com for production
 
 
-    #PAYMOB_WALLET (vodaphone-cash,orange-money,etisalat-cash,we-cash,meza-wallet) - test phone 01010101010 ,PIN & OTP IS 123456
+    #PAYMOB_WALLET (Vodafone-cash,orange-money,etisalat-cash,we-cash,meza-wallet) - test phone 01010101010 ,PIN & OTP IS 123456
     'PAYMOB_WALLET_INTEGRATION_ID'=>env('PAYMOB_WALLET_INTEGRATION_ID'),
 
     #Paytabs
