@@ -31,5 +31,3 @@
         });
     },100); 
 </script>
-
-SEPARATED
