@@ -112,7 +112,7 @@ return [
     'PAYTABS_CHECKOUT_LANG' => env('PAYTABS_CHECKOUT_LANG',"AR"),
     'PAYTABS_CURRENCY'=>env('PAYTABS_CURRENCY',"EGP"),
 
-    'VERIFY_ROUTE_NAME' => "verify-payment",
+    'VERIFY_ROUTE_NAME' => "payment-verify",
     'APP_NAME'=>env('APP_NAME'),
 ];
 ```
