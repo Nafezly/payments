@@ -43,7 +43,9 @@ class TapPayment extends BaseController implements PaymentInterface
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
+
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
+        
         $this->checkRequiredFields($required_fields, 'Tap', func_get_args());
 
         $unique_id = uniqid();

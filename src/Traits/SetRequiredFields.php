@@ -10,18 +10,18 @@ trait SetRequiredFields
      *
      * @param  array $required_fields
      * @param  string  $gatway_name
-     * @param  array  $arguments
      * @return void
      */
-    public function checkRequiredFields($required_fields, $gatway_name, $arguments)
+    public function checkRequiredFields($required_fields, $gatway_name)
     {
-        $amount = $arguments[0] ?? null;
-        $user_id = $arguments[1] ?? null;
-        $user_first_name = $arguments[2] ?? null;
-        $user_last_name = $arguments[3] ?? null;
-        $user_email = $arguments[4] ?? null;
-        $user_phone = $arguments[5] ?? null;
-        $source = $arguments[6] ?? null;
+     
+        $amount = $this->amount ?? null;
+        $user_id = $this->user_id ?? null;
+        $user_first_name = $this->user_first_name ?? null;
+        $user_last_name = $this->user_last_name ?? null;
+        $user_email = $this->user_email ?? null;
+        $user_phone = $this->user_phone ?? null;
+        $source = $this->source ?? null;
         foreach($required_fields as $field){
             $this->{$field} = $this->{$field} ?? ${$field};
             if (is_null($this->{$field})) throw new MissingPaymentInfoException($field, $gatway_name);

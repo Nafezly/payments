@@ -122,13 +122,13 @@ trait SetVariables
      */
     public function setPassedVariablesToGlobal($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
-        $this->setAmount($amount);
-        $this->setUserId($user_id);
-        $this->setUserFirstName($user_first_name);
-        $this->setUserLastName($user_last_name);
-        $this->setUserEmail($user_email);
-        $this->setUserPhone($user_phone);
-        $this->setSource($source);
+        if($amount!=null)$this->setAmount($amount);
+        if($user_id!=null)$this->setUserId($user_id);
+        if($user_first_name!=null)$this->setUserFirstName($user_first_name);
+        if($user_last_name!=null)$this->setUserLastName($user_last_name);
+        if($user_email!=null)$this->setUserEmail($user_email);
+        if($user_phone!=null)$this->setUserPhone($user_phone);
+        if($source!=null)$this->setSource($source);
     }
     
 
