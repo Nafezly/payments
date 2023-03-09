@@ -24,21 +24,26 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->configure();
-        $this->registerPublishing();
-        
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'nafezly');
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'nafezly');
-        
+
+        $langPath = 'vendor/payments';
+        $langPath = (function_exists('lang_path'))
+            ? lang_path($langPath)
+            : resource_path('lang/' . $langPath);
+
+        $this->registerPublishing($langPath);
+
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'nafezly');
+
+
+
 
         $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/nafezly'),
-        ]);
-        $this->publishes([
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/nafezly'),
             __DIR__ . '/../config/nafezly-payments.php' => config_path('nafezly-payments.php'),
-        ]);
-        $this->publishes([
-            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/payments'),
-        ]);
+            __DIR__ . '/../resources/lang' => $langPath,
+        ], 'nafezly-payments-all');
+
+        $this->registerTranslations($langPath);
     }
 
     /**
@@ -79,7 +84,6 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         $this->app->bind(PaytabsPayment::class, function () {
             return new PaytabsPayment();
         });
-        
     }
 
     /**
@@ -90,26 +94,36 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
     protected function configure()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/nafezly-payments.php', 'nafezly-payments'
+            __DIR__ . '/../config/nafezly-payments.php',
+            'nafezly-payments'
         );
     }
-
+    /**
+     * Register translations.
+     *
+     * @return void
+     */
+    public function registerTranslations($langPath)
+    {
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'nafezly');
+        $this->loadTranslationsFrom($langPath, 'nafezly');
+    }
     /**
      * Register the package's publishable resources.
      *
      * @return void
      */
-    protected function registerPublishing()
+    protected function registerPublishing($langPath)
     {
         $this->publishes([
             __DIR__ . '/../config/nafezly-payments.php' => config_path('nafezly-payments.php'),
         ], 'nafezly-payments-config');
+
         $this->publishes([
-            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/payments'),
+            __DIR__ . '/../resources/lang' => $langPath,
         ], 'nafezly-payments-lang');
         $this->publishes([
             __DIR__ . '/../resources/views' => resource_path('views/vendor/payments'),
         ], 'nafezly-payments-views');
-
     }
 }
