@@ -51,7 +51,7 @@ class PaytabsPayment extends BaseController implements PaymentInterface
     {
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount'];
-        $this->checkRequiredFields($required_fields, 'PayTabs', func_get_args());
+        $this->checkRequiredFields($required_fields, 'PayTabs');
         $unique_id = uniqid();
 
         $response = Http::withHeaders([
@@ -100,8 +100,8 @@ class PaytabsPayment extends BaseController implements PaymentInterface
 
     public function verify(Request $request): array
     {
-        $payment_id = $request->payment_id!=null?$request->payment_id:Cache::get($request['payment_id']);
-        Cache::forget($request['payment_id']);
+        $payment_id = $request->tranRef!=null?$request->tranRef:Cache::get($request['tranRef']);
+        Cache::forget($request['tranRef']);
 
         $response = Http::withHeaders([
             'Authorization' => $this->paytabs_server_key,

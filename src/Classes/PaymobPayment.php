@@ -38,7 +38,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
     {
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
-        $this->checkRequiredFields($required_fields, 'PayMob', func_get_args());
+        $this->checkRequiredFields($required_fields, 'PayMob');
 
         $request_new_token = Http::withHeaders(['content-type' => 'application/json'])
             ->post('https://accept.paymobsolutions.com/api/auth/tokens', [

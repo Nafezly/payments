@@ -46,7 +46,7 @@ class TapPayment extends BaseController implements PaymentInterface
 
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
 
-        $this->checkRequiredFields($required_fields, 'Tap', func_get_args());
+        $this->checkRequiredFields($required_fields, 'Tap');
 
         $unique_id = uniqid();
         $response = Http::withHeaders([

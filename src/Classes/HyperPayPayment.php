@@ -49,7 +49,7 @@ class HyperPayPayment extends BaseController implements PaymentInterface
     {
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
-        $this->checkRequiredFields($required_fields, 'HYPERPAY', func_get_args());
+        $this->checkRequiredFields($required_fields, 'HYPERPAY');
 
         $data = http_build_query([
             'entityId' => $this->getEntityId($this->source),

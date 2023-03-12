@@ -42,7 +42,7 @@ class ThawaniPayment extends BaseController implements PaymentInterface
     {
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
-        $this->checkRequiredFields($required_fields, 'Thawani', func_get_args());
+        $this->checkRequiredFields($required_fields, 'Thawani');
         $unique_id = uniqid();
         $response = Http::withHeaders([
             'Content-Type' => "application/json",
