@@ -21,6 +21,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Opay](https://www.opaycheckout.com/)
 - [Paytabs](https://site.paytabs.com/)
 - [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
+- Cash on delivery
 
 ## Installation
 
@@ -239,9 +240,9 @@ now you have DTO for response
 after this payment used you can check for the status boolean to do your actions next 
 if the status false you will find the error message contain the error and errors array will contain for example the validation errors
 ### Feature 2
-now you have a payments table and payment logs table when you uss pay function
-the record will store into payments table this table is a morph
-with status PAID
+now you have a payments table and payment logs table when you us pay function
+the record will store into payments table with status UNPAID this table is a morph
+
 
 | column | description |
 |--|--|
@@ -263,7 +264,7 @@ when any something went wrong the request and response will be saved into paymen
     php artisan migrate 
 ```
 ### Feature 3 (Extendability)
-is there is a new payment implement IPaymentInterface use the traits and your logic 
+if there is a new payment implement IPaymentInterface use the traits and your logic 
 and done you have a payment with all of this functionalities ;)
 ## Test Cards
 
