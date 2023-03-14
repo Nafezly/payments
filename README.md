@@ -206,6 +206,15 @@ use Nafezly\Payments\Classes\PaymobWalletPayment;
 you can now have all of this payments as a crud !!
 the table contain (method,name,color,description,icon,is_active) so you can create your own dashboard crud to manage which one active or not and if there is an api functionality you can send this crud where they are active and return back for you the selected method so you can use the factory way directly.
 **pass the method to factory -> pay done you have the response data :)**
+
+for the seeder with all payment methods
+```php
+
+use Nafezly\Payments\Seeders\PaymentMethodsTableSeeder;
+
+        $this->call(PaymentMethodsTableSeeder::class);
+```
+
 ## Test Cards
 
 - [Thawani](https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card)
