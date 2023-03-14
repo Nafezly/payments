@@ -3,7 +3,7 @@
 namespace Nafezly\Payments\Seeders;
 
 use Illuminate\Database\Seeder;
-use Nafezly\Payments\Model\NafezlyPaymentMethod;
+use Nafezly\Payments\Models\NafezlyPaymentMethod;
 
 class PaymentMethodsTableSeeder extends Seeder
 {

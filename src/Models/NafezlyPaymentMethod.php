@@ -1,6 +1,6 @@
 <?php
 
-namespace Nafezly\Payments\Model;
+namespace Nafezly\Payments\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
