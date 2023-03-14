@@ -33,6 +33,7 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         $this->registerPublishing($langPath);
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'nafezly');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations', 'nafezly');
 
 
 
