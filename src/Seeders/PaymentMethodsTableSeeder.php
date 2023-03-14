@@ -72,6 +72,11 @@ class PaymentMethodsTableSeeder extends Seeder
                 'name' => 'pay by Opay',
                 'icon'=>"bx bx-circle",
                 'color'=>"#ff0000",
+            ],[
+                'method'=>'cashOnDelivery',
+                'name' => 'pay with cash',
+                'icon'=>"bx bx-circle",
+                'color'=>"#ff0000",
             ]
         ];
 
