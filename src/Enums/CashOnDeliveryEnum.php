@@ -19,7 +19,7 @@ class CashOnDeliveryEnum
     const VERIFY_VALIDATION =
         [
             "amount" => 'required|numeric',
-            "transaction_code" => 'required|exists:payments,transaction_code',
+            "transaction_code" => 'required|exists:nafezly_payments,transaction_code',
             "status" =>'required|string'
 
         ];
