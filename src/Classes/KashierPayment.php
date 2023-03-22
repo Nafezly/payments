@@ -79,7 +79,7 @@ class KashierPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request): array
     {
-        if ($request["paymentStatus"] == "SUCCESS") {
+        if ($request["paymentStatus"] == "SUCCESS" && $request['signature']!=null) {
             $queryString = "";
             foreach ($request->all() as $key => $value) {
 
