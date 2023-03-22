@@ -88,7 +88,6 @@ class KashierPayment extends BaseController implements PaymentInterface
                 }
                 $queryString = $queryString . "&" . $key . "=" . $value;
             }
-
             $queryString = ltrim($queryString, $queryString[0]);
             $signature = hash_hmac('sha256', $queryString, $this->kashier_iframe_key,false);
             if ($signature == $request["signature"]) {
