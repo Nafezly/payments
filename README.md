@@ -170,7 +170,21 @@ $payment->verify($request);
 ]
 
 ```
-
+### Factory Pattern Use
+you can pass only method name without payment key word like (Fawry,Paymob,Opay ...etc) 
+and the factory will return the payment instance for you , use it as you want ;)
+```php
+    $payment = new \Nafezly\Payments\Factories\PaymentFactory();
+    $payment=$payment->get(string $paymentName)->pay(
+	$amount, 
+	$user_id = null, 
+	$user_first_name = null, 
+	$user_last_name = null, 
+	$user_email = null, 
+	$user_phone = null, 
+	$source = null
+);;
+```
 ## Available Classes
 
 ```php
