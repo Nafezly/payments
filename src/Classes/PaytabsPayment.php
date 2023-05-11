@@ -100,7 +100,7 @@ class PaytabsPayment extends BaseController implements PaymentInterface
 
     public function verify(Request $request): array
     {
-        $payment_id = $request->tranRef!=null?$request->tranRef:Cache::get($request->payment_id);
+        $payment_id = $request->tranRef!=null?$request->tranRef:Cache::get($request['tranRef']);
         Cache::forget($request['tranRef']);
 
         $response = Http::withHeaders([
