@@ -67,8 +67,8 @@ class PaytabsPayment extends BaseController implements PaymentInterface
             "hide_shipping" => true,
             "cart_description" => "items",
             "paypage_lang" => $this->paytabs_checkout_lang,
-            "callback" => route($this->verify_route_name,['payment_id'=>$unique_id]), //Post end point  -the payment status will be sent to server
-            "return" => route($this->verify_route_name,['payment_id'=>$unique_id]), //Get end point - The link to which the user will be redirected
+            "callback" => route($this->verify_route_name,['payment_id'=>$unique_id,'payment' => "paytabs"]), //Post end point  -the payment status will be sent to server
+            "return" => route($this->verify_route_name,['payment_id'=>$unique_id,'payment' => "paytabs"]), //Get end point - The link to which the user will be redirected
             "customer_ref" => $unique_id,
             "customer_details" => [
                 "name" => $this->user_first_name . ' ' . $this->user_last_name,
