@@ -10,16 +10,19 @@ use Nafezly\Payments\Classes\BaseController;
 class KashierPayment extends BaseController implements PaymentInterface
 {
     public  $kashier_url;
+    public  $kashier_webhook_url;
     public  $kashier_mode;
     private $kashier_account_key;
     private $kashier_iframe_key;
     private $kashier_token;
     public  $app_name;
+
     private $verify_route_name;
 
     public function __construct()
     {
         $this->kashier_url = config("nafezly-payments.KASHIER_URL");
+        $this->kashier_webhook_url = config("nafezly-payments.KASHIER_WEBHOOK_URL");
         $this->kashier_mode = config("nafezly-payments.KASHIER_MODE");
         $this->kashier_account_key = config("nafezly-payments.KASHIER_ACCOUNT_KEY");
         $this->kashier_iframe_key = config("nafezly-payments.KASHIER_IFRAME_KEY");
@@ -56,6 +59,7 @@ class KashierPayment extends BaseController implements PaymentInterface
 
         $data = [
             'mid' => $mid,
+            'webhook_url'=> $this->kashier_webhook_url,
             'amount' => $this->amount,
             'currency' => $this->currency,
             'order_id' => $order_id,

@@ -8,6 +8,9 @@ data-hash="{{ $data['hash'] }}"
 data-currency="{{ $data['currency'] }}"
 data-orderId="{{ $data['order_id'] }}"
 data-allowedMethods="{{ $data['source']==null?'card':$data['source'] }}"
+@if($data['webhook_url']!=null)
+data-serverWebhook="{{$data['webhook_url']}}"
+@endif
 data-merchantId="{{ $data['mid'] }}"
 data-merchantRedirect="{{ $data['redirect_back'] }}" 
 data-store="{{ $model->app_name }}"
