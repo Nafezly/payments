@@ -66,6 +66,7 @@ return [
     'KASHIER_URL' => env('KASHIER_URL', "https://checkout.kashier.io"),
     'KASHIER_MODE' => env('KASHIER_MODE', "test"), //live or test
     'KASHIER_CURRENCY'=>env('KASHIER_CURRENCY',"EGP"),
+    'KASHIER_WEBHOOK_URL'=>env('KASHIER_WEBHOOK_URL'),
 
 
     #FAWRY
