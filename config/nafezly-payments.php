@@ -72,8 +72,17 @@ return [
     'PAYTABS_CHECKOUT_LANG' => env('PAYTABS_CHECKOUT_LANG',"AR"),
     'PAYTABS_CURRENCY'=>env('PAYTABS_CURRENCY',"EGP"),
 
+
+    #Binance
+    'BINANCE_API'=>env('BINANCE_API'),
+    'BINANCE_SECRET'=>env('BINANCE_SECRET'),
+
+
     'VERIFY_ROUTE_NAME' => "payment-verify",
     'APP_NAME'=>env('APP_NAME'),
+
+
+
 
     
 
