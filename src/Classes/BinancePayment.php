@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Http;
 
 use Nafezly\Payments\Interfaces\PaymentInterface;
 use Nafezly\Payments\Classes\BaseController;
+use Illuminate\Support\Str;
+
 
 class BinancePayment extends BaseController implements PaymentInterface 
 {
@@ -102,21 +104,34 @@ class BinancePayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request)
     {
-        if ($request['status']=="SUCCESS") {
-            return [
-                'success' => true,
-                'payment_id'=>"",
-                'message' => __('nafezly::messages.PAYMENT_DONE'),
-                'process_data' => $request->all()
-            ];
-        } else {
-            return [
-                'success' => false,
-                'payment_id'=>"",
-                'message' => __('nafezly::messages.PAYMENT_FAILED'),
-                'process_data' => $request->all()
-            ];
+
+        $payload = $request->getContent();
+        $signature = $request->header('X-MAC-Signature');
+        $secretKey = $this->binance_secret; // Replace with your actual Binance secret key
+
+        $computedSignature = hash_hmac('sha256', $payload, $secretKey);
+
+        if ($signature === $computedSignature) {
+            // Signature verification successful
+            $data = json_decode($payload, true);
+            $paymentId = $data['paymentId']; // Retrieve the payment ID
+            $paymentStatus = $data['paymentStatus']; // Retrieve the payment status
+
+            if ($paymentStatus === 'completed') {
+                return [
+                    'success' => true,
+                    'payment_id'=>"",
+                    'message' => __('nafezly::messages.PAYMENT_DONE'),
+                    'process_data' => $request->all()
+                ];
+            } 
         }
+        return [
+            'success' => false,
+            'payment_id'=>"",
+            'message' => __('nafezly::messages.PAYMENT_FAILED'),
+            'process_data' => $request->all()
+        ];
     }
 
 }

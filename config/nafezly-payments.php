@@ -78,6 +78,26 @@ return [
     'BINANCE_SECRET'=>env('BINANCE_SECRET'),
 
 
+
+    #NowPayments
+    'NOWPAYMENTS_API_KEY'=>env('NOWPAYMENTS_API_KEY'),
+
+
+    #Payeer
+    'PAYEER_MERCHANT_ID'=>env('PAYEER_MERCHANT_ID'),
+    'PAYEER_API_KEY'=>env('PAYEER_API_KEY'),
+    'PAYEER_ADDITIONAL_API_KEY'=>env('PAYEER_ADDITIONAL_API_KEY'),
+
+
+    #Perfectmoney
+    /*
+    *please 
+    *1- create POST route /payments/verify/perfectmoney 
+    *2- put it into app/Http/Middleware/VerifyCsrfToken.php middleware inside except array
+    */
+    'PERFECT_MONEY_ID'=>env('PERFECT_MONEY_ID','UXXXXXXX'),
+    'PERFECT_MONEY_PASSPHRASE'=>env('PERFECT_MONEY_PASSPHRASE'),
+
     'VERIFY_ROUTE_NAME' => "payment-verify",
     'APP_NAME'=>env('APP_NAME'),
 
