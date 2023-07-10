@@ -20,6 +20,10 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Tap](https://www.tap.company/)
 - [Opay](https://www.opaycheckout.com/)
 - [Paytabs](https://site.paytabs.com/)
+- [Binance](https://www.binance.com/en)
+- [PerfectMoney](https://PerfectMoney.com/)
+- [NowPayments](https://NowPayments.io/)
+- [Payeer](https://payeer.com)
 - [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 
 ## Installation

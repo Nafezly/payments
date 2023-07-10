@@ -92,7 +92,7 @@ return [
     #Perfectmoney
     /*
     *please 
-    *1- create POST route /payments/verify/perfectmoney 
+    *1- create POST route /payments/verify/{payment} and put it before your verify route 
     *2- put it into app/Http/Middleware/VerifyCsrfToken.php middleware inside except array
     */
     'PERFECT_MONEY_ID'=>env('PERFECT_MONEY_ID','UXXXXXXX'),
