@@ -93,7 +93,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
     {
         $string = $request['amount_cents'] . $request['created_at'] . $request['currency'] . $request['error_occured'] . $request['has_parent_transaction'] . $request['id'] . $request['integration_id'] . $request['is_3d_secure'] . $request['is_auth'] . $request['is_capture'] . $request['is_refunded'] . $request['is_standalone_payment'] . $request['is_voided'] . $request['order'] . $request['owner'] . $request['pending'] . $request['source_data_pan'] . $request['source_data_sub_type'] . $request['source_data_type'] . $request['success'];
 
-        if (hash_hmac('sha512', $string, config('nafezly-payments.PAYMOB_HMAC'))) {
+        if ( hash_equals(hash_hmac('sha512', $string, config('nafezly-payments.PAYMOB_HMAC')),$request['hmac']) ){
             if ($request['success'] == "true") {
                 return [
                     'success' => true,

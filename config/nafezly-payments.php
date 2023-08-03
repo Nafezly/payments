@@ -103,6 +103,11 @@ return [
 
 
 
+    #TELR
+    'TELR_MERCHANT_ID'=>env('TELR_MERCHANT_ID'),
+    'TELR_API_KEY'=>env('TELR_API_KEY'),
+    'TELR_MODE'=>env('TELR_MODE','test'),//test,live
+
 
     
 
