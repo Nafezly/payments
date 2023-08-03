@@ -24,6 +24,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [PerfectMoney](https://PerfectMoney.com/)
 - [NowPayments](https://NowPayments.io/)
 - [Payeer](https://payeer.com)
+- [Telr](https://telr.com)
 - [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 
 ## Installation
@@ -119,6 +120,8 @@ return [
 
     'VERIFY_ROUTE_NAME' => "payment-verify",
     'APP_NAME'=>env('APP_NAME'),
+
+    //and more config for another payment gateways
 ];
 ```
 
@@ -190,23 +193,7 @@ and the factory will return the payment instance for you , use it as you want ;)
 	$source = null
 );;
 ```
-## Available Classes
-
-```php
-
-use Nafezly\Payments\Classes\FawryPayment;
-use Nafezly\Payments\Classes\HyperPayPayment;
-use Nafezly\Payments\Classes\KashierPayment;
-use Nafezly\Payments\Classes\PaymobPayment;
-use Nafezly\Payments\Classes\PayPalPayment;
-use Nafezly\Payments\Classes\ThawaniPayment;
-use Nafezly\Payments\Classes\TapPayment;
-use Nafezly\Payments\Classes\OpayPayment;
-use Nafezly\Payments\Classes\PaytabsPayment;
-use Nafezly\Payments\Classes\PaymobWalletPayment;
-```
-
-## Test Cards
+## Some Test Cards
 
 - [Thawani](https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card)
 - [Kashier](https://developers.kashier.io/payment/testing)
