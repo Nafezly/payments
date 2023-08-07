@@ -74,21 +74,18 @@ class PerfectMoneyPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request)
     {
+        $signature = (isset($request['PAYMENT_ID']) ? $request['PAYMENT_ID'] : null) . ':'
+            . (isset($request['PAYEE_ACCOUNT']) ? $request['PAYEE_ACCOUNT'] : null) . ':'
+            . (isset($request['PAYMENT_AMOUNT']) ? $request['PAYMENT_AMOUNT'] : null) . ':'
+            . (isset($request['PAYMENT_UNITS']) ? $request['PAYMENT_UNITS'] : null) . ':'
+            . (isset($request['PAYMENT_BATCH_NUM']) ? $request['PAYMENT_BATCH_NUM'] : null) . ':'
+            . (isset($request['PAYER_ACCOUNT']) ? $request['PAYER_ACCOUNT'] : null) . ':'
+            . strtoupper(md5($this->perfect_money_passphrase)) . ':'
+            . (isset($request['TIMESTAMPGMT']) ? $request['TIMESTAMPGMT'] : null);
 
+        $v2_hash = strtoupper(md5($signature));
 
-        $paymentId = $request['PAYMENT_ID'];
-        $payeeAccount = $request['PAYEE_ACCOUNT'];
-        $paymentAmount = $request['PAYMENT_AMOUNT'];
-        $paymentUnits = $request['PAYMENT_UNITS'];
-        $paymentBatchNum = $request['PAYMENT_BATCH_NUM'];
-        $payerAccount = $request['PAYER_ACCOUNT'];
-        $passphrase = $this->perfect_money_passphrase; // Replace with your Perfect Money account passphrase
-
-        $hash = strtoupper(md5($paymentId . ':' . $payeeAccount . ':' . $paymentAmount . ':' . $paymentUnits . ':' . $paymentBatchNum . ':' . $payerAccount . ':' . strtoupper(md5($passphrase))));
-
-        $receivedHash = $request['V2_HASH'];
-
-        if ($receivedHash === $hash) {
+        if ($v2_hash === $request['V2_HASH'] ) {
             return [
                 'success' => true,
                 'payment_id'=>$paymentId,
