@@ -88,14 +88,14 @@ class PerfectMoneyPayment extends BaseController implements PaymentInterface
         if ($v2_hash === $request['V2_HASH'] ) {
             return [
                 'success' => true,
-                'payment_id'=>$paymentId,
+                'payment_id'=>$request['PAYMENT_ID'],
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $request->all()
             ];
         } else {
             return [
                 'success' => false,
-                'payment_id'=>$paymentId,
+                'payment_id'=>$request['PAYMENT_ID'],
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $request->all()
             ];
