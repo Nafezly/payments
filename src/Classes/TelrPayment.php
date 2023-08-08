@@ -73,12 +73,14 @@ class TelrPayment extends BaseController implements PaymentInterface
         $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data)->json();
       
 
-        if(isset($response['order']['url']))
+        if(isset($response['order']['url'])){
+            cache(['telr_ref_code_'.$uniqid => $response['order']['ref']]);
             return [
                 'payment_id'=>$uniqid,
                 'html'=>$response,
                 'redirect_url'=>$response['order']['url']
             ];
+        }
         return [
             'payment_id'=>$uniqid,
             'html'=>$response,
@@ -92,12 +94,15 @@ class TelrPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request)
     {
+        if($request->ref_code==null)
+            $request->merge(['ref_code'=>cache('telr_ref_code_'.$request->payment_id)]);
+
         $response = $request->all();
         $data = [
             'ivp_method' => 'check',
             'ivp_store' => $this->telr_merchant_id,
             'ivp_authkey' => $this->telr_api_key,
-            'order_ref' => $response['payment_id'],
+            'order_ref' => $response['ref_code'],
             'ivp_test'=>$this->telr_mode=="live"?false:true,
         ];
         $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data)->json();
