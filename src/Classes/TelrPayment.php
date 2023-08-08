@@ -54,6 +54,7 @@ class TelrPayment extends BaseController implements PaymentInterface
             'ivp_cart' => $uniqid,
             'ivp_amount' => $this->amount,
             'ivp_currency' => $this->currency??"SAR",
+            'ivp_desc'=> "Credit",
             'ivp_test'=>$this->telr_mode=="live"?false:true,
             'return_auth'=> route($this->verify_route_name,['payment'=>"telr"]),
             'return_decl'=> route($this->verify_route_name,['payment'=>"telr"]),
