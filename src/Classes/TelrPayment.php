@@ -42,7 +42,7 @@ class TelrPayment extends BaseController implements PaymentInterface
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
-        $required_fields = ['amount'];
+        $required_fields = ['amount','user_first_name','user_last_name','user_email'];
         $this->checkRequiredFields($required_fields, 'BINANCE');
  
         $uniqid = uniqid().rand(1000,9999);
@@ -58,16 +58,25 @@ class TelrPayment extends BaseController implements PaymentInterface
             'ivp_test'=>$this->telr_mode=="live"?false:true,
             'return_auth'=> route($this->verify_route_name,['payment'=>"telr"]),
             'return_decl'=> route($this->verify_route_name,['payment'=>"telr"]),
-            'return_can'=> route($this->verify_route_name,['payment'=>"telr"])
+            'return_can'=> route($this->verify_route_name,['payment'=>"telr"]),
+            'bill_fname' => $this->user_first_name,
+            'bill_sname' => $this->user_last_name,
+            'bill_addr1' => "NA",
+            'bill_addr2' => "NA",
+            'bill_city' => "NA",
+            'bill_region' => "NA",
+            'bill_zip' => "NA",
+            'bill_country' => "NA",
+            'bill_email' => $this->user_email,
         ];
         $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data)->json();
       
 
-        if(isset($response['url']))
+        if(isset($response['order']['url']))
             return [
                 'payment_id'=>$uniqid,
-                'html'=>"",
-                'redirect_url'=>$response['url']
+                'html'=>$response,
+                'redirect_url'=>$response['order']['url']
             ];
         return [
             'payment_id'=>$uniqid,
@@ -91,7 +100,7 @@ class TelrPayment extends BaseController implements PaymentInterface
             'order_amount' => $response['amount'],
             'ivp_test'=>$this->telr_mode=="live"?false:true,
         ];
-        $response = Http::post('https://secure.telr.com/gateway/order.json', $data);
+        $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data);
         $telrHashCode = $response['code'];
         if ($telrHashCode === $telrCallbackData['code']) {
             return [
