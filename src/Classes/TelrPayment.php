@@ -96,13 +96,12 @@ class TelrPayment extends BaseController implements PaymentInterface
     {
         if($request->ref_code==null)
             $request->merge(['ref_code'=>cache('telr_ref_code_'.$request->payment_id)]);
-
-        $response = $request->all();
+ 
         $data = [
             'ivp_method' => 'check',
             'ivp_store' => $this->telr_merchant_id,
             'ivp_authkey' => $this->telr_api_key,
-            'order_ref' => $response['ref_code'],
+            'order_ref' => $request['ref_code'],
             'ivp_test'=>$this->telr_mode=="live"?false:true,
         ];
         $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data)->json();
@@ -110,7 +109,7 @@ class TelrPayment extends BaseController implements PaymentInterface
         if (isset($response['order']['status']['text']) &&  $response['order']['status']['text']="Paid") {
             return [
                 'success' => true,
-                'payment_id'=>$response['payment_id'],
+                'payment_id'=>$request['payment_id'],
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $request->all()
             ];
