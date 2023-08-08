@@ -30,7 +30,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 ## Installation
 
 ```jsx
-composer require nafezly/payments
+composer require nafezly/payments dev-master
 ```
 
 ## Publish Vendor Files

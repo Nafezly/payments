@@ -52,7 +52,7 @@ class TelrPayment extends BaseController implements PaymentInterface
             'ivp_authkey' => $this->telr_api_key,
             'order_ref' => $uniqid,
             'amount' => $this->amount,
-            'currency' => $this->currency??"SAR",
+            'ivp_currency' => $this->currency??"SAR",
             'ivp_test'=>$this->telr_mode=="live"?false:true,
             'return_auth'=> route($this->verify_route_name,['payment'=>"telr"]),
             'return_decl'=> route($this->verify_route_name,['payment'=>"telr"]),
