@@ -100,7 +100,7 @@ class TelrPayment extends BaseController implements PaymentInterface
             'order_ref' => $response['payment_id'],
             'ivp_test'=>$this->telr_mode=="live"?false:true,
         ];
-        $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data);
+        $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data)->json();
         $telrHashCode = $response['code'];
         if ($telrHashCode === $telrCallbackData['code']) {
             return [
