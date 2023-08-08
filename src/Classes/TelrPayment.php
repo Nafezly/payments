@@ -68,6 +68,7 @@ class TelrPayment extends BaseController implements PaymentInterface
             'bill_zip' => "NA",
             'bill_country' => "NA",
             'bill_email' => $this->user_email,
+            'bill_phone'=>$this->user_phone
         ];
         $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data)->json();
       
