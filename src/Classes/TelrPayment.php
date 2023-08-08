@@ -46,15 +46,13 @@ class TelrPayment extends BaseController implements PaymentInterface
         $this->checkRequiredFields($required_fields, 'TELR');
  
         $uniqid = uniqid().rand(1000,9999);
-        $currency = $this->currency==null?"SAR":$this->currency;
-
         $data = [
             'ivp_method' => 'create',
             'ivp_store' => $this->telr_merchant_id,
             'ivp_authkey' => $this->telr_api_key,
             'order_ref' => $uniqid,
             'amount' => $this->amount,
-            'currency' => $currency,
+            'currency' => $this->currency??"SAR",
             'ivp_test'=>$this->telr_mode=="live"?false:true,
             'return_auth'=> route($this->verify_route_name,['payment'=>"telr"]),
             'return_decl'=> route($this->verify_route_name,['payment'=>"telr"]),
