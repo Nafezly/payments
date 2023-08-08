@@ -61,8 +61,8 @@ class OpayPayment extends BaseController implements PaymentInterface
                  "currency" => $this->currency, 
                  "total" => $this->amount*100 
             ], 
-           "callbackUrl" => $this->verify_route_name."?reference_id=".$unique_id, 
-           "cancelUrl" => $this->verify_route_name."?reference_id=".$unique_id, 
+           "callbackUrl" => route($this->verify_route_name,['reference_id'=>$unique_id,'payment'=>"opay"]), 
+           "cancelUrl" => route($this->verify_route_name,['reference_id'=>$unique_id,'payment'=>"opay"]), 
            "country" => "EG", 
            "expireAt" => 780, 
            "payMethod" => "BankCard", 
@@ -76,7 +76,7 @@ class OpayPayment extends BaseController implements PaymentInterface
                 ] 
             ], 
            "reference" => $unique_id, 
-           "returnUrl" => $this->verify_route_name."?reference_id=".$unique_id, 
+           "returnUrl" => route($this->verify_route_name,['reference_id'=>$unique_id,'payment'=>"opay"]), 
            "userInfo" => [
               "userEmail" => $this->user_email, 
               "userId" => $this->user_id, 

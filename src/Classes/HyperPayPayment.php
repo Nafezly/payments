@@ -56,7 +56,7 @@ class HyperPayPayment extends BaseController implements PaymentInterface
             'amount' => $this->amount,
             'currency' => $this->currency,
             'paymentType' => 'DB',
-            'merchantTransactionId' => uniqid(),
+            'merchantTransactionId' => uniqid().rand(10000,99999),
             'billing.street1' => 'riyadh',
             'billing.city' => 'riyadh',
             'billing.state' => 'riyadh',
