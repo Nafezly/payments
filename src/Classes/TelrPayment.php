@@ -43,7 +43,7 @@ class TelrPayment extends BaseController implements PaymentInterface
     {
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount','user_first_name','user_last_name','user_email'];
-        $this->checkRequiredFields($required_fields, 'BINANCE');
+        $this->checkRequiredFields($required_fields, 'TELR');
  
         $uniqid = uniqid().rand(1000,9999);
         $currency = $this->currency==null?"SAR":$this->currency;
