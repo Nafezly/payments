@@ -60,7 +60,7 @@ class TelrPayment extends BaseController implements PaymentInterface
             'return_decl'=> route($this->verify_route_name,['payment'=>"telr"]),
             'return_can'=> route($this->verify_route_name,['payment'=>"telr"])
         ];
-        $response = Http::post('https://secure.telr.com/gateway/order.json', $data)->json();
+        $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data)->json();
       
 
         if(isset($response['url']))
