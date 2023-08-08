@@ -56,9 +56,9 @@ class TelrPayment extends BaseController implements PaymentInterface
             'ivp_currency' => $this->currency??"SAR",
             'ivp_desc'=> "Credit",
             'ivp_test'=>$this->telr_mode=="live"?false:true,
-            'return_auth'=> route($this->verify_route_name,['payment'=>"telr"]),
-            'return_decl'=> route($this->verify_route_name,['payment'=>"telr"]),
-            'return_can'=> route($this->verify_route_name,['payment'=>"telr"]),
+            'return_auth'=> route($this->verify_route_name,['payment'=>"telr",'payment_id'=>$uniqid]),
+            'return_decl'=> route($this->verify_route_name,['payment'=>"telr",'payment_id'=>$uniqid]),
+            'return_can'=> route($this->verify_route_name,['payment'=>"telr",'payment_id'=>$uniqid]),
             'bill_fname' => $this->user_first_name,
             'bill_sname' => $this->user_last_name,
             'bill_addr1' => "NA",
@@ -97,8 +97,7 @@ class TelrPayment extends BaseController implements PaymentInterface
             'ivp_method' => 'check',
             'ivp_store' => $this->telr_merchant_id,
             'ivp_authkey' => $this->telr_api_key,
-            'order_ref' => $response['order_ref'],
-            'order_amount' => $response['amount'],
+            'order_ref' => $response['payment_id'],
             'ivp_test'=>$this->telr_mode=="live"?false:true,
         ];
         $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data);
