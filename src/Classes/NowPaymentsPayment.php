@@ -80,7 +80,7 @@ class NowPaymentsPayment extends BaseController implements PaymentInterface
 
         $response = \Http::withHeaders([
             'x-api-key'=>$this->nowpayments_api_key
-        ])->post('https://api.nowpayments.io/v1/payment/'.$request['payment_id'])->json();
+        ])->get('https://api.nowpayments.io/v1/payment/'.$request['payment_id'])->json();
 
         if (isset($response['payment_status']) && $response['payment_status'] == "finished") {
             return [
