@@ -87,14 +87,14 @@ class NowPaymentsPayment extends BaseController implements PaymentInterface
                 'success' => true,
                 'payment_id'=>$request->payment_id,
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
-                'process_data' => $request->all()
+                'process_data' => $response
             ];
         } else {
             return [
                 'success' => false,
                 'payment_id'=>$request->payment_id,
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
-                'process_data' => $request->all()
+                'process_data' => $response
             ];
         }
     }
