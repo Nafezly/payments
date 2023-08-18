@@ -31,7 +31,6 @@ class PaytabsPayment extends BaseController implements PaymentInterface
         $this->paytabs_checkout_lang = config('nafezly-payments.PAYTABS_CHECKOUT_LANG');
         $this->currency = config('nafezly-payments.PAYTABS_CURRENCY');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
-
     }
 
     /**
@@ -46,10 +45,15 @@ class PaytabsPayment extends BaseController implements PaymentInterface
      */
 
     public function pay(
-        $amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null
-    )
-    {
-        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
+        $amount = null,
+        $user_id = null,
+        $user_first_name = null,
+        $user_last_name = null,
+        $user_email = null,
+        $user_phone = null,
+        $source = null
+    ) {
+        $this->setPassedVariablesToGlobal($amount, $user_id, $user_first_name, $user_last_name, $user_email, $user_phone, $source);
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'PayTabs');
         $unique_id = uniqid();
@@ -67,8 +71,8 @@ class PaytabsPayment extends BaseController implements PaymentInterface
             "hide_shipping" => true,
             "cart_description" => "items",
             "paypage_lang" => $this->paytabs_checkout_lang,
-            "callback" => route($this->verify_route_name,['payment_id'=>$unique_id,'payment' => "paytabs"]), //Post end point  -the payment status will be sent to server
-            "return" => route($this->verify_route_name,['payment_id'=>$unique_id,'payment' => "paytabs"]), //Get end point - The link to which the user will be redirected
+            "callback" => route($this->verify_route_name, ['payment_id' => $unique_id, 'payment' => "paytabs"]), //Post end point  -the payment status will be sent to server
+            "return" => route($this->verify_route_name, ['payment_id' => $unique_id, 'payment' => "paytabs"]), //Get end point - The link to which the user will be redirected
             "customer_ref" => $unique_id,
             "customer_details" => [
                 "name" => $this->user_first_name . ' ' . $this->user_last_name,
@@ -100,7 +104,8 @@ class PaytabsPayment extends BaseController implements PaymentInterface
 
     public function verify(Request $request): array
     {
-        $payment_id = $request->tranRef!=null?$request->tranRef:Cache::get($request['tranRef']);
+        $tranRef = $request->tranRef != null ? $request->tranRef : ($request->tran_ref != null ? $request->tran_ref : null);
+        $payment_id = $tranRef != null ? $tranRef : Cache::get($request['tranRef']);
         Cache::forget($request['tranRef']);
 
         $response = Http::withHeaders([
@@ -118,7 +123,6 @@ class PaytabsPayment extends BaseController implements PaymentInterface
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
-
         } else {
             return [
                 'success' => false,
