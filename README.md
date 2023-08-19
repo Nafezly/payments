@@ -155,7 +155,6 @@ return [
 
     'VERIFY_ROUTE_NAME' => "payment-verify",
     'APP_NAME'=>env('APP_NAME'),
-
     //and more config for another payment gateways
 ];
 ```
