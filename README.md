@@ -25,7 +25,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [NowPayments](https://NowPayments.io/)
 - [Payeer](https://payeer.com)
 - [Telr](https://telr.com)
-- [Clickpay](https://telr.com)
+- [Clickpay](https://clickpay.com.sa/)
 - [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 
 ## Installation
