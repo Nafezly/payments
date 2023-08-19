@@ -118,6 +118,41 @@ return [
     'PAYTABS_CHECKOUT_LANG' => env('PAYTABS_CHECKOUT_LANG',"AR"),
     'PAYTABS_CURRENCY'=>env('PAYTABS_CURRENCY',"EGP"),
 
+    
+    #Binance
+    'BINANCE_API'=>env('BINANCE_API'),
+    'BINANCE_SECRET'=>env('BINANCE_SECRET'),
+
+
+    #NowPayments
+    'NOWPAYMENTS_API_KEY'=>env('NOWPAYMENTS_API_KEY'),
+
+
+    #Payeer
+    'PAYEER_MERCHANT_ID'=>env('PAYEER_MERCHANT_ID'),
+    'PAYEER_API_KEY'=>env('PAYEER_API_KEY'),
+    'PAYEER_ADDITIONAL_API_KEY'=>env('PAYEER_ADDITIONAL_API_KEY'),
+
+
+    #Perfectmoney
+    /*
+    *please 
+    *1- create POST route /payments/verify/{payment} and put it before your verify route 
+    *2- put it into app/Http/Middleware/VerifyCsrfToken.php middleware inside except array
+    */
+    'PERFECT_MONEY_ID'=>env('PERFECT_MONEY_ID','UXXXXXXX'),
+    'PERFECT_MONEY_PASSPHRASE'=>env('PERFECT_MONEY_PASSPHRASE'),
+
+    #TELR
+    'TELR_MERCHANT_ID'=>env('TELR_MERCHANT_ID'),
+    'TELR_API_KEY'=>env('TELR_API_KEY'),
+    'TELR_MODE'=>env('TELR_MODE','test'),//test,live
+
+
+    #CLICKPAY
+    'CLICKPAY_SERVER_KEY'=>env('CLICKPAY_SERVER_KEY'),
+    'CLICKPAY_PROFILE_ID'=>env('CLICKPAY_PROFILE_ID')
+
     'VERIFY_ROUTE_NAME' => "payment-verify",
     'APP_NAME'=>env('APP_NAME'),
 

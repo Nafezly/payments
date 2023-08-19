@@ -109,6 +109,7 @@ return [
     'TELR_MODE'=>env('TELR_MODE','test'),//test,live
 
 
-    
-
+    #CLICKPAY
+    'CLICKPAY_SERVER_KEY'=>env('CLICKPAY_SERVER_KEY'),
+    'CLICKPAY_PROFILE_ID'=>env('CLICKPAY_PROFILE_ID')
 ];
