@@ -98,7 +98,7 @@ return [
     'PERFECT_MONEY_ID'=>env('PERFECT_MONEY_ID','UXXXXXXX'),
     'PERFECT_MONEY_PASSPHRASE'=>env('PERFECT_MONEY_PASSPHRASE'),
 
-    'VERIFY_ROUTE_NAME' => "payment-verify",
+    'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME'),
 
 

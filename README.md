@@ -154,16 +154,16 @@ return [
     'CLICKPAY_SERVER_KEY'=>env('CLICKPAY_SERVER_KEY'),
     'CLICKPAY_PROFILE_ID'=>env('CLICKPAY_PROFILE_ID')
 
-    'VERIFY_ROUTE_NAME' => "payment-verify",
+    'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME'),
     //and more config for another payment gateways
 ];
 ```
 
-## Web.php MUST Have Route with name “payment-verify”
+## Web.php MUST Have Route with name “verify-payment”
 
 ```php
-Route::get('/payments/verify/{payment?}',[FrontController::class,'payment_verify'])->name('payment-verify');
+Route::get('/payments/verify/{payment?}',[FrontController::class,'payment_verify'])->name('verify-payment');
 ```
 
 ## How To Use
