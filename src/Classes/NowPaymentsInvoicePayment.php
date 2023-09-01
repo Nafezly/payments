@@ -79,14 +79,14 @@ class NowPaymentsInvoicePayment extends BaseController implements PaymentInterfa
         if (isset($response['payment_status']) && $response['payment_status'] == "finished") {
             return [
                 'success' => true,
-                'payment_id'=>$request->payment_id,
+                'payment_id'=>$response['payment_id'],
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
         } else {
             return [
                 'success' => false,
-                'payment_id'=>$request->payment_id,
+                'payment_id'=>$response['payment_id'],
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];
