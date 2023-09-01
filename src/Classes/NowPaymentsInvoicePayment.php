@@ -74,7 +74,7 @@ class NowPaymentsInvoicePayment extends BaseController implements PaymentInterfa
 
         $response = \Http::withHeaders([
             'x-api-key'=>$this->nowpayments_api_key
-        ])->get('https://api.nowpayments.io/v1/payment/'.$request['payment_id'])->json();
+        ])->get('https://api.nowpayments.io/v1/payment/'.$request['NP_id'])->json();
 
         if (isset($response['payment_status']) && $response['payment_status'] == "finished") {
             return [
