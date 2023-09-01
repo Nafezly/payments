@@ -71,27 +71,27 @@ class NowPaymentsInvoicePayment extends BaseController implements PaymentInterfa
      */
     public function verify(Request $request)
     {
-        $payment_id = $request['NP_id']??$request['payment_id'];
+        $invoice_id = $request->NP_id??$request->payment_id;
         
         $response = \Http::withHeaders([
             'x-api-key'=>$this->nowpayments_api_key
-        ])->get('https://api.nowpayments.io/v1/invoice/'.$payment_id)->json();
+        ])->get('https://api.nowpayments.io/v1/invoice/'.$invoice_id)->json();
 
         if (isset($response['payment_status']) && $response['payment_status'] == "finished") {
             return [
                 'success' => true,
-                'payment_id'=>$response['payment_id'],
+                'payment_id'=>$invoice_id,
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
         } else {
             return [
                 'success' => false,
-                'payment_id'=>$response['payment_id'],
+                'payment_id'=>$invoice_id,
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];
         }
-    }
+}
 
 }
