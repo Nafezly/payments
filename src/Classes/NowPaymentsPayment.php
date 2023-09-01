@@ -77,7 +77,7 @@ class NowPaymentsPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request)
     {
-        $payment_id = $request['NP_id']??$request['payment_id'];
+        $payment_id = $request->NP_id??$request->payment_id;
         $response = \Http::withHeaders([
             'x-api-key'=>$this->nowpayments_api_key
         ])->get('https://api.nowpayments.io/v1/payment/'.$payment_id)->json();
@@ -99,8 +99,12 @@ class NowPaymentsPayment extends BaseController implements PaymentInterface
         }
     }
     public function get_minimum_amount($from,$to,$fiat_equivalent="usd"){
-        $response = \Http::withHeaders(['x-api-key'=>$this->nowpayments_api_key])->get('https://api.nowpayments.io/v1/min-amount?currency_from='.$from.'&currency_to='.$to.'&fiat_equivalent='.$fiat_equivalent)->json();
-        return $response['fiat_equivalent'];
+        try{
+            $response = \Http::withHeaders(['x-api-key'=>$this->nowpayments_api_key])->get('https://api.nowpayments.io/v1/min-amount?currency_from='.$from.'&currency_to='.$to.'&fiat_equivalent='.$fiat_equivalent)->json();
+            return $response['fiat_equivalent'];
+        }catch(\Exception $e){
+            return 10000000;
+        }
 
     }
 
