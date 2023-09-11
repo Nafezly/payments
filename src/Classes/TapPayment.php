@@ -56,7 +56,7 @@ class TapPayment extends BaseController implements PaymentInterface
         ])->post('https://api.tap.company/v2/charges', [
             "amount" => $this->amount,
             "currency" => $this->currency,
-            "threeDSecure" => false,
+            "threeDSecure" => true,
             "save_card" => false,
             "description" => "Cerdit",
             "statement_descriptor" => "Cerdit",
