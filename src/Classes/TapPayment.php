@@ -51,12 +51,12 @@ class TapPayment extends BaseController implements PaymentInterface
         $unique_id = uniqid();
         $response = Http::withHeaders([
             "authorization" => "Bearer " . $this->tap_secret_key,
-            "content-type" => "application/json",
+            "Content-Type" => "application/json",
             'lang_code' => $this->tap_lang_code
         ])->post('https://api.tap.company/v2/charges', [
             "amount" => $this->amount,
             "currency" => $this->currency,
-            "threeDSecure" => true,
+            "threeDSecure" => false,
             "save_card" => false,
             "description" => "Cerdit",
             "statement_descriptor" => "Cerdit",
@@ -96,7 +96,8 @@ class TapPayment extends BaseController implements PaymentInterface
     public function verify(Request $request): array
     {
         $response = Http::withHeaders([
-            "authorization" => "Bearer " . $this->tap_secret_key,
+            "Authorization" => "Bearer " . $this->tap_secret_key,
+            "Content-Type" => "application/json",
         ])->get('https://api.tap.company/v2/charges/' . $request->tap_id)->json();
         if (isset($response['status']) && $response['status'] == "CAPTURED") {
             return [
