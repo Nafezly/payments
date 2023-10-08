@@ -27,7 +27,6 @@ class StripePayment extends BaseController implements PaymentInterface
     }
 
 
-
     /**
      * @param $amount
      * @param null $user_id
@@ -78,32 +77,6 @@ class StripePayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request)
     {
-        if($request->ref_code==null)
-            $request->merge(['ref_code'=>cache('telr_ref_code_'.$request->payment_id)]);
- 
-        $data = [
-            'ivp_method' => 'check',
-            'ivp_store' => $this->telr_merchant_id,
-            'ivp_authkey' => $this->telr_api_key,
-            'order_ref' => $request['ref_code'],
-            'ivp_test'=>$this->telr_mode=="live"?false:true,
-        ];
-        $response = Http::asForm()->post('https://secure.telr.com/gateway/order.json', $data)->json();
-
-        if (isset($response['order']['status']['text']) &&  $response['order']['status']['text']="Paid") {
-            return [
-                'success' => true,
-                'payment_id'=>$request['payment_id'],
-                'message' => __('nafezly::messages.PAYMENT_DONE'),
-                'process_data' => $request->all()
-            ];
-        } else {
-            return [
-                'success' => false,
-                'payment_id'=>"",
-                'message' => __('nafezly::messages.PAYMENT_FAILED'),
-                'process_data' => $request->all()
-            ];
-        }
+        
     }
 }
