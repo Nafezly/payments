@@ -136,8 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const stripe = Stripe("{{$data['public_key']}}");
         let elements;
         const appearance = {
-            clientSecret: '{{$data['
-            client_secret ']}}',
+            clientSecret: '{{$data['client_secret']}}',
             locale: 'ar',
             theme: 'night',
             variables: { colorPrimaryText: '#2196f3' }
