@@ -44,21 +44,17 @@ class StripePayment extends BaseController implements PaymentInterface
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'STRIPE');
 
-        
-        $data_to_send = [
+     
+        $response = Http::asForm()->withHeaders([
+            'Authorization' => 'Bearer ' . $this->stripe_secret_key,
+            'content-type' =>"application/x-www-form-urlencoded"
+        ])->post("https://api.stripe.com/v1/payment_intents",[
             'amount' => $this->amount*100,
             'currency' => $this->currency??"usd",
             'description' => 'Credit',
             'payment_method_types'=>["card"],
-        ];
-        if($this->user_email!=null){
-            $data_to_send['receipt_email']=$this->user_email;
-        }
-
-        $response = Http::asForm()->withHeaders([
-            'Authorization' => 'Bearer ' . $this->stripe_secret_key,
-            'content-type' =>"application/x-www-form-urlencoded"
-        ])->post("https://api.stripe.com/v1/payment_intents",$data_to_send);
+            'receipt_email'=>$this->user_email??""
+        ]);
 
         if ($response->successful()) {
             $response = $response->json();
