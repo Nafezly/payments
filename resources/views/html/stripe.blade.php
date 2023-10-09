@@ -116,16 +116,13 @@
     <form id="payment-form">
         <div id="payment-element">
         </div>
-        <div id="btn-stripe-container"></div>
+        <div id="btn-stripe-container">
+            <button id="submit-button-stripe"><div class="spinner hidden" id="spinner"></div><span id="button-text">ادفع بأمان</span></button>
+        </div>
         <div id="payment-message" class="hidden"></div>
     </form>
 </div>
 <script id="stripe-appended-script">
-(function(){
-
-
-        let btn_ctr = document.getElementById("btn-stripe-container");
-        btn_ctr.append('<button id="submit-button-stripe"><div class="spinner hidden" id="spinner"></div><span id="button-text">ادفع بأمان</span></button>');
 
         const stripe = Stripe("{{$data['public_key']}}");
         let elements;
@@ -230,5 +227,5 @@
                 document.querySelector("#button-text").classList.remove("hidden");
             }
         }
-})();
+
 </script>
