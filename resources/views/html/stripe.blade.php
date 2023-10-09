@@ -120,9 +120,8 @@
         <div id="payment-message" class="hidden"></div>
     </form>
 </div>
-<script type="text/javascript">
+<script type="text/javascript" id="stripe-appended-script">
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
         let btn_ctr = document.getElementById("btn-stripe-container");
         btn_ctr.append('<button id="submit-button-stripe"><div class="spinner hidden" id="spinner"></div><span id="button-text">ادفع بأمان</span></button>');
 
@@ -229,6 +228,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelector("#button-text").classList.remove("hidden");
             }
         }
-    }, 2000);
 });
 </script>
