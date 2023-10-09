@@ -49,7 +49,7 @@ class StripePayment extends BaseController implements PaymentInterface
             'Authorization' => 'Bearer ' . $this->stripe_secret_key,
             'content-type' =>"application/x-www-form-urlencoded"
         ])->post("https://api.stripe.com/v1/payment_intents",[
-            'amount' => 1500,
+            'amount' => $this->amount*100,
             'currency' => $this->currency??"usd",
             'description' => 'Credit',
             'payment_method_types'=>["card"],
@@ -63,7 +63,8 @@ class StripePayment extends BaseController implements PaymentInterface
                 'html'=>$this->generate_html([
                     'public_key'=>$this->stripe_public_key,
                     'client_secret'=>$response['client_secret'],
-                    'return_url'=>route($this->verify_route_name,['payment'=>'stripe'])
+                    'return_url'=>route($this->verify_route_name,['payment'=>'stripe']),
+                    'amount'=>$this->amount
                 ]),
                 'redirect_url'=>"",
             ];
