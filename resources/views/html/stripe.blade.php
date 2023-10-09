@@ -123,7 +123,7 @@
     </form>
 </div>
 <script id="stripe-appended-script">
-
+(function(){
         var element = document.getElementById("button-text");
         element.classList.add("hidden");
 
@@ -241,5 +241,5 @@
             element.classList.remove("hidden");
         },1500);
 
-
+})();
 </script>
