@@ -107,6 +107,6 @@ class StripePayment extends BaseController implements PaymentInterface
      * @return string
      */
     public function generate_html($data){
-        return view('nafezly::html.stripe', ['data' => $data])->render();
+        return str_replace("\n",'',view('nafezly::html.stripe', ['data' => $data])->render());
     }
 }
