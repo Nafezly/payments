@@ -61,8 +61,6 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
             'content-type'=>"application/x-www-form-urlencoded",
             'HMAC' => hash_hmac('sha512', http_build_query($fields, '', '&'), $this->coinpayments_private_key),
         ])->post("https://www.coinpayments.net/api.php", $fields)->json();
-
-        dd($response);
         if($response['error']=="ok")
             return [
                 'payment_id'=>$request['result']['txn_id'],

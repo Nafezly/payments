@@ -56,16 +56,21 @@ class StripePayment extends BaseController implements PaymentInterface
         ]);
 
         if ($response->successful()) {
-            $paymentIntent = $response->json();
+            $response = $response->json();
+        
             return [
-                'payment_id'=>"",
-                'html'=>$paymentIntent,
+                'payment_id'=>$response['id'],
+                'html'=>$this->generate_html([
+                    'public_key'=>$this->stripe_public_key,
+                    'client_secret'=>$response['client_secret'],
+                    'return_url'=>route($this->verify_route_name,['payment'=>'stripe'])
+                ]),
                 'redirect_url'=>"",
             ];
         } else {
             return [
-                'payment_id'=>"",
-                'html'=>$response->json(),
+                'payment_id'=>$response['id'],
+                'html'=>$response,
                 'redirect_url'=>""
             ];
         }
@@ -77,6 +82,31 @@ class StripePayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request)
     {
-        
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->stripe_secret_key,
+        ])->get("https://api.stripe.com/v1/payment_intents/".$request['payment_intent'])->json();
+        if ($response['status'] === 'succeeded') {
+            return [
+                'success' => true,
+                'payment_id' => $response['id'],
+                'message' => __('nafezly::messages.PAYMENT_DONE'),
+                'process_data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'payment_id' => $response['id'],
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                'process_data' => $response
+            ];
+        }
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    public function generate_html($data){
+        return view('nafezly::html.stripe', ['data' => $data])->render();
     }
 }
