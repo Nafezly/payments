@@ -117,7 +117,7 @@
         <div id="payment-element">
         </div>
         <div id="btn-stripe-container">
-            <button id="submit-button-stripe" style="text-align:ceter"><div class="spinner" id="spinner"></div><span id="button-text">ادفع بأمان</span></button>
+            <button id="submit-button-stripe" style="text-align:center"><div class="spinner" id="spinner"></div><span id="button-text">ادفع بأمان</span></button>
         </div>
         <div id="payment-message" class="hidden"></div>
     </form>
