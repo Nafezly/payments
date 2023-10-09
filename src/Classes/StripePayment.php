@@ -89,14 +89,14 @@ class StripePayment extends BaseController implements PaymentInterface
         if ($response['status'] === 'succeeded') {
             return [
                 'success' => true,
-                'payment_id' => $response['id'],
+                'payment_id' => $request['payment_intent'],
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response
             ];
         } else {
             return [
                 'success' => false,
-                'payment_id' => $response['id'],
+                'payment_id' => $request['payment_intent'],
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ];
