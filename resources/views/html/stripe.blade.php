@@ -1,12 +1,11 @@
 <script src="https://js.stripe.com/v3/"></script>
 <style>
-    * {
+* {
   box-sizing: border-box;
 }
 .hidden {
   display: none;
 }
-
 #payment-message {
   color: rgb(105, 115, 134);
   font-size: 16px;
@@ -124,14 +123,8 @@
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
-
-
         let btn_ctr = document.getElementById("btn-stripe-container");
         btn_ctr.append('<button id="submit-button-stripe"><div class="spinner hidden" id="spinner"></div><span id="button-text">ادفع بأمان</span></button>');
-
-
-
-
 
         const stripe = Stripe("{{$data['public_key']}}");
         let elements;
@@ -238,5 +231,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 2000);
 });
-
 </script>
