@@ -125,7 +125,12 @@
   </form>
 </div>
 
-<script>
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+
+
+
 const stripe = Stripe("{{$data['public_key']}}"); 
 let elements;
 const appearance = {
@@ -228,4 +233,6 @@ function setLoading(isLoading) {
         document.querySelector("#button-text").classList.remove("hidden");
     }
 }
+
+});
 </script>
