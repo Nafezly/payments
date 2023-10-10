@@ -53,7 +53,7 @@ class StripePayment extends BaseController implements PaymentInterface
             'currency' => $this->currency??"usd",
             'description' => 'Credit',
             'payment_method_types'=>["card"],
-            'receipt_email'=>$this->user_email??"",
+            'receipt_email'=>$this->user_email??""
         ]);
 
         if ($response->successful()) {
