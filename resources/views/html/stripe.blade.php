@@ -170,7 +170,7 @@
                     payment_method_data: {
                         billing_details: {
                             address: {
-                                country: 'NA'
+                                country: null
                             }
                         }
                     }
