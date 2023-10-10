@@ -117,7 +117,7 @@
         <div id="payment-element">
         </div>
         <div id="btn-stripe-container">
-            <button id="submit-button-stripe" style="text-align:center"><div class="spinner" id="spinner"></div><span id="button-text">ادفع بأمان {{$data['amount']}}$</span></button>
+            <button id="submit-button-stripe" style="text-align:center"><div class="spinner" id="spinner"></div><span id="button-text">شحن {{$data['amount']}}$</span></button>
         </div>
         <div id="payment-message" class="hidden"></div>
     </form>
@@ -146,8 +146,7 @@
             fields: {
                 billingDetails: {
                     address: {
-                        country: 'never',
-                        postalCode: 'never'
+                        country: 'never'
                     }
                 }
             }
@@ -171,8 +170,7 @@
                     payment_method_data: {
                         billing_details: {
                             address: {
-                                country: 'SA',
-                                postal_code: '00000'
+                                country: 'NA'
                             }
                         }
                     }
