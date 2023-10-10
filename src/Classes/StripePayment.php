@@ -54,7 +54,7 @@ class StripePayment extends BaseController implements PaymentInterface
             'description' => 'Credit',
             'receipt_email'=>$this->user_email??"",
             'automatic_payment_methods'=>[
-                "enabled"=>1
+                "enabled"=>true
             ]
         ]);
 
