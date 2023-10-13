@@ -84,7 +84,7 @@ class StripePayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request)
     {
-        $payment_id = isset($request['data']['object']['id'])?$request['data']['object']['id']:$request['payment_intent'];
+        $payment_id = isset($request['data']['object']['payment_intent'])?$request['data']['object']['payment_intent']:$request['payment_intent'];
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $this->stripe_secret_key,
         ])->get("https://api.stripe.com/v1/payment_intents/".$payment_id)->json();
