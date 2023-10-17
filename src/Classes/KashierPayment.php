@@ -85,7 +85,7 @@ class KashierPayment extends BaseController implements PaymentInterface
     {
         if($request["paymentStatus"] == "SUCCESS" && $request['merchantOrderId']!=null){
             $url_mode = $this->kashier_mode == "live"?'':'test-';
-            $response = Http::withHeaders([
+            $response = Http::timeout(12)->retry(3, 1000)->withHeaders([
                 'Authorization' => $this->kashier_token
             ])->get('https://'.$url_mode.'api.kashier.io/payments/orders/'.$request['merchantOrderId'])->json();
             if(isset($response['response']['status']) && $response['response']['status']=="CAPTURED"){
