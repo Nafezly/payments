@@ -83,28 +83,7 @@ class KashierPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request): array
     {
-        if($request["paymentStatus"] == "SUCCESS" && $request['merchantOrderId']!=null){
-            $url_mode = $this->kashier_mode == "live"?'':'test-';
-            $response = Http::timeout(12)->retry(3, 1000)->withHeaders([
-                'Authorization' => $this->kashier_token
-            ])->get('https://'.$url_mode.'api.kashier.io/payments/orders/'.$request['merchantOrderId'])->json();
-            if(isset($response['response']['status']) && $response['response']['status']=="CAPTURED"){
-                return [
-                    'success' => true,
-                    'payment_id'=>$request['merchantOrderId'],
-                    'message' => __('nafezly::messages.PAYMENT_DONE'),
-                    'process_data' => $request->all()
-                ];
-            }else{
-                return [
-                    'success' => false,
-                    'payment_id'=>$request['merchantOrderId'],
-                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
-                    'process_data' => $request->all()
-                ];
-            }
-            
-        }else if($request["paymentStatus"] == "SUCCESS" && $request['signature']!=null) {
+        if($request["paymentStatus"] == "SUCCESS" && $request['signature']!=null) {
             $queryString = "";
             foreach ($request->all() as $key => $value) {
 
@@ -130,6 +109,28 @@ class KashierPayment extends BaseController implements PaymentInterface
                     'process_data' => $request->all()
                 ];
             }
+        }else if($request["paymentStatus"] == "SUCCESS" && $request['merchantOrderId']!=null){
+
+            $url_mode = $this->kashier_mode == "live"?'':'test-';
+            $response = Http::withHeaders([
+                'Authorization' => $this->kashier_token
+            ])->get('https://'.$url_mode.'api.kashier.io/payments/orders/'.$request['merchantOrderId'])->json();
+            if(isset($response['response']['status']) && $response['response']['status']=="CAPTURED"){
+                return [
+                    'success' => true,
+                    'payment_id'=>$request['merchantOrderId'],
+                    'message' => __('nafezly::messages.PAYMENT_DONE'),
+                    'process_data' => $request->all()
+                ];
+            }else{
+                return [
+                    'success' => false,
+                    'payment_id'=>$request['merchantOrderId'],
+                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                    'process_data' => $request->all()
+                ];
+            }
+
         }else {
             return [
                 'success' => false,
