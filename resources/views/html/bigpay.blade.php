@@ -1,15 +1,8 @@
+ <script type="text/javascript" src="https://{{$data['bigpay_mode']=='live'?'live':'integration'}}.big-pay.com/scripts/redirect-bigpay.min.js"></script>
  <body>
    
  </body>
  <script> 
-  const scriptSrc = "https://{{$data['bigpay_mode']=='live'?'live':'integration'}}.big-pay.com/scripts/redirect-bigpay.min.js";
-  const existingScript = document.querySelector(`script[src="${scriptSrc}"]`);
-
-  if (!existingScript) {
-    const scriptElement = document.createElement("script");
-    scriptElement.src = scriptSrc;
-    document.body.appendChild(scriptElement);
-  }
   function checkout(){ 
     var transaction = {
         order_number        : '{{$data['order_number']}}',
@@ -36,8 +29,6 @@
         website_id          : '{{$data['bigpay_key']}}',
         authorization       : '{{$data['authorization']}}'
     };
-
-
 
   setTimeout(function(){
     redirectToCheckout(transaction);
