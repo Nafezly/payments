@@ -123,7 +123,12 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
 
         $response = Http::withHeaders([
             'Authorization'=> 'Basic '.base64_encode($this->paypal_client_id.':'.$this->paypal_secret),
-        ])->post('https://api-m'.$mode.'.paypal.com/v2/checkout/orders/'.$request['order_id'].'/capture');
+        ])->post('https://api-m'.$mode.'.paypal.com/v2/checkout/orders/'.$request['order_id'].'/capture',[
+            'application_context' => [
+                "return_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
+                "cancel_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
+            ]
+        ]);
 
         $json_response = $response->json();
 
