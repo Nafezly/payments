@@ -77,7 +77,7 @@ class BigPayPayment extends BaseController implements PaymentInterface
             'Authorization'=> "Basic ".base64_encode($this->bigpay_key.':'.$this->bigpay_secret)
         ])->get($base_url.$request->transaction);
         $json_response= $response->json();
-        if($response->ok() && isset($json_response['orderNumber']) && isset($json_response['status']) && $json_response['status']=="SUCCESS"  ){
+        if($response->ok() && isset($json_response['orderNumber']) && isset($json_response['status']) && ($json_response['status']=="SUCCESS" || $json_response['status']=="PAYED")  ){
             return [
                 'success' => true,
                 'payment_id' => $json_response['orderNumber'],
