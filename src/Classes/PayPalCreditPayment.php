@@ -70,9 +70,8 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                         "payment_method_preference" => "IMMEDIATE_PAYMENT_REQUIRED",
                         "locale" => "ar-SA",
                         "shipping_preference" => "NO_SHIPPING",
-                        /*
-                        "return_url" => "https://example.com/returnUrl",
-                        "cancel_url" => "https://example.com/cancelUrl",*/
+                        "return_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
+                        "cancel_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
                     ],
                 ],
             ],
