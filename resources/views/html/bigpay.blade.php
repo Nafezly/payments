@@ -1,7 +1,4 @@
- <script type="text/javascript" src="https://{{$data['bigpay_mode']=='live'?'live':'integration'}}.big-pay.com/scripts/redirect-bigpay.min.js"></script>
- <body>
-   
- </body>
+ <script src="https://{{$data['bigpay_mode']=='live'?'live':'integration'}}.big-pay.com/scripts/redirect-bigpay.min.js"></script>
  <script> 
   function checkout(){ 
     var transaction = {
