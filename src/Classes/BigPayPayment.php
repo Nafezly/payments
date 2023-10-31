@@ -43,22 +43,70 @@ class BigPayPayment extends BaseController implements PaymentInterface
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'BIGPAY');
-        
         $unique_id = uniqid().rand(100000,999999);
-        return [
-            'payment_id'=>$unique_id,
-            'html'=>$this->generate_html([
-                'bigpay_mode'=>$this->bigpay_mode,
-                'amount'=>$this->amount,
-                'order_number'=>$unique_id,
-                'product_description'=>"Credit",
-                'bigpay_key'=>$this->bigpay_key,
-                'bigpay_secret'=>$this->bigpay_secret,
-                'authorization'=>base64_encode($this->bigpay_key.':'.$this->bigpay_secret),
-                'verify_route_name'=>route($this->verify_route_name,['payment'=>'bigpay']),
-            ]),
-            'redirect_url'=>"",
-        ];
+
+
+        try{
+            $push_to_gateway = Http::withHeaders([
+                'Authorization'=>"Basic ".base64_encode($this->bigpay_key.':'.$this->bigpay_secret)
+            ])->post('https://gateway.big-pay.com/app/transactions/initSession',[
+                "orderId"=>$unique_id,
+                "description"=>"Credit",
+                "store"=>$this->bigpay_key,
+                "amount"=>$this->amount,
+                "cancelUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+                "completeUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+                "timeoutUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+                "successCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+                "failureCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+                "session"=>null
+            ])->json();
+            $get_mastercard_version = Http::get('https://bobsal.gateway.mastercard.com/checkout/api/retrieveWsapiVersion/'.$push_to_gateway['session']['id'])->json();
+
+            $push_to_gateway = Http::asForm()->withHeaders([
+                "User-Agent"=>"Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0",
+                "Accept"=>"application/json, text/javascript, */*; q=0.01",
+                "Accept-Language"=>"en-US,en;q=0.5",
+                "Accept-Encoding"=>"gzip, deflate, br",
+                "Content-Length"=>"260",
+                "Referer"=>"https://bobsal.gateway.mastercard.com/static/checkout/landing/index.html",
+                "Content-Type"=>"application/x-www-form-urlencoded; charset=UTF-8",
+                "Content-Length"=>"260",
+                "Origin"=>"https://bobsal.gateway.mastercard.com",
+                "Sec-Fetch-Dest"=>"empty",
+                "Sec-Fetch-Mode"=>"cors",
+                "Sec-Fetch-Site"=>"same-origin",
+                "Te"=>"trailers",
+                "Connection"=>"close",
+            ])->post('https://bobsal.gateway.mastercard.com/api/page/version/'.$get_mastercard_version['wsapiVersion'].'/pay',[
+                'session.id'=>$push_to_gateway['session']['id'],
+                'interaction.cancelUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay'])).'#__hc-action-cancel',
+                'interaction.timeoutUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay'])).'#__hc-action-timeout'
+            ])->json();
+            if(isset($push_to_gateway['redirectURL'])){
+                return [
+                    'payment_id'=>$unique_id,
+                    'html'=>"",
+                    'redirect_url'=>'https://bobsal.gateway.mastercard.com'.$push_to_gateway['redirectURL'].'?checkoutVersion=1.0.0'
+                ];
+            }
+        }catch(\Exception $e){
+            return [
+                'payment_id'=>$unique_id,
+                'html'=>$this->generate_html([
+                    'bigpay_mode'=>$this->bigpay_mode,
+                    'amount'=>$this->amount,
+                    'order_number'=>$unique_id,
+                    'product_description'=>"Credit",
+                    'bigpay_key'=>$this->bigpay_key,
+                    'bigpay_secret'=>$this->bigpay_secret,
+                    'authorization'=>base64_encode($this->bigpay_key.':'.$this->bigpay_secret),
+                    'verify_route_name'=>route($this->verify_route_name,['payment'=>'bigpay']),
+                ]),
+                'redirect_url'=>"",
+            ];
+        }
+        
 
     }
 
