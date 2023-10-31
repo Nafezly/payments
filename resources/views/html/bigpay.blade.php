@@ -30,5 +30,5 @@
   setTimeout(function(){
     redirectToCheckout(transaction);
     checkout();
-  },7000);
+  },3000);
 </script>
