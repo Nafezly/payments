@@ -102,7 +102,7 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
         ])->post("https://www.coinpayments.net/api.php", $fields)->json();
  
 
-        if ($response['error'] == 'ok' && $response['result']['status'] == 100 && $response['status_text']['status']=="Complete") {
+        if ($response['error'] == 'ok' && $response['result']['status'] == 100 && $response['result']['status_text']=="Complete") {
             return [
                 'success' => true,
                 'payment_id'=>$trans_id,
