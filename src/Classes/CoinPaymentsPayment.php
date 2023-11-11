@@ -63,7 +63,7 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
         ])->post("https://www.coinpayments.net/api.php", $fields)->json();
         if($response['error']=="ok")
             return [
-                'payment_id'=>$request['result']['txn_id'],
+                'payment_id'=>$response['result']['txn_id'],
                 'html' => $response,
                 'redirect_url'=>$response['result']['checkout_url']
             ];
