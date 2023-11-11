@@ -43,6 +43,7 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount','user_email'];
 
+        $payment_id = uniqid().rand(10000,99999);
         $fields = [
             'version'=>1,
             'key'=>$this->coinpayments_public_key,
@@ -52,9 +53,9 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
             'currency1' => 'USD',
             'currency2' => $this->currency??"USDT",
             'buyer_email' => $this->user_email??null,
-            'ipn_url'=> route($this->verify_route_name,['payment'=>"coinpayments"]),
-            'success_url'=> route($this->verify_route_name,['payment'=>"coinpayments"]),
-            'cancel_url'=> route($this->verify_route_name,['payment'=>"coinpayments"]),
+            'ipn_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$payment_id]),
+            'success_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$payment_id]),
+            'cancel_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$payment_id]),
             
         ];
         $response = Http::asForm()->withHeaders([
@@ -62,14 +63,15 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
             'HMAC' => hash_hmac('sha512', http_build_query($fields, '', '&'), $this->coinpayments_private_key),
         ])->post("https://www.coinpayments.net/api.php", $fields)->json();
         if($response['error']=="ok")
+            cache(['NOWPAYMENTS_'.$payment_id => $response['result']['txn_id'] ]);
             return [
-                'payment_id'=>$response['result']['txn_id'],
+                'payment_id'=>$payment_id,
                 'html' => $response,
                 'redirect_url'=>$response['result']['checkout_url']
             ];
         else
             return [
-                'payment_id'=>"",
+                'payment_id'=>$payment_id,
                 'html' => $response,
                 'redirect_url'=>""
             ];
@@ -82,12 +84,16 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request): array
     {
+        $trans_id= cache('NOWPAYMENTS_'.$request['payment_id']);
+        if($request['txn_id']!=null)
+            $trans_id=$request['txn_id'];
+        
         $fields = [
             'version'=>1,
             'key'=>$this->coinpayments_public_key,
             'format'=>"json",
             'cmd' => 'get_tx_info',
-            'txid' =>$request['txn_id']??$request['payment_id'],
+            'txid' =>$trans_id,
         ];
         $response = Http::withHeaders([
             'HMAC' => hash_hmac('sha512', http_build_query($fields, '', '&'), $this->coinpayments_private_key),
