@@ -103,7 +103,7 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
         if ($response['error'] == 'ok' && $response['result']['status'] == 100) {
             return [
                 'success' => true,
-                'payment_id'=>$request['payment_id'],
+                'payment_id'=>$trans_id,
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response
             ]; 
@@ -111,7 +111,7 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
 
             return [
                 'success' => false,
-                'payment_id'=>$request['payment_id'],
+                'payment_id'=>$trans_id,
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $response
             ]; 
