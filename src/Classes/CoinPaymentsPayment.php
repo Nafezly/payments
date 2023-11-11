@@ -85,9 +85,9 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request): array
     {
-        $trans_id= cache('NOWPAYMENTS_'.$request['payment_id']);
-        if($request['txn_id']!=null)
-            $trans_id=$request['txn_id'];
+        $trans_id= $request['txn_id'];
+        if(cache('NOWPAYMENTS_'.$request['payment_id'])!=null)
+            $trans_id=cache('NOWPAYMENTS_'.$request['payment_id']);
         
         $fields = [
             'version'=>1,
