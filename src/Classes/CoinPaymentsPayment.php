@@ -87,7 +87,7 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
             'key'=>$this->coinpayments_public_key,
             'format'=>"json",
             'cmd' => 'get_tx_info',
-            'txid' => $request['payment_id'],
+            'txid' =>$request['txn_id']??$request['payment_id'],
         ];
         $response = Http::withHeaders([
             'HMAC' => hash_hmac('sha512', http_build_query($fields, '', '&'), $this->coinpayments_private_key),
