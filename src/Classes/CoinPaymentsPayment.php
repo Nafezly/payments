@@ -96,12 +96,13 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
             'cmd' => 'get_tx_info',
             'txid' =>$trans_id,
         ];
-        $response = Http::withHeaders([
+        $response = Http::asForm()->withHeaders([
+            'content-type'=>"application/x-www-form-urlencoded",
             'HMAC' => hash_hmac('sha512', http_build_query($fields, '', '&'), $this->coinpayments_private_key),
         ])->post("https://www.coinpayments.net/api.php", $fields)->json();
  
 
-        if ($response['error'] == 'ok' && $response['result']['status'] == 100) {
+        if ($response['error'] == 'ok' && $response['result']['status'] == 100 && $response['status_text']['status']=="Complete") {
             return [
                 'success' => true,
                 'payment_id'=>$trans_id,
