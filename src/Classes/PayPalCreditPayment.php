@@ -12,20 +12,20 @@ use Illuminate\Support\Facades\Http;
 
 class PayPalCreditPayment extends BaseController implements PaymentInterface
 {
-    private $paypal_client_id;
-    private $paypal_secret;
+    private $paypal_credit_client_id;
+    private $paypal_credit_secret;
     private $verify_route_name;
-    public $paypal_mode;
+    public $paypal_credit_mode;
     public $currency;
 
 
     public function __construct()
     {
-        $this->paypal_client_id = config('nafezly-payments.PAYPAL_CLIENT_ID');
-        $this->paypal_secret = config('nafezly-payments.PAYPAL_SECRET');
+        $this->paypal_credit_client_id = config('nafezly-payments.PAYPAL_CREDIT_CLIENT_ID');
+        $this->paypal_credit_secret = config('nafezly-payments.PAYPAL_CREDIT_SECRET');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
-        $this->paypal_mode = config('nafezly-payments.PAYPAL_MODE');
-        $this->currency = config('nafezly-payments.PAYPAL_CURRENCY');
+        $this->paypal_credit_mode = config('nafezly-payments.PAYPAL_CREDIT_MODE');
+        $this->currency = config('nafezly-payments.PAYPAL_CREDIT_CURRENCY');
     }
 
     /**
@@ -45,14 +45,12 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
         $this->checkRequiredFields($required_fields, 'PayPal');
  
 
-
-
-        $mode = $this->paypal_mode=="live"?'':'.sandbox';
+        $mode = $this->paypal_credit_mode=="live"?'':'.sandbox';
         $order_id = uniqid().rand(1000,99999);
         $response = Http::withHeaders([
             'Content-Type'=> 'application/json',
             'Accept-Language' => 'ar_SA',
-            'Authorization'=> 'Basic '.base64_encode($this->paypal_client_id.':'.$this->paypal_secret)
+            'Authorization'=> 'Basic '.base64_encode($this->paypal_credit_client_id.':'.$this->paypal_credit_secret)
         ])->post('https://api-m'.$mode.'.paypal.com/v2/checkout/orders', [
            "intent" => "CAPTURE", 
            "purchase_units" => [
@@ -76,15 +74,15 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                 ],
             ],
             "payer"=>[
-                'email_address'=>"test@test.com",
+                'email_address'=>$this->user_email??"",
                 'name'=>[
-                    'given_name'=>"test",
-                    'surname'=>"test"
+                    'given_name'=>$this->user_first_name??"",
+                    'surname'=>$this->user_last_name??""
                 ],
                 'phone'=>[
                     'phone_type'=>"MOBILE",
                     'phone_number'=>[
-                        "national_number"=>"201234567890"
+                        "national_number"=>$this->user_phone??"201234567890"
                     ]
                 ],
                 'address'=>[
@@ -98,11 +96,12 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             $response = $response->json();
             return [
                 'payment_id'=>$response['id'],
-                'html' => $response /*$this->generate_html([
+                'html' => /*$response*/ $this->generate_html([
                     'response'=>$response,
+                    'currency'=>$this->currency??"USD",
                     'return_url'=>route($this->verify_route_name,['payment'=>'paypal_credit']),
-                    'paypal_client_id'=>$this->paypal_client_id
-                ])*/,
+                    'paypal_client_id'=>$this->paypal_credit_client_id
+                ]),
                 'redirect_url'=>""
             ];
         }
@@ -119,26 +118,25 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request): array
     {
-        $mode = $this->paypal_mode=="live"?'':'.sandbox';
+        $mode = $this->paypal_credit_mode=="live"?'':'.sandbox';
 
         $response = Http::withHeaders([
-            'Authorization'=> 'Basic '.base64_encode($this->paypal_client_id.':'.$this->paypal_secret),
+            'Authorization'=> 'Basic '.base64_encode($this->paypal_credit_client_id.':'.$this->paypal_credit_secret),
         ])->post('https://api-m'.$mode.'.paypal.com/v2/checkout/orders/'.$request['order_id'].'/capture',[
             'application_context' => [
                 "return_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
                 "cancel_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
             ]
         ]);
-
         $json_response = $response->json();
-
-        if($response->ok()){
-            return [
+        if(isset($json_response['status']) && $json_response['status']=="COMPLETED"){
+            return array_merge($json_response,[
                 'success' => true,
-                'payment_id'=>$request->order_id,
+                'payment_id'=>$json_response['id'],
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
-                'process_data' => $json_response
-            ];
+                'process_data' => $json_response,
+                
+            ]);
         }
         return [
             'success' => false,
