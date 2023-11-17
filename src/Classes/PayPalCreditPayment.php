@@ -129,14 +129,24 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             ]
         ]);
         $json_response = $response->json();
-        if(isset($json_response['status']) && $json_response['status']=="COMPLETED"){
-            return array_merge($json_response,[
+        if(
+            (isset($json_response['status']) && $json_response['status']=="COMPLETED") ||
+            (isset($json_response['details'][0]['issue']) && $json_response['details'][0]['issue']=="ORDER_ALREADY_CAPTURED")
+        ){
+            return [
                 'success' => true,
-                'payment_id'=>$json_response['id'],
+                'payment_id'=>$request['order_id'],
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $json_response,
                 
-            ]);
+            ];
+            /*return array_merge($json_response,[
+                'success' => true,
+                'payment_id'=>$request['order_id'],
+                'message' => __('nafezly::messages.PAYMENT_DONE'),
+                'process_data' => $json_response,
+                
+            ]);*/
         }
         return [
             'success' => false,
