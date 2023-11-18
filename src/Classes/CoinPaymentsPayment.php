@@ -58,7 +58,7 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
             'cancel_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$payment_id]),
             
         ];
-        $response = Http::asForm()->withHeaders([
+        $response = Http::asForm()->retry(3,100)->withHeaders([
             'content-type'=>"application/x-www-form-urlencoded",
             'HMAC' => hash_hmac('sha512', http_build_query($fields, '', '&'), $this->coinpayments_private_key),
         ])->post("https://www.coinpayments.net/api.php", $fields)->json();

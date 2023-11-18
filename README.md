@@ -5,7 +5,7 @@
 [![Made With Love](https://img.shields.io/badge/Made%20With-Love-orange.svg)](https://github.com/chetanraj/awesome-github-badges)
 
 Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay - Tap - Opay - Paytabs - Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)
-![payment-gateways.jpg](https://github.com/nafezly/payments/blob/master/gateways.jpg?raw=true&v=8)
+![gateways.jpg](https://github.com/nafezly/payments/blob/master/gateways.jpg?raw=true&v=8)
 
 
 ## Supported gateways
@@ -26,6 +26,13 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Payeer](https://payeer.com)
 - [Telr](https://telr.com)
 - [Clickpay](https://clickpay.com.sa/)
+- [Coinpayments](https://www.coinpayments.net/)
+- [BigPay](https://www.big-pay.com/)
+- [Enot](https://enot.io/)
+- [PAYCEC](https://www.paycec.com/eg-en)
+- [PayPal Credit Cards](https://developer.paypal.com/docs/checkout/standard/)
+- [Payrexx](https://payrexx.com/en/)
+- [Creptomus](https://cryptomus.com/)
 - [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 
 ## Installation

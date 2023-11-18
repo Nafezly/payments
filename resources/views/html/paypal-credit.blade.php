@@ -106,10 +106,12 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
             })
             .then((response) => response.json())
             .then((order_details) => {
-                console.log(order_details); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
+                console.log(order_details.process_data); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
                 let intent_object = intent === "authorize" ? "authorizations" : "captures";
                 //Custom Successful Message
-                alerts.innerHTML = `<div class=\'ms-alert ms-action\'>Thank you ` + order_details.payer.name.given_name + ` ` + order_details.payer.name.surname + ` for your payment of ` + order_details.purchase_units[0].payments[intent_object][0].amount.value + ` ` + order_details.purchase_units[0].payments[intent_object][0].amount.currency_code + `!</div>`;
+
+                window.location.href = "{{$data['return_url']}}"+"?order_id="+order_details.process_data.id
+                alerts.innerHTML = `<div class=\'ms-alert ms-action\'>Thank you ` + order_details.process_data.payer.name.given_name + ` ` + order_details.process_data.payer.name.surname + ` for your payment of ` + order_details.process_data.purchase_units[0].payments[intent_object][0].amount.value + ` ` + order_details.process_data.purchase_units[0].payments[intent_object][0].amount.currency_code + `!</div>`;
 
                 //Close out the PayPal buttons that were rendered
                 paypal_buttons.close();
