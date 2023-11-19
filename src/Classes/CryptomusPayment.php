@@ -19,6 +19,7 @@ class CryptomusPayment extends BaseController implements PaymentInterface
 
     public $cryptomus_merchant_id;
     public $cryptomus_api_key;
+    public $network;
     public $verify_route_name;
 
 
@@ -50,20 +51,21 @@ class CryptomusPayment extends BaseController implements PaymentInterface
 
 
         try{
-            $response = Http::withHeaders([
-                'merchant' => $this->cryptomus_merchant_id,
-                'sign' => $this->cryptomus_api_key,
-            ])
-            ->post('https://api.cryptomus.com/v1/payment',[
-                "amount"=> $this->amount,
-                "currency"=> "USD",
+            $body = [
+                "amount"=> "$this->amount",
+                "currency"=> $this->source??"USD",
                 "order_id"=> $unique_id,
                 'url_return'=> route($this->verify_route_name,['payment'=>'cryptomus']),
                 'url_success'=> route($this->verify_route_name,['payment'=>'cryptomus']),
                 'url_callback'=> route($this->verify_route_name,['payment'=>'cryptomus']),
                 'to_currency'=>$this->currency??null,
-
-            ])->json();
+                'network'=>$this->network??null
+            ];
+            $response = Http::withHeaders([
+                'merchant' => "$this->cryptomus_merchant_id",
+                'sign' => md5(base64_encode(json_encode($body, JSON_UNESCAPED_UNICODE)) . $this->cryptomus_api_key),
+            ])
+            ->post('https://api.cryptomus.com/v1/payment',$body)->json();
             if(isset($response['result']['url'])){
                 return [
                     'payment_id'=>$unique_id,
@@ -99,14 +101,13 @@ class CryptomusPayment extends BaseController implements PaymentInterface
      * @return array|void
      */
     public function verify(Request $request)
-    {        
+    {      
+        $body = ["order_id"=> $request['order_id']];  
         $response = Http::withHeaders([
             'merchant' => $this->cryptomus_merchant_id,
-            'sign' => $this->cryptomus_api_key,
+            'sign' => md5(base64_encode(json_encode($body, JSON_UNESCAPED_UNICODE)) . $this->cryptomus_api_key),
         ])
-        ->post('https://api.cryptomus.com/v1/payment/info',[
-            "order_id"=> $request['order_id']
-        ])->json();
+        ->post('https://api.cryptomus.com/v1/payment/info',$body)->json();
 
         if(isset($response['result']['status']) && in_array($response['result']['status'],['paid','paid_over'])){
             return [
@@ -122,5 +123,10 @@ class CryptomusPayment extends BaseController implements PaymentInterface
             'message' => __('nafezly::messages.PAYMENT_FAILED'),
             'process_data' => $response
         ];
-    } 
+    }
+
+    public function setNetwork($network){
+        $this->network=$network;
+        return $this;
+    }
 }
