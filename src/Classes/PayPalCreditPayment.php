@@ -45,6 +45,10 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
         $this->checkRequiredFields($required_fields, 'PayPal');
  
 
+
+        $country = \Http::get('http://ip-api.com/json/'.$this->get_ip())->json();
+
+
         $mode = $this->paypal_credit_mode=="live"?'':'.sandbox';
         $order_id = uniqid().rand(1000,99999);
         $response = Http::withHeaders([
@@ -86,8 +90,8 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                     ]
                 ],
                 'address'=>[
-                    'postal_code'=>"00000",
-                    'country_code'=>"EG"
+                    'postal_code'=>$country['zip']!=""?$country['zip']:'12271',
+                    'country_code'=>$country['countryCode']
                 ]
             ]
         ]);
@@ -162,5 +166,38 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
     {
         return view('nafezly::html.paypal-credit', ['data' => $data])->render();
     }
+
+
+
+    public function get_ip(){
+        $ipaddress = '';
+        if(isset($_SERVER["HTTP_CF_CONNECTING_IP"]))
+            $ipaddress=$_SERVER["HTTP_CF_CONNECTING_IP"];
+        else if(isset($_SERVER['REMOTE_ADDR']))
+            $ipaddress=$_SERVER['REMOTE_ADDR'];
+        else if(isset($_SERVER['HTTP_CLIENT_IP']))
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        else if(isset($_SERVER['REMOTE_ADDR']))
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        else if(request()->ip()!=null)
+            $ipaddress = request()->ip();
+        else
+            $ipaddress = 'UNKNOWN';
+        if($ipaddress=="127.0.0.1"){
+            $ip = \Http::get('https://api.ipify.org/?format=json')->json();
+            return $ip['ip'];
+        }
+        return $ipaddress;
+    }
+
+
 
 }
