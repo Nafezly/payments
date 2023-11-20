@@ -12,7 +12,7 @@
 </div>
 <script>
 	// Helper / Utility functions
-let url_to_head = (url) => {
+var url_to_head = (url) => {
     return new Promise(function(resolve, reject) {
         var script = document.createElement('script');
         script.src = url;
@@ -25,10 +25,10 @@ let url_to_head = (url) => {
         document.head.appendChild(script);
     });
 }
-let handle_close = (event) => {
+var handle_close = (event) => {
     event.target.closest(".ms-alert").remove();
 }
-let handle_click = (event) => {
+var handle_click = (event) => {
     if (event.target.classList.contains("ms-close")) {
         handle_close(event);
     }
@@ -53,7 +53,7 @@ const paypal_sdk_url = "https://www.paypal.com/sdk/js";
 const client_id = "{{$data['paypal_client_id']}}";
 const currency = "USD";
 const intent = "capture";
-let alerts = document.getElementById("alerts");
+var alerts = document.getElementById("alerts");
 
 //PayPal Code
 //https://developer.paypal.com/sdk/js/configuration/#link-queryparameters
@@ -62,8 +62,8 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
     //Handle loading spinner
     document.getElementById("loading").classList.add("hide");
     document.getElementById("content").classList.remove("hide");
-    let alerts = document.getElementById("alerts");
-    let paypal_buttons = paypal.Buttons({
+    var alerts = document.getElementById("alerts");
+    var paypal_buttons = paypal.Buttons({
      // https://developer.paypal.com/sdk/js/reference
         onClick: (data) => { // https://developer.paypal.com/sdk/js/reference/#link-oninitonclick
             //Custom JS here
@@ -96,7 +96,7 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
         },
 
         onApprove: function(data, actions) {
-            let order_id = data.orderID;
+            var order_id = data.orderID;
             return fetch("{{$data['return_url']}}", {
                 method: "post", headers: { "Content-Type": "application/json; charset=utf-8" },
                 body: JSON.stringify({
@@ -107,7 +107,7 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
             .then((response) => response.json())
             .then((order_details) => {
                 console.log(order_details.process_data); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
-                let intent_object = intent === "authorize" ? "authorizations" : "captures";
+                var intent_object = intent === "authorize" ? "authorizations" : "captures";
                 //Custom Successful Message
 
                 window.location.href = "{{$data['return_url']}}"+"?order_id="+order_details.process_data.id
