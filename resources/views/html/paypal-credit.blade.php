@@ -36,7 +36,7 @@ var handle_click = (event) => {
 
 
 function emulateFetch(intent) {
-    const localResponse = JSON.parse(`{!!json_encode($data['response'])!!}`);
+    var localResponse = JSON.parse(`{!!json_encode($data['response'])!!}`);
 
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -49,10 +49,10 @@ function emulateFetch(intent) {
 
 
 document.addEventListener("click", handle_click);
-const paypal_sdk_url = "https://www.paypal.com/sdk/js";
-const client_id = "{{$data['paypal_client_id']}}";
-const currency = "USD";
-const intent = "capture";
+var paypal_sdk_url = "https://www.paypal.com/sdk/js";
+var client_id = "{{$data['paypal_client_id']}}";
+var currency = "USD";
+var intent = "capture";
 var alerts = document.getElementById("alerts");
 
 //PayPal Code
