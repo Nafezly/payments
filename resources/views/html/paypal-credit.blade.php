@@ -99,7 +99,8 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
                 method: "post", headers: { "Content-Type": "application/json; charset=utf-8" },
                 body: JSON.stringify({
                     "intent": intent,
-                    "order_id": order_id
+                    "order_id": order_id,
+                    "check":1
                 })
             })
             .then((response) => response.json())
