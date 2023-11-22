@@ -42,7 +42,7 @@ function emulateFetch(intent) {
         setTimeout(() => {
             resolve({
                 json: () => Promise.resolve(localResponse),
-            });        }, 500);
+            });        }, 100);
     })
     .then(response => response.json());
 }
@@ -64,9 +64,7 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
     document.getElementById("content").classList.remove("hide");
     var alerts = document.getElementById("alerts");
     var paypal_buttons = paypal.Buttons({
-     // https://developer.paypal.com/sdk/js/reference
-        onClick: (data) => { // https://developer.paypal.com/sdk/js/reference/#link-oninitonclick
-            //Custom JS here
+        onClick: (data) => { 
         },
         style: { //https://developer.paypal.com/sdk/js/reference/#link-style
             shape: 'rect',
@@ -106,14 +104,12 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
             })
             .then((response) => response.json())
             .then((order_details) => {
-                console.log(order_details.process_data); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
+                //console.log(order_details.process_data); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
                 var intent_object = intent === "authorize" ? "authorizations" : "captures";
                 //Custom Successful Message
-
                 window.location.href = "{{$data['return_url']}}"+"?order_id="+order_details.process_data.id
                 alerts.innerHTML = `<div class=\'ms-alert ms-action\'>Thank you ` + order_details.process_data.payer.name.given_name + ` ` + order_details.process_data.payer.name.surname + ` for your payment of ` + order_details.process_data.purchase_units[0].payments[intent_object][0].amount.value + ` ` + order_details.process_data.purchase_units[0].payments[intent_object][0].amount.currency_code + `!</div>`;
 
-                //Close out the PayPal buttons that were rendered
                 paypal_buttons.close();
              })
              .catch((error) => {

@@ -90,6 +90,11 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                     ]
                 ],
                 'address'=>[
+                    'address_line_1'=>$country['regionName'].', '.$country['city'].', '.$country['region'],
+                    'admin_area_1'=>$country['city'],
+                    'admin_area_2'=>$country['city'],
+                    'address_line_2'=>$country['city'].', '.$country['region'],
+                    'city'=>$country['city']??"",
                     'postal_code'=>$country['zip']!=""?$country['zip']:'12271',
                     'country_code'=>$country['countryCode']
                 ]
