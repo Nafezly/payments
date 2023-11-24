@@ -1,18 +1,16 @@
-
-  <div id="loading" class="spinner-container ms-div-center">
-    <div class="spinner"></div>
-  </div>
-  <div id="content" class="hide">
-    <div class="ms-card ms-fill">
-      <div class="ms-card-content">
-      </div>
+<div id="paypal-credit-frame">
+    <div id="loading" class="spinner-container ms-div-center">
+        <div class="spinner"></div>
     </div>
-    <div id="payment_options"></div>
-    <div id="alerts" class="ms-text-center" style="padding: 6px;text-align: center;"></div>
-  </div>
-
+    <div id="content" class="hide">
+        <div class="ms-card ms-fill">
+          <div class="ms-card-content">
+          </div>
+        </div>
+        <div id="payment_options"></div>
+        <div id="alerts" class="ms-text-center" style="padding: 6px;text-align: center;"></div>
+    </div>
 </div>
-
 <script>
 
 
@@ -75,6 +73,7 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
     var alerts = document.getElementById("alerts");
     var paypal_buttons = paypal.Buttons({
         onClick: (data) => { 
+            alerts.innerHTML="";
         },
         style: { //https://developer.paypal.com/sdk/js/reference/#link-style
             shape: 'rect',
@@ -84,7 +83,7 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
         },
 
         createOrder: function(data, actions) { 
-
+            alerts.innerHTML="";
         	return emulateFetch(intent)
 		    /*.then((response) => response.json())*/
 		    .then((order) => { return order.id; })
@@ -102,6 +101,8 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
         },
 
         onApprove: function(data, actions) {
+            alerts.innerHTML="";
+
             var order_id = data.orderID;
             return fetch("{{$data['return_url']}}", {
                 method: "post", headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -113,6 +114,7 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
             })
             .then((response) => response.json())
             .then((order_details) => {
+                alerts.innerHTML="";
                 //console.log(order_details.process_data); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
                 var intent_object = intent === "authorize" ? "authorizations" : "captures";
                 //Custom Successful Message
@@ -126,7 +128,6 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
                 paypal_buttons.close();
              })
              .catch((error) => {
-                console.log(error);
                 alerts.innerHTML = `<svg width="75px" height="75px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 17V11" stroke="#0194fe" stroke-width="1.464" stroke-linecap="round"></path> <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="#0194fe"></circle> <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="#0194fe" stroke-width="1.464" stroke-linecap="round"></path> </g></svg> <div class=\'ms-alert ms-action\'><h4 style='text-align:center;font-weight:bold'>حدث خطأ أثناء التنفيذ</h4></div>`;
 
              });
@@ -137,8 +138,7 @@ url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&
         },
 
         onError: function(err) {
-
-             alerts.innerHTML = `<svg width="75px" height="75px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 17V11" stroke="#0194fe" stroke-width="1.464" stroke-linecap="round"></path> <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="#0194fe"></circle> <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="#0194fe" stroke-width="1.464" stroke-linecap="round"></path> </g></svg> <div class=\'ms-alert ms-action\'><h4 style='text-align:center;font-weight:bold'>حدث خطأ أثناء التنفيذ</h4></div>`;
+            alerts.innerHTML = `<svg width="75px" height="75px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 17V11" stroke="#0194fe" stroke-width="1.464" stroke-linecap="round"></path> <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="#0194fe"></circle> <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="#0194fe" stroke-width="1.464" stroke-linecap="round"></path> </g></svg> <div class=\'ms-alert ms-action\'><h4 style='text-align:center;font-weight:bold'>حدث خطأ أثناء التنفيذ</h4></div>`;
 
             console.log(err);
         }
