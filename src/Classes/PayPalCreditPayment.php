@@ -89,7 +89,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                         "national_number"=>$this->user_phone??"201234567890"
                     ]
                 ],
-                /*'address'=>[
+                'address'=>[
                     'address_line_1'=>$this->remove_special_characters($country['regionName']).', '.$this->remove_special_characters($country['city']).', '.$this->remove_special_characters($country['region']),
                     'admin_area_1'=>$this->remove_special_characters($country['city']),
                     'admin_area_2'=>$this->remove_special_characters($country['city']),
@@ -97,7 +97,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                     'city'=>$this->remove_special_characters($country['city'])??"",
                     'postal_code'=>$this->remove_special_characters($country['zip'])!=""?$this->remove_special_characters($country['zip']):'12271',
                     'country_code'=>$this->remove_special_characters($country['countryCode'])
-                ]*/
+                ]
             ]
         ]);
 
