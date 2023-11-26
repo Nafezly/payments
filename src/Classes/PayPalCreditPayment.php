@@ -100,7 +100,6 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                 ]
             ]
         ]);
-
         if($response->ok()){
             $response = $response->json();
             return [
