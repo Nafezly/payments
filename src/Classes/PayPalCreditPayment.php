@@ -90,13 +90,13 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                     ]
                 ],
                 'address'=>[
-                    'address_line_1'=>$country['regionName'].', '.$country['city'].', '.$country['region'],
-                    'admin_area_1'=>$country['city'],
-                    'admin_area_2'=>$country['city'],
-                    'address_line_2'=>$country['city'].', '.$country['region'],
-                    'city'=>$country['city']??"",
-                    'postal_code'=>$country['zip']!=""?$country['zip']:'12271',
-                    'country_code'=>$country['countryCode']
+                    'address_line_1'=>$this->remove_special_characters($country['regionName']).', '.$this->remove_special_characters($country['city']).', '.$this->remove_special_characters($country['region']),
+                    'admin_area_1'=>$this->remove_special_characters($country['city']),
+                    'admin_area_2'=>$this->remove_special_characters($country['city']),
+                    'address_line_2'=>$this->remove_special_characters($country['city']).', '.$this->remove_special_characters($country['region']),
+                    'city'=>$this->remove_special_characters($country['city'])??"",
+                    'postal_code'=>$this->remove_special_characters($country['zip'])!=""?$this->remove_special_characters($country['zip']):'12271',
+                    'country_code'=>$this->remove_special_characters($country['countryCode'])
                 ]
             ]
         ]);
@@ -201,6 +201,30 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             return $ip['ip'];
         }
         return $ipaddress;
+    }
+
+    public function remove_special_characters($string){
+        $t = $string; 
+        $specChars = array(
+            ' ' => ' ',    '!' => '',    '"' => '',
+            '#' => '',    '$' => '',    '%' => '',
+            '&amp;' => '','&nbsp;' => '', 
+            '\'' => '',   '(' => '',
+            ')' => '',    '*' => '',    '+' => '',
+            ',' => '',    '₹' => '',    '.' => '',
+            '/-' => '',    ':' => '',    ';' => '',
+            '<' => '',    '=' => '',    '>' => '',
+            '?' => '',    '@' => '',    '[' => '',
+            '\\' => '',   ']' => '',    '^' => '',
+            '_' => '',    '`' => '',    '{' => '',
+            '|' => '',    '}' => '',    '~' => '',
+            '-----' => '-',    '----' => '-',    '---' => '-',
+            '/' => '',    '--' => '-',   '/_' => '-',    
+        ); 
+        foreach ($specChars as $k => $v) {
+            $t = str_replace($k, $v, $t);
+        }
+        return substr($t,0,230);
     }
 
 
