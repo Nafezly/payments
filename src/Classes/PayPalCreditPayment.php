@@ -47,15 +47,9 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
 
 
         $country = \Http::get('http://ip-api.com/json/'.$this->get_ip())->json();
-
-
         $mode = $this->paypal_credit_mode=="live"?'':'.sandbox';
         $order_id = uniqid().rand(1000,99999);
-        $response = Http::withHeaders([
-            'Content-Type'=> 'application/json',
-            'Accept-Language' => 'ar_SA',
-            'Authorization'=> 'Basic '.base64_encode($this->paypal_credit_client_id.':'.$this->paypal_credit_secret)
-        ])->post('https://api-m'.$mode.'.paypal.com/v2/checkout/orders', [
+        $data = [
            "intent" => "CAPTURE", 
            "purchase_units" => [
                  [
@@ -71,7 +65,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                     "experience_context" => [
                         "payment_method_preference" => "UNRESTRICTED",
                         "locale" => "ar-SA",
-                        "shipping_preference" => "NO_SHIPPING",
+                        "shipping_preference" => $this->source??"NO_SHIPPING",
                         "return_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
                         "cancel_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
                     ],
@@ -83,12 +77,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                     'given_name'=>$this->user_first_name??"",
                     'surname'=>$this->user_last_name??""
                 ],
-                'phone'=>[
-                    'phone_type'=>"MOBILE",
-                    'phone_number'=>[
-                        "national_number"=>$this->user_phone??"201234567890"
-                    ]
-                ],
+                'birth_date'=>"1996-".date('m-d'),
                 'address'=>[
                     'address_line_1'=>$this->remove_special_characters($country['regionName']).', '.$this->remove_special_characters($country['city']).', '.$this->remove_special_characters($country['region']),
                     'admin_area_1'=>$this->remove_special_characters($country['city']),
@@ -99,7 +88,20 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                     'country_code'=>$this->remove_special_characters($country['countryCode'])
                 ]
             ]
-        ]);
+        ];
+        if($this->user_phone!=null)
+            $data['payer']['phone']=[
+                'phone_type'=>"MOBILE",
+                'phone_number'=>[
+                    "national_number"=>$this->user_phone,
+                ]
+            ];
+        
+        $response = Http::withHeaders([
+            'Content-Type'=> 'application/json',
+            'Accept-Language' => 'ar_SA',
+            'Authorization'=> 'Basic '.base64_encode($this->paypal_credit_client_id.':'.$this->paypal_credit_secret)
+        ])->post('https://api-m'.$mode.'.paypal.com/v2/checkout/orders',$data);
 
         if($response->ok()){
             $response = $response->json();
