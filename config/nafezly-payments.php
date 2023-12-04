@@ -157,4 +157,10 @@ return [
     'PRIME_SECRET_WORD_2'=>env('PRIME_SECRET_WORD_2'),
 
 
+    'PAYLINK_API_KEY'=>env('PAYLINK_API_KEY','0662abb5-13c7-38ab-cd12-236e58f43766'),
+    'PAYLINK_APP_ID'=>env('PAYLINK_APP_ID','APP_ID_1123453311'),
+    'PAYLINK_MODE'=>env('PAYLINK_MODE','test'),
+
+
+
 ];
