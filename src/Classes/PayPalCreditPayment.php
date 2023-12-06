@@ -17,6 +17,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
     private $verify_route_name;
     public $paypal_credit_mode;
     public $currency;
+    public $custom_values=[];
 
 
     public function __construct()
@@ -96,7 +97,8 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                     "national_number"=>$this->user_phone,
                 ]
             ];
-        
+        $data= array_replace_recursive($data,$this->custom_values);
+        //dd($data);
         $response = Http::withHeaders([
             'Content-Type'=> 'application/json',
             'Accept-Language' => 'ar_SA',
@@ -229,6 +231,10 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
         return substr($t,0,230);
     }
 
+    public function setCustomValues($values=[]){
+        $this->custom_values=$values;
+        return $this;
+    }
 
 
 }
