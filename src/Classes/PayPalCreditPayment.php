@@ -46,8 +46,17 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
         $this->checkRequiredFields($required_fields, 'PayPal');
  
 
+        $country=[
+            'regionName'=>"",
+            'region'=>"",
+            'city'=>"",
+            'zip'=>"",
+            'countryCode'=>""
+        ];
+        try{
+            $country = array_replace_recursive($country,\Http::get('http://ip-api.com/json/'.$this->get_ip())->json());
+        }catch(\Exception $e){}
 
-        $country = \Http::get('http://ip-api.com/json/'.$this->get_ip())->json();
         $mode = $this->paypal_credit_mode=="live"?'':'.sandbox';
         $order_id = uniqid().rand(1000,99999);
         $data = [
