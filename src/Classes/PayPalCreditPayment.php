@@ -54,7 +54,9 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             'countryCode'=>""
         ];
         try{
-            $country = array_replace_recursive($country,\Http::get('http://ip-api.com/json/'.$this->get_ip())->json());
+            $fetch_address = \Http::get('http://ip-api.com/json/'.$this->get_ip())->json();
+            if(is_array($fetch_address))
+                $country = array_replace_recursive($country,$fetch_address);
         }catch(\Exception $e){}
 
         $mode = $this->paypal_credit_mode=="live"?'':'.sandbox';
