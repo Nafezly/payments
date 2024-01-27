@@ -143,16 +143,10 @@ class WisePayment extends BaseController implements PaymentInterface
                 'time-zone' => 'Africa/Cairo',
                 'Cookie'=>"oauthToken=".$this->wise_api_key,
                 'Authorization'=>"Bearer ".$this->wise_api_key
-            ])->get('https://wise.com/gateway/v2/profiles/'.$this->wise_profile_id.'/acquiring/payment-request-summaries',[
-                'requestType' => 'SINGLE_USE',
-                'status' => 'COMPLETED',
-                'sortBy' => 'UPDATED_AT',
-                'sortOrder' => 'DESC',
-            ])->json();
-            foreach(collect($response['groups']) as $group){
-                if(collect($group['content'])->where('id',$request['payment_id'])->first()!=null){
-                    $paid=1;break;
-                }
+            ])->get('https://wise.com/gateway/v1/profiles/'.$this->wise_profile_id.'/acquiring/payment-request-details/'.$request['payment_id'])->json();
+
+            if(str_contains($response['subtitle'], "Paid") && !in_array("CANCEL", $response['actions']) && $response['badge']=="POSITIVE"){
+                $paid=1;
             }
         }catch(\Exception $e){
             return [
@@ -168,7 +162,7 @@ class WisePayment extends BaseController implements PaymentInterface
                 'success' => true,
                 'payment_id'=>$request['payment_id'],
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
-                'process_data' => collect($group['content'])->where('id',$request['payment_id'])->first()
+                'process_data' => $response
             ];
         } else {
             return [
@@ -180,4 +174,52 @@ class WisePayment extends BaseController implements PaymentInterface
         }
 
     }
+
+
+    public function payments($type="paid")
+    {
+      
+        try{
+            $options = [
+                'requestType' => 'SINGLE_USE',
+                'status' => 'COMPLETED',
+                'sortBy' => 'UPDATED_AT',
+                'sortOrder' => 'DESC',
+            ];
+            if($type=="unpaid")
+                $options = [
+                    'requestType' => 'SINGLE_USE',
+                    'status' => 'PUBLISHED',
+                    'sortBy' => 'EXPIRATION_AT',
+                    'sortOrder' => 'ASC',
+                ];
+            $response = Http::withHeaders([
+                'time-zone' => 'Africa/Cairo',
+                'Cookie'=>"oauthToken=".$this->wise_api_key,
+                'Authorization'=>"Bearer ".$this->wise_api_key
+            ])->get('https://wise.com/gateway/v2/profiles/'.$this->wise_profile_id.'/acquiring/payment-request-summaries',$options)->json();
+            
+            $payments = [];
+            foreach(collect($response['groups']) as $group){ 
+                if(is_array($group['content']))
+                    $payments=array_merge($payments,$group['content']);
+            }
+            return [
+                'success' => true,
+                'payment_id'=>"",
+                'message' => "",
+                'process_data' => $payments
+            ];
+        }catch(\Exception $e){
+            return [
+                'success' => false,
+                'payment_id'=>"",
+                'message' => $e,
+                'process_data' => $e
+            ];
+        }
+
+    }
+
+
 }
