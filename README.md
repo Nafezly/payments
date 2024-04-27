@@ -176,7 +176,7 @@ Route::get('/payments/verify/{payment?}',[FrontController::class,'payment_verify
 ## How To Use
 
 ```jsx
-use Nafezly\Payments\PaymobPayment;
+use Nafezly\Payments\Classes\PaymobPayment;
 
 $payment = new PaymobPayment();
 

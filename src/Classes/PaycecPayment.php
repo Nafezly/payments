@@ -84,7 +84,10 @@ class PaycecPayment extends BaseController implements PaymentInterface
             $sig = $endpoint.'?'.http_build_query($params);
             $params['sig']= hash_hmac('sha512', $sig, $this->paycec_merchant_secret, false);
  
-            $response = Http::asForm()->post($sig,$params)->json();
+            $response = Http::withoutVerifying()->withOptions([
+                'debug' => false,
+                'verify' => false,
+            ])->asForm()->post($sig,$params)->json();
 
             if(isset($response['token'])){
                 return [
