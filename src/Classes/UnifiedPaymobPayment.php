@@ -20,8 +20,9 @@ class UnifiedPaymobPayment extends BaseController implements PaymentInterface
     {
         $this->paymob_public_key = config('nafezly-payments.PAYMOB_PUBLIC_API_KEY');
         $this->paymob_secret_key = config('nafezly-payments.PAYMOB_SECRET_API_KEY');
-        $this->paymob_integration_ids = explode(',', config('nafezly-payments.PAYMOB_UNIFIED_INTEGRATION_IDS', ''));
-        if (!filled($this->paymob_integration_ids)) {
+        if (filled(config('nafezly-payments.PAYMOB_UNIFIED_INTEGRATION_IDS', ''))) {
+            $this->paymob_integration_ids = explode(',', config('nafezly-payments.PAYMOB_UNIFIED_INTEGRATION_IDS', ''));
+        } else {
             $this->paymob_integration_ids = [
                 config("nafezly-payments.PAYMOB_INTEGRATION_ID", ''),
                 config("nafezly-payments.PAYMOB_WALLET_INTEGRATION_ID", ''),
