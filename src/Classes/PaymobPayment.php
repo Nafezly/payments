@@ -43,7 +43,8 @@ class PaymobPayment extends BaseController implements PaymentInterface
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'PayMob');
 
-        // New integration (Flash) that we are forced to use now
+        // New integration (Flash) that we are forced to use now doesnt let us register order first, so we generate one for us.
+        // Docs: https://developers.paymob.com/egypt/checkout-api/integration-guide-and-api-reference/create-intention-payment-api
         $merchant_order_id = str($this->paymob_public_key)
             ->beforeLast('_')
             ->append('-')
@@ -91,7 +92,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
             ->json();
 
         return [
-            'payment_id' => $response['id'],
+            'payment_id' => $merchant_order_id,
             'html' => "",
             'redirect_url' => "https://accept.paymob.com/unifiedcheckout/?publicKey=$this->paymob_public_key&clientSecret={$response['client_secret']}"
         ];
