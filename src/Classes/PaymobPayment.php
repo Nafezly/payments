@@ -14,7 +14,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
     private $paymob_public_key;
     private $paymob_secret_key;
     private $paymob_integration_id;
-    private $paymob_iframe_id;
+    private $paymob_wallet_integration_id;
 
 
     public function __construct()
@@ -22,7 +22,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
         $this->paymob_public_key = config('nafezly-payments.PAYMOB_PUBLIC_API_KEY');
         $this->paymob_secret_key = config('nafezly-payments.PAYMOB_SECRET_API_KEY');
         $this->paymob_integration_id = config('nafezly-payments.PAYMOB_INTEGRATION_ID');
-        $this->paymob_iframe_id = config("nafezly-payments.PAYMOB_IFRAME_ID");
+        $this->paymob_wallet_integration_id = config("nafezly-payments.PAYMOB_WALLET_INTEGRATION_ID");
         $this->currency = config("nafezly-payments.PAYMOB_CURRENCY");
     }
 
@@ -35,7 +35,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
      * @param null $user_phone
      * @param null $source
      * @return array
-     * @throws MissingPaymentInfoException|ConnectionException|RequestException
+     * @throws MissingPaymentInfoException|ConnectionException|RequestException|\Random\RandomException
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
@@ -43,18 +43,28 @@ class PaymobPayment extends BaseController implements PaymentInterface
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'PayMob');
 
+        // New integration (Flash) that we are forced to use now
+        $merchant_order_id = str($this->paymob_public_key)
+            ->beforeLast('_')
+            ->append('-')
+            ->append(now()->getTimestampMs())
+            ->append('-')
+            ->append(bin2hex(random_bytes(16)))
+            ->toString();
+
         $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'Authorization' => 'Token ' . $this->paymob_secret_key,
-            ])
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => 'Token ' . $this->paymob_secret_key,
+        ])
             ->post('https://accept.paymob.com/v1/intention/', [
                 "amount" => $this->amount * 100,
                 "currency" => $this->currency,
                 "payment_methods" => [
                     (int)$this->paymob_integration_id,
-                    // here we can add mobile wallet too if needed according to docs.
+                    (int)$this->paymob_wallet_integration_id,
                 ],
+                "special_reference" => $merchant_order_id,
                 "items" => [],
                 "customer" => [
                     "first_name" => $this->user_first_name,
@@ -99,14 +109,14 @@ class PaymobPayment extends BaseController implements PaymentInterface
             if ($request['success'] == "true") {
                 return [
                     'success' => true,
-                    'payment_id'=>$request['order'],
+                    'payment_id'=>$request['merchant_order_id'] ?? $request['order'],
                     'message' => __('nafezly::messages.PAYMENT_DONE'),
                     'process_data' => $request->all()
                 ];
             } else {
                 return [
                     'success' => false,
-                    'payment_id'=>$request['order'],
+                    'payment_id'=>$request['merchant_order_id'] ?? $request['order'],
                     'message' => __('nafezly::messages.PAYMENT_FAILED_WITH_CODE',['CODE'=>$this->getErrorMessage($request['txn_response_code'])]),
                     'process_data' => $request->all()
                 ];
@@ -115,7 +125,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
         } else {
             return [
                 'success' => false,
-                'payment_id'=>$request['order'],
+                'payment_id'=>$request['merchant_order_id'] ?? $request['order'],
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $request->all()
             ];
