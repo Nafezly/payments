@@ -14,7 +14,6 @@ class PaymobPayment extends BaseController implements PaymentInterface
     private $paymob_public_key;
     private $paymob_secret_key;
     private $paymob_integration_id;
-    private $paymob_wallet_integration_id;
 
 
     public function __construct()
@@ -22,7 +21,6 @@ class PaymobPayment extends BaseController implements PaymentInterface
         $this->paymob_public_key = config('nafezly-payments.PAYMOB_PUBLIC_API_KEY');
         $this->paymob_secret_key = config('nafezly-payments.PAYMOB_SECRET_API_KEY');
         $this->paymob_integration_id = config('nafezly-payments.PAYMOB_INTEGRATION_ID');
-        $this->paymob_wallet_integration_id = config("nafezly-payments.PAYMOB_WALLET_INTEGRATION_ID");
         $this->currency = config("nafezly-payments.PAYMOB_CURRENCY");
     }
 
@@ -39,7 +37,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
      */
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null)
     {
-        $this->setPassedVariablesToGlobal($amount, $user_id, $user_first_name, $user_last_name, $user_email, $user_phone, $source);
+        $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'PayMob');
 
@@ -63,7 +61,6 @@ class PaymobPayment extends BaseController implements PaymentInterface
                 "currency" => $this->currency,
                 "payment_methods" => [
                     (int)$this->paymob_integration_id,
-                    (int)$this->paymob_wallet_integration_id,
                 ],
                 "special_reference" => $merchant_order_id,
                 "items" => [],
