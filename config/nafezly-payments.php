@@ -9,6 +9,9 @@ return [
     'PAYMOB_HMAC' => env('PAYMOB_HMAC'),
     'PAYMOB_CURRENCY'=> env('PAYMOB_CURRENCY',"EGP"),
 
+    #PAYMOB UNIFIED CHECKOUT, aka: Flash Checkout, ex: 5000,5001, default wii take PAYMOB_INTEGRATION_ID and PAYMOB_WALLET_INTEGRATION_ID as values,
+    'PAYMOB_UNIFIED_INTEGRATION_IDS' => env('PAYMOB_UNIFIED_INTEGRATION_IDS'),
+
     #HYPERPAY
     'HYPERPAY_BASE_URL' => env('HYPERPAY_BASE_URL', "https://eu-test.oppwa.com"),
     'HYPERPAY_URL' => env('HYPERPAY_URL', env('HYPERPAY_BASE_URL') . "/v1/checkouts"),
