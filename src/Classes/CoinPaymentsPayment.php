@@ -43,7 +43,11 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount','user_email'];
 
-        $payment_id = uniqid().rand(10000,99999);
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
+
         $fields = [
             'version'=>1,
             'key'=>$this->coinpayments_public_key,
@@ -53,9 +57,9 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
             'currency1' => 'USD',
             'currency2' => $this->currency??"USDT",
             'buyer_email' => $this->user_email??null,
-            'ipn_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$payment_id]),
-            'success_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$payment_id]),
-            'cancel_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$payment_id]),
+            'ipn_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$unique_id]),
+            'success_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$unique_id]),
+            'cancel_url'=> route($this->verify_route_name,['payment'=>"coinpayments",'payment_id'=>$unique_id]),
             
         ];
         $response = Http::asForm()->retry(3,100)->withHeaders([
@@ -63,16 +67,16 @@ class CoinPaymentsPayment extends BaseController implements PaymentInterface
             'HMAC' => hash_hmac('sha512', http_build_query($fields, '', '&'), $this->coinpayments_private_key),
         ])->post("https://www.coinpayments.net/api.php", $fields)->json();
         if($response['error']=="ok"){
-            cache(['COINPAYMENTS_'.$payment_id => $response['result']['txn_id'] ]);
+            cache(['COINPAYMENTS_'.$unique_id => $response['result']['txn_id'] ]);
             return [
-                'payment_id'=>$payment_id,
+                'payment_id'=>$unique_id,
                 'html' => $response,
                 'redirect_url'=>$response['result']['checkout_url']
             ];
         }
         else
             return [
-                'payment_id'=>$payment_id,
+                'payment_id'=>$unique_id,
                 'html' => $response,
                 'redirect_url'=>""
             ];

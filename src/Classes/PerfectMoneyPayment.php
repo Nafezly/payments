@@ -41,7 +41,13 @@ class PerfectMoneyPayment extends BaseController implements PaymentInterface
         $this->setPassedVariablesToGlobal($amount,$user_id,$user_first_name,$user_last_name,$user_email,$user_phone,$source);
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'PERFECTMONEY');
-        $unique_id= uniqid().rand(100000,999999);
+
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
+
+
         $formData = [
             'PAYEE_ACCOUNT' => $this->perfect_money_id,
             'PAYEE_NAME' => env('APP_NAME'),

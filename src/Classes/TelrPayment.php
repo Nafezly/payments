@@ -45,7 +45,11 @@ class TelrPayment extends BaseController implements PaymentInterface
         $required_fields = ['amount','user_first_name','user_last_name','user_email'];
         $this->checkRequiredFields($required_fields, 'TELR');
  
-        $uniqid = uniqid().rand(1000,9999);
+        if($this->payment_id==null)
+            $uniqid = uniqid().rand(100000,999999);
+        else
+            $uniqid = $this->payment_id;
+
         $data = [
             'ivp_method' => 'create',
             'ivp_store' => $this->telr_merchant_id,

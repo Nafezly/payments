@@ -46,7 +46,11 @@ class PaylinkPayment extends BaseController implements PaymentInterface
         else
             $url = "https://restpilot.paylink.sa";
 
-        $payment_id = uniqid().rand(10000,99999);
+        if($this->payment_id==null)
+            $payment_id = uniqid().rand(100000,999999);
+        else
+            $payment_id = $this->payment_id;
+
         $get_token_id = \Http::post($url."/api/auth",[
             'apiId'=>$this->paylink_app_id,
             'secretKey'=>$this->paylink_api_key,

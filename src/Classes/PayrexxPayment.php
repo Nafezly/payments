@@ -68,7 +68,12 @@ class PayrexxPayment extends BaseController implements PaymentInterface
 
         $required_fields = ['amount'/*, 'user_first_name', 'user_last_name', 'user_email', 'user_phone'*/];
         $this->checkRequiredFields($required_fields, 'PAYREXX');
-        $unique_id = uniqid();
+
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
+        
 
 
         $apiEndpoint = "https://api.payrexx.com/v1.0/Gateway/";

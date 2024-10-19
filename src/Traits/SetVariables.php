@@ -3,6 +3,7 @@ namespace Nafezly\Payments\Traits;
 
 trait SetVariables
 {
+    public $payment_id = null;
     public $user_id = null;
     public $user_first_name = null;
     public $user_last_name = null;
@@ -11,6 +12,14 @@ trait SetVariables
     public $source = null;
     public $currency = null;
     public $amount = null;
+
+
+    public function setPaymentId($value)
+    {
+        $this->payment_id = $value;
+        return $this;
+    }
+
 
     /**
      * Sets user ID

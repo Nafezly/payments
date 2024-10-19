@@ -49,10 +49,13 @@ class KashierPayment extends BaseController implements PaymentInterface
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'KASHIER');
 
-        $payment_id = uniqid();
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
 
         $mid = $this->kashier_account_key;
-        $order_id = $payment_id;
+        $order_id = $unique_id;
         $secret = $this->kashier_iframe_key;
         $path = "/?payment={$mid}.{$order_id}.{$this->amount}.{$this->currency}";
         $hash = hash_hmac('sha256', $path, $secret);
@@ -70,7 +73,7 @@ class KashierPayment extends BaseController implements PaymentInterface
         ];
 
         return [
-            'payment_id' => $payment_id,
+            'payment_id' => $unique_id,
             'html' => $this->generate_html($data),
             'redirect_url'=>""
         ];

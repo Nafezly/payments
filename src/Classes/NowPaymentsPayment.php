@@ -45,7 +45,11 @@ class NowPaymentsPayment extends BaseController implements PaymentInterface
                 'error'=>"AMOUNT_MINIMAL_ERROR"
             ];
         }
-        $order_id = uniqid().rand(10000,99999);
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
+
         $response = Http::withHeaders([
             'x-api-key' => $this->nowpayments_api_key,
         ])->post('https://api.nowpayments.io/v1/payment',[
@@ -53,7 +57,7 @@ class NowPaymentsPayment extends BaseController implements PaymentInterface
                 "price_currency"=> "usd",
                 "pay_currency"=> $this->currency,
                 "ipn_callback_url"=> route($this->verify_route_name,['payment'=>"nowpayments"]),
-                "order_id"=> $order_id,
+                "order_id"=> $unique_id,
                 "order_description"=> "Credit"
         ])->json();
         if(isset($response['payment_status']) && $response['payment_status'] == "waiting")

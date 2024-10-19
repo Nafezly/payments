@@ -55,6 +55,12 @@ class PayPalPayment extends BaseController implements PaymentInterface
         else
             $environment = new SandboxEnvironment($this->paypal_client_id, $this->paypal_secret);
 
+
+        if($this->payment_id==null)
+            $order_id = uniqid().rand(100000,999999);
+        else
+            $order_id = $this->payment_id;
+
         
         $client = new PayPalHttpClient($environment);
 
@@ -63,7 +69,7 @@ class PayPalPayment extends BaseController implements PaymentInterface
         $request->body = [
             "intent" => "CAPTURE",
             "purchase_units" => [[
-                "reference_id" => uniqid(),
+                "reference_id" => $order_id,
                 "amount" => [
                     "value" => $this->amount,
                     "currency_code" => $this->currency

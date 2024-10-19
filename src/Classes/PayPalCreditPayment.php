@@ -60,7 +60,13 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
         }catch(\Exception $e){}
 
         $mode = $this->paypal_credit_mode=="live"?'':'.sandbox';
-        $order_id = uniqid().rand(1000,99999);
+
+        if($this->payment_id==null)
+            $order_id = uniqid().rand(100000,999999);
+        else
+            $order_id = $this->payment_id;
+
+        
         $data = [
            "intent" => "CAPTURE", 
            "purchase_units" => [

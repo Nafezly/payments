@@ -37,14 +37,18 @@ class NowPaymentsInvoicePayment extends BaseController implements PaymentInterfa
         $required_fields = ['amount','currency'];
         $this->checkRequiredFields($required_fields, 'NOWPAYMENTS');
 
-        $order_id = uniqid().rand(10000,99999);
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
+
         $response = Http::withHeaders([
             'x-api-key' => $this->nowpayments_api_key,
             "Content-Type"=>"application/json"
         ])->post('https://api.nowpayments.io/v1/invoice',[
                 "price_amount"=> $this->amount,
                 "price_currency"=> $this->currency,
-                "order_id"=> $order_id,
+                "order_id"=> $uniqid,
                 "order_description"=> "Credit",
                 "ipn_callback_url"=> route($this->verify_route_name,['payment'=>"nowpaymentsinvoice"]),
                 "success_url"=>route($this->verify_route_name,['payment'=>"nowpaymentsinvoice"]),

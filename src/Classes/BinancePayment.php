@@ -51,7 +51,12 @@ class BinancePayment extends BaseController implements PaymentInterface
         }
         $ch = curl_init();
 
-        $uniqid= uniqid().rand(10000,99999);
+
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
+
         $timestamp = round(microtime(true) * 1000);
         // Request body
         $data = array(

@@ -51,7 +51,12 @@ class OpayPayment extends BaseController implements PaymentInterface
         $required_fields = ['amount', 'user_first_name', 'user_last_name', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'OPAY');
 
-        $unique_id=uniqid();
+
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
+
         $response = Http::withHeaders([
             "MerchantId"=>$this->opay_merchant_id,
             "authorization"=>"Bearer ".$this->opay_public_key,

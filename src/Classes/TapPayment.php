@@ -48,7 +48,12 @@ class TapPayment extends BaseController implements PaymentInterface
 
         $this->checkRequiredFields($required_fields, 'Tap');
 
-        $unique_id = uniqid();
+
+        if($this->payment_id==null)
+            $unique_id = uniqid().rand(100000,999999);
+        else
+            $unique_id = $this->payment_id;
+
         $response = Http::withHeaders([
             "authorization" => "Bearer " . $this->tap_secret_key,
             "Content-Type" => "application/json",

@@ -43,8 +43,14 @@ class PayeerPayment extends BaseController implements PaymentInterface
         $required_fields = ['amount'];
         $this->checkRequiredFields($required_fields, 'PAYEER');
 
+
+        if($this->payment_id==null)
+            $m_orderid = uniqid().rand(100000,999999);
+        else
+            $m_orderid = $this->payment_id;
+
+
         $m_shop = $this->payeer_merchant_id;
-        $m_orderid = uniqid().rand(10000,99999);
         $m_amount = number_format($this->amount, 2, '.', '');
         $m_curr = 'USD';
         $m_desc = base64_encode('credit');
