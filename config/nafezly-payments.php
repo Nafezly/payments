@@ -166,5 +166,10 @@ return [
     'PAYSKY_SECRET'=>env('PAYSKY_SECRET',''),
     'PAYSKY_MODE'=>env('PAYSKY_MODE','live'), //test
 
+
+    'YALLAPAY_PUBLIC_KEY'=>env('YALLAPAY_PUBLIC_KEY',''),
+    'YALLAPAY_SECRET_KEY'=>env('YALLAPAY_SECRET_KEY',''),
+    
+
     
 ];
