@@ -161,6 +161,8 @@ return [
     'PAYLINK_APP_ID'=>env('PAYLINK_APP_ID','APP_ID_1123453311'),
     'PAYLINK_MODE'=>env('PAYLINK_MODE','test'),
 
-
-
+    'PAYSKY_MID'=>env('PAYSKY_MID',''),
+    'PAYSKY_TID'=>env('PAYSKY_TID',''),
+    'PAYSKY_SECRET'=>env('PAYSKY_SECRET',''),
+    'PAYSKY_MODE'=>env('PAYSKY_MODE','live'), //test
 ];
