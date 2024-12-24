@@ -165,4 +165,6 @@ return [
     'PAYSKY_TID'=>env('PAYSKY_TID',''),
     'PAYSKY_SECRET'=>env('PAYSKY_SECRET',''),
     'PAYSKY_MODE'=>env('PAYSKY_MODE','live'), //test
+
+    
 ];
