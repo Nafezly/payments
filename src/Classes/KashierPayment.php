@@ -105,6 +105,7 @@ class KashierPayment extends BaseController implements PaymentInterface
                     'process_data' => $request->all()
                 ];
             }
+            
         }if($request["paymentStatus"] == "SUCCESS" && $request['merchantOrderId']!=null){
            
             $url_mode = $this->kashier_mode == "live"?'':'test-';
