@@ -17,6 +17,7 @@ class YallaPayPayment extends BaseController implements PaymentInterface
 {
     private $yallapay_public_key;
     private $yallapay_secret_key;
+    private $yallapay_webhook_secret;
     private $verify_route_name;
 
 
@@ -24,6 +25,7 @@ class YallaPayPayment extends BaseController implements PaymentInterface
     {
         $this->yallapay_public_key = config('nafezly-payments.YALLAPAY_PUBLIC_KEY');
         $this->yallapay_secret_key = config('nafezly-payments.YALLAPAY_SECRET_KEY');
+        $this->yallapay_webhook_secret = config('nafezly-payments.YALLAPAY_WEBHOOK_SECRET');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
     }
 
@@ -62,7 +64,7 @@ class YallaPayPayment extends BaseController implements PaymentInterface
             'fallback_url'=>route($this->verify_route_name,['payment_id'=>$unique_id,'payment'=>"yallapay"]),
             'external_id'=>$unique_id,
             'amount'=>$this->amount,
-            'purpose'=>"transaction"
+            'purpose'=>"Transaction"
         ])->json();
 
         if(isset($response['checkout_url']) ){
@@ -87,7 +89,21 @@ class YallaPayPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request): array
     {
-        $payment_id = implode('-', array_slice(explode('-', $request['payment_id'] ??"" ) , 1)) ;
+        $payment_id = $request['external_id'] ;
+
+
+
+        if($request['webhook_secret'] == $this->yallapay_webhook_secret){
+            if($request['status'] == 1){
+                return [
+                    'success' => true,
+                    'payment_id'=>$payment_id,
+                    'message' => __('nafezly::messages.PAYMENT_DONE'),
+                    'process_data' => $request->all()
+                ];
+
+            }
+        }
 
         $res = \Http::post('https://yallapay.net/api/transaction/verify',[
             'private_key'=>$this->yallapay_secret_key,
@@ -117,5 +133,18 @@ class YallaPayPayment extends BaseController implements PaymentInterface
                 ];
             }
         }
+
+
+        return [
+            'success' => false,
+            'payment_id'=>$payment_id,
+            'message' => __('nafezly::messages.PAYMENT_FAILED_WITH_CODE'),
+            'process_data' => $request->all()
+        ];
+
+
+        
+
+        
     }
 }
