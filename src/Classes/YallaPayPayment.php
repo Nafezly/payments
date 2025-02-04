@@ -94,7 +94,7 @@ class YallaPayPayment extends BaseController implements PaymentInterface
 
 
         if($request['webhook_secret'] == $this->yallapay_webhook_secret){
-            if($request['status'] == 1){
+            if(in_array($request['status'], [1,'Paid','success'])){
                 return [
                     'success' => true,
                     'payment_id'=>$payment_id,
