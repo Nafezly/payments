@@ -90,7 +90,8 @@ class YallaPayPayment extends BaseController implements PaymentInterface
     public function verify(Request $request): array
     {
         $payment_id = $request['external_id'] ;
-
+        if(isset($request['payment_id']))
+            $payment_id =  $request['payment_id'];
 
 
         if($request['webhook_secret'] == $this->yallapay_webhook_secret){
@@ -103,35 +104,37 @@ class YallaPayPayment extends BaseController implements PaymentInterface
                 ];
 
             }
-        }
+        }else{
 
-        $res = \Http::post('https://yallapay.net/api/transaction/verify',[
-            'private_key'=>$this->yallapay_secret_key,
-            'trx_id'=>  $payment_id
-        ]);
-        if($res->ok()){
-            if(isset($res[0]['status']) && $res[0]['status'] == "Paid"){
-                return [
-                    'success' => true,
-                    'payment_id'=>$payment_id,
-                    'message' => __('nafezly::messages.PAYMENT_DONE'),
-                    'process_data' => $request->all()
-                ];
-            }else if(isset($res['error'])){
-                return [
-                    'success' => false,
-                    'payment_id'=>$payment_id,
-                    'message' => __('nafezly::messages.PAYMENT_FAILED_WITH_CODE'),
-                    'process_data' => $request->all()
-                ];
-            }else if(isset($res[0]['status'])){
-                return [
-                    'success' => false,
-                    'payment_id'=>$payment_id,
-                    'message' => __('nafezly::messages.PAYMENT_FAILED_WITH_CODE'),
-                    'process_data' => $request->all()
-                ];
+            $res = \Http::post('https://yallapay.net/api/transaction/verify',[
+                'private_key'=>$this->yallapay_secret_key,
+                'trx_id'=>  $payment_id
+            ]);
+            if($res->ok()){
+                if(isset($res[0]['status']) && $res[0]['status'] == "Paid"){
+                    return [
+                        'success' => true,
+                        'payment_id'=>$payment_id,
+                        'message' => __('nafezly::messages.PAYMENT_DONE'),
+                        'process_data' => $request->all()
+                    ];
+                }else if(isset($res['error'])){
+                    return [
+                        'success' => false,
+                        'payment_id'=>$payment_id,
+                        'message' => __('nafezly::messages.PAYMENT_FAILED_WITH_CODE'),
+                        'process_data' => $request->all()
+                    ];
+                }else if(isset($res[0]['status'])){
+                    return [
+                        'success' => false,
+                        'payment_id'=>$payment_id,
+                        'message' => __('nafezly::messages.PAYMENT_FAILED_WITH_CODE'),
+                        'process_data' => $request->all()
+                    ];
+                }
             }
+
         }
 
 
