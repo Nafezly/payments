@@ -50,7 +50,6 @@ class BigPayPayment extends BaseController implements PaymentInterface
             $unique_id = $this->payment_id;
 
 
-
         $dashboard_url = $this->bigpay_mode == "live" ? 'dashboard':'integration';
         $push_to_gateway = Http::withHeaders([
             'Authorization'=>"Basic ".base64_encode($this->bigpay_key.':'.$this->bigpay_secret)
@@ -59,11 +58,11 @@ class BigPayPayment extends BaseController implements PaymentInterface
             "description"=>"Credit",
             "store"=>$this->bigpay_key,
             "amount"=>$this->amount,
-            "cancelUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-            "completeUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-            "timeoutUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-            "successCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-            "failureCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+            "cancelUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
+            "completeUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
+            "timeoutUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
+            "successCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
+            "failureCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
           
         ])->json();
 
@@ -88,8 +87,8 @@ class BigPayPayment extends BaseController implements PaymentInterface
                 "Connection"=>"close",
             ])->post('https://bobsal.gateway.mastercard.com/api/page/version/'.$get_mastercard_version['wsapiVersion'].'/pay',[
                 'session.id'=>$push_to_gateway['session']['id'],
-                'interaction.cancelUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay'])).'#__hc-action-cancel',
-                'interaction.timeoutUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay'])).'#__hc-action-timeout'
+                'interaction.cancelUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid])).'#__hc-action-cancel',
+                'interaction.timeoutUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid])).'#__hc-action-timeout'
             ])->json();
             if(isset($push_to_gateway['redirectURL'])){
                 return [
@@ -132,25 +131,27 @@ class BigPayPayment extends BaseController implements PaymentInterface
     public function verify(Request $request)
     {
         
-        $base_url = "https://app.big-pay.com/integration/transactions/transaction/";
-        if($this->bigpay_mode=="live")
-            $base_url="https://gateway.big-pay.com/app/transactions/transaction/";
+        $dashboard_url = $this->bigpay_mode == "live" ? 'dashboard':'integration';
+        $base_url = "https://".$dashboard_url.".big-pay.com/api/transactions/order/";
+
 
         $response = Http::withHeaders([
             'Authorization'=> "Basic ".base64_encode($this->bigpay_key.':'.$this->bigpay_secret)
-        ])->get($base_url.$request->transaction);
+        ])->get($base_url.$request['payment_id']);
+
+
         $json_response= $response->json();
-        if($response->ok() && isset($json_response['orderNumber']) && isset($json_response['status']) && ($json_response['status']=="SUCCESS" || $json_response['status']=="PAYED")  ){
+        if($response->ok() && isset($json_response['orderNumber']) && isset($json_response['status']) && in_array($json_response['status'], ["SUCCESS","PAYED"]) ){
             return [
                 'success' => true,
-                'payment_id' => $json_response['orderNumber'],
+                'payment_id' => $request['payment_id'],
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $json_response
             ];
         }
         return [
             'success' => false,
-            'payment_id' => $request->transaction,
+            'payment_id' => $request['payment_id'],
             'message' => __('nafezly::messages.PAYMENT_FAILED'),
             'process_data' => $json_response
         ];
