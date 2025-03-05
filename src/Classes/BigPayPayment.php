@@ -50,23 +50,27 @@ class BigPayPayment extends BaseController implements PaymentInterface
             $unique_id = $this->payment_id;
 
 
-        try{
-            $dashboard_url = $this->bigpay_mode == "live" ? 'dashboard':'integration';
 
-            $push_to_gateway = Http::withHeaders([
-                'Authorization'=>"Basic ".base64_encode($this->bigpay_key.':'.$this->bigpay_secret)
-            ])->post('https://'.$dashboard_url.'.big-pay.com/app/transactions/initSession',[
-                "orderId"=>$unique_id,
-                "description"=>"Credit",
-                "store"=>$this->bigpay_key,
-                "amount"=>$this->amount,
-                "cancelUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-                "completeUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-                "timeoutUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-                "successCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-                "failureCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
-                "session"=>null
-            ])->json();
+
+
+        $dashboard_url = $this->bigpay_mode == "live" ? 'dashboard':'integration';
+        $push_to_gateway = Http::withHeaders([
+            'Authorization'=>"Basic ".base64_encode($this->bigpay_key.':'.$this->bigpay_secret)
+        ])->post('https://'.$dashboard_url.'.big-pay.com/app/transactions/initSession',[
+            "orderId"=>$unique_id,
+            "description"=>"Credit",
+            "store"=>$this->bigpay_key,
+            "amount"=>$this->amount,
+            "cancelUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+            "completeUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+            "timeoutUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+            "successCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+            "failureCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay']),
+          
+        ])->json();
+
+        try{
+            
             $get_mastercard_version = Http::get('https://bobsal.gateway.mastercard.com/checkout/api/retrieveWsapiVersion/'.$push_to_gateway['session']['id'])->json();
 
             $push_to_gateway = Http::asForm()->withHeaders([
@@ -103,6 +107,13 @@ class BigPayPayment extends BaseController implements PaymentInterface
                     'bigpay_mode'=>$this->bigpay_mode,
                     'amount'=>$this->amount,
                     'order_number'=>$unique_id,
+
+
+                    'order_username'=>$this->user_first_name??"",
+                    'order_email'=>$this->user_email??"",
+                    'order_phone'=>$this->user_phone??"",
+                    'session_id'=>$push_to_gateway['session']['id'],
+
                     'product_description'=>"Credit",
                     'bigpay_key'=>$this->bigpay_key,
                     'bigpay_secret'=>$this->bigpay_secret,
