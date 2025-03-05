@@ -58,11 +58,11 @@ class BigPayPayment extends BaseController implements PaymentInterface
             "description"=>"Credit",
             "store"=>$this->bigpay_key,
             "amount"=>$this->amount,
-            "cancelUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
-            "completeUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
-            "timeoutUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
-            "successCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
-            "failureCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid]),
+            "cancelUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$unique_id]),
+            "completeUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$unique_id]),
+            "timeoutUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$unique_id]),
+            "successCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$unique_id]),
+            "failureCallbackUrl"=>route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$unique_id]),
           
         ])->json();
 
@@ -87,8 +87,8 @@ class BigPayPayment extends BaseController implements PaymentInterface
                 "Connection"=>"close",
             ])->post('https://bobsal.gateway.mastercard.com/api/page/version/'.$get_mastercard_version['wsapiVersion'].'/pay',[
                 'session.id'=>$push_to_gateway['session']['id'],
-                'interaction.cancelUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid])).'#__hc-action-cancel',
-                'interaction.timeoutUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$uniqid])).'#__hc-action-timeout'
+                'interaction.cancelUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$unique_id])).'#__hc-action-cancel',
+                'interaction.timeoutUrl'=>urlencode(route($this->verify_route_name,['payment'=>'bigpay','payment_id'=>$unique_id])).'#__hc-action-timeout'
             ])->json();
             if(isset($push_to_gateway['redirectURL'])){
                 return [
