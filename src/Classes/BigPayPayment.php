@@ -51,8 +51,6 @@ class BigPayPayment extends BaseController implements PaymentInterface
 
 
 
-
-
         $dashboard_url = $this->bigpay_mode == "live" ? 'dashboard':'integration';
         $push_to_gateway = Http::withHeaders([
             'Authorization'=>"Basic ".base64_encode($this->bigpay_key.':'.$this->bigpay_secret)
