@@ -1,11 +1,11 @@
 <?php
 return [
     #PAYMOB
-    'PAYMOB_API_KEY' => env('PAYMOB_API_KEY'),
-    'PAYMOB_INTEGRATION_ID' => env('PAYMOB_INTEGRATION_ID'),
-    'PAYMOB_IFRAME_ID' => env('PAYMOB_IFRAME_ID'),
-    'PAYMOB_HMAC' => env('PAYMOB_HMAC'),
+    'PAYMOB_PUBLIC_KEY'=>env('PAYMOB_PUBLIC_KEY'),
+    'PAYMOB_SECRET_KEY' => env('PAYMOB_SECRET_KEY'),
+    'PAYMOB_INTEGRATION_ID' => env('PAYMOB_INTEGRATION_ID',""), //array of integration ids
     'PAYMOB_CURRENCY'=> env('PAYMOB_CURRENCY',"EGP"),
+    'PAYMOB_HMAC' => env('PAYMOB_HMAC'),
 
     #HYPERPAY
     'HYPERPAY_BASE_URL' => env('HYPERPAY_BASE_URL', "https://eu-test.oppwa.com"),
