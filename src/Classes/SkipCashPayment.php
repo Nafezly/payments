@@ -10,10 +10,17 @@ use Nafezly\Payments\Classes\BaseController;
 
 class SkipCashPayment extends BaseController implements PaymentInterface
 {
+    #[\SensitiveParameter]
     private $secret_key;
+    
+    #[\SensitiveParameter]
     private $key_id;
+    
     private $base_url;
+    
+    #[\SensitiveParameter]
     private $webhook_key;
+    
     private $mode;
     public $verify_route_name;
 
@@ -31,6 +38,38 @@ class SkipCashPayment extends BaseController implements PaymentInterface
         } else {
             $this->base_url = 'https://skipcashtest.azurewebsites.net/api/v1/payments';
         }
+    }
+
+    /**
+     * Hide sensitive data when dumping/debugging the object
+     * This method is called by var_dump(), print_r(), and similar functions
+     * 
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        return [
+            'base_url' => $this->base_url,
+            'mode' => $this->mode,
+            'verify_route_name' => $this->verify_route_name,
+            'secret_key' => '[HIDDEN]',
+            'key_id' => '[HIDDEN]',
+            'webhook_key' => '[HIDDEN]',
+            // Include parent class properties if needed
+            'payment_id' => $this->payment_id ?? null,
+            'user_id' => $this->user_id ?? null,
+            'amount' => $this->amount ?? null,
+        ];
+    }
+
+    /**
+     * Hide sensitive data when object is converted to string
+     * 
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'SkipCashPayment[mode=' . $this->mode . ', base_url=' . $this->base_url . ']';
     }
 
     /**
