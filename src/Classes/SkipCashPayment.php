@@ -10,17 +10,10 @@ use Nafezly\Payments\Classes\BaseController;
 
 class SkipCashPayment extends BaseController implements PaymentInterface
 {
-    #[\SensitiveParameter]
     private $secret_key;
-    
-    #[\SensitiveParameter]
     private $key_id;
-    
     private $base_url;
-    
-    #[\SensitiveParameter]
     private $webhook_key;
-    
     private $mode;
     public $verify_route_name;
 
