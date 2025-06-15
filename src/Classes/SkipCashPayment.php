@@ -24,7 +24,7 @@ class SkipCashPayment extends BaseController implements PaymentInterface
         $this->mode = config('nafezly-payments.SKIPCASH_MODE', 'test');
         $this->webhook_key = config('nafezly-payments.SKIPCASH_WEBHOOK_KEY');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
-        
+
         // Set the base URL based on mode
         if ($this->mode === 'live') {
             $this->base_url = 'https://api.skipcash.app/api/v1/payments';
@@ -33,37 +33,9 @@ class SkipCashPayment extends BaseController implements PaymentInterface
         }
     }
 
-    /**
-     * Hide sensitive data when dumping/debugging the object
-     * This method is called by var_dump(), print_r(), and similar functions
-     * 
-     * @return array
-     */
-    public function __debugInfo()
-    {
-        return [
-            'base_url' => $this->base_url,
-            'mode' => $this->mode,
-            'verify_route_name' => $this->verify_route_name,
-            'secret_key' => '[HIDDEN]',
-            'key_id' => '[HIDDEN]',
-            'webhook_key' => '[HIDDEN]',
-            // Include parent class properties if needed
-            'payment_id' => $this->payment_id ?? null,
-            'user_id' => $this->user_id ?? null,
-            'amount' => $this->amount ?? null,
-        ];
-    }
 
-    /**
-     * Hide sensitive data when object is converted to string
-     * 
-     * @return string
-     */
-    public function __toString()
-    {
-        return 'SkipCashPayment[mode=' . $this->mode . ', base_url=' . $this->base_url . ']';
-    }
+
+
 
     /**
      * Generate UUID v4
@@ -75,12 +47,12 @@ class SkipCashPayment extends BaseController implements PaymentInterface
     {
         $data = $data ?? random_bytes(16);
         assert(strlen($data) == 16);
-        
+
         // Set version to 0100
         $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
         // Set bits 6-7 to 10
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
-        
+
         // Output the 36 character UUID
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
@@ -93,15 +65,15 @@ class SkipCashPayment extends BaseController implements PaymentInterface
      */
     private function calculateAuthorizationHeader($data)
     {
-        $headerString = "Uid=" . $data['Uid'] . 
-                       ',KeyId=' . $data['KeyId'] . 
-                       ',Amount=' . $data['Amount'] . 
-                       ',FirstName=' . $data['FirstName'] . 
-                       ',LastName=' . $data['LastName'] . 
-                       ',Phone=' . $data['Phone'] . 
-                       ',Email=' . $data['Email'] . 
-                       ',TransactionId=' . $data['TransactionId'];
-        
+        $headerString = "Uid=" . $data['Uid'] .
+            ',KeyId=' . $data['KeyId'] .
+            ',Amount=' . $data['Amount'] .
+            ',FirstName=' . $data['FirstName'] .
+            ',LastName=' . $data['LastName'] .
+            ',Phone=' . $data['Phone'] .
+            ',Email=' . $data['Email'] .
+            ',TransactionId=' . $data['TransactionId'];
+
         $hash = hash_hmac('sha256', $headerString, $this->secret_key, true);
         return base64_encode($hash);
     }
@@ -135,7 +107,7 @@ class SkipCashPayment extends BaseController implements PaymentInterface
         }
 
         $uuid = $this->generateUuid();
-        
+
         $paymentData = [
             'Uid' => $uuid,
             'KeyId' => $this->key_id,
@@ -145,13 +117,8 @@ class SkipCashPayment extends BaseController implements PaymentInterface
             'Phone' => $this->user_phone,
             'Email' => $this->user_email,
             'TransactionId' => $unique_id,
-            'Subject' => 'Payment for Order #' . $unique_id,
-            'Description' => 'Payment processing via SkipCash',
-            'ReturnUrl' => route($this->verify_route_name, ['payment' => 'skipcash']),
-            'WebhookUrl' => route($this->verify_route_name, ['payment' => 'skipcash']),
-            'Custom1' => $unique_id,
         ];
-
+   
         // Calculate authorization header
         $authorizationHeader = $this->calculateAuthorizationHeader($paymentData);
 
@@ -196,29 +163,29 @@ class SkipCashPayment extends BaseController implements PaymentInterface
     {
         // Build the string for verification based on SkipCash documentation
         $verificationString = "PaymentId=" . $webhookData['PaymentId'] .
-                             ",Amount=" . $webhookData['Amount'] .
-                             ",StatusId=" . $webhookData['StatusId'];
-        
+            ",Amount=" . $webhookData['Amount'] .
+            ",StatusId=" . $webhookData['StatusId'];
+
         // Add optional fields if they exist
         if (!empty($webhookData['TransactionId'])) {
             $verificationString .= ",TransactionId=" . $webhookData['TransactionId'];
         }
-        
+
         if (!empty($webhookData['Custom1'])) {
             $verificationString .= ",Custom1=" . $webhookData['Custom1'];
         }
-        
+
         $verificationString .= ",VisaId=" . $webhookData['VisaId'];
 
         $calculatedHash = base64_encode(hash_hmac('sha256', $verificationString, $this->webhook_key, true));
-        
+
         return hash_equals($calculatedHash, $authorizationHeader);
     }    /**
-     * Get status message based on StatusId
-     * 
-     * @param int $statusId
-     * @return string
-     */
+         * Get status message based on StatusId
+         * 
+         * @param int $statusId
+         * @return string
+         */
     private function getStatusMessage($statusId)
     {
         $statuses = [
