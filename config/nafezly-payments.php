@@ -167,9 +167,16 @@ return [
     'PAYSKY_MODE'=>env('PAYSKY_MODE','live'), //test
 
 
+    #YALLAPAY
     'YALLAPAY_PUBLIC_KEY'=>env('YALLAPAY_PUBLIC_KEY',''),
     'YALLAPAY_SECRET_KEY'=>env('YALLAPAY_SECRET_KEY',''),
     
+
+    #SKIPCASH
+    'SKIPCASH_SECRET_KEY'=>env('SKIPCASH_SECRET_KEY'),
+    'SKIPCASH_KEY_ID'=>env('SKIPCASH_KEY_ID'),
+    'SKIPCASH_WEBHOOK_KEY'=>env('SKIPCASH_WEBHOOK_KEY'),
+    'SKIPCASH_MODE'=>env('SKIPCASH_MODE','test'), //test,live
 
     
 ];

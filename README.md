@@ -33,6 +33,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [PayPal Credit Cards](https://developer.paypal.com/docs/checkout/standard/)
 - [Payrexx](https://payrexx.com/en/)
 - [Creptomus](https://cryptomus.com/)
+- [SkipCash](https://skipcash.app/)
 - [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 
 ## Installation
@@ -155,11 +156,16 @@ return [
     'TELR_MERCHANT_ID'=>env('TELR_MERCHANT_ID'),
     'TELR_API_KEY'=>env('TELR_API_KEY'),
     'TELR_MODE'=>env('TELR_MODE','test'),//test,live
-
-
     #CLICKPAY
     'CLICKPAY_SERVER_KEY'=>env('CLICKPAY_SERVER_KEY'),
-    'CLICKPAY_PROFILE_ID'=>env('CLICKPAY_PROFILE_ID')
+    'CLICKPAY_PROFILE_ID'=>env('CLICKPAY_PROFILE_ID'),
+
+
+    #SKIPCASH
+    'SKIPCASH_SECRET_KEY'=>env('SKIPCASH_SECRET_KEY'),
+    'SKIPCASH_KEY_ID'=>env('SKIPCASH_KEY_ID'),
+    'SKIPCASH_WEBHOOK_KEY'=>env('SKIPCASH_WEBHOOK_KEY'),
+    'SKIPCASH_MODE'=>env('SKIPCASH_MODE','test'), //test,live
 
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME'),
@@ -221,7 +227,7 @@ $payment->verify($request);
 
 ```
 ### Factory Pattern Use
-you can pass only method name without payment key word like (Fawry,Paymob,Opay ...etc) 
+you can pass only method name without payment key word like (Fawry,Paymob,Opay,SkipCash ...etc) 
 and the factory will return the payment instance for you , use it as you want ;)
 ```php
     $payment = new \Nafezly\Payments\Factories\PaymentFactory();
@@ -235,8 +241,50 @@ and the factory will return the payment instance for you , use it as you want ;)
 	$source = null
 );;
 ```
+
+### SkipCash Usage Example
+
+```php
+use Nafezly\Payments\Classes\SkipCashPayment;
+
+$payment = new SkipCashPayment();
+
+// Using pay function
+$payment->pay(
+    $amount,                    // Required: Payment amount
+    $user_id = null,           // Optional: User ID
+    $user_first_name,          // Required: User first name
+    $user_last_name,           // Required: User last name
+    $user_email,               // Required: User email (auto-generated if empty)
+    $user_phone,               // Required: User phone number
+    $source = null             // Optional: Payment source
+);
+
+// Using setter methods
+$payment->setUserId($id)
+        ->setUserFirstName($first_name)
+        ->setUserLastName($last_name)
+        ->setUserEmail($email)
+        ->setUserPhone($phone)
+        ->setAmount($amount)
+        ->pay();
+```
+
+**SkipCash Configuration Requirements:**
+- `SKIPCASH_SECRET_KEY`: Your SkipCash secret key
+- `SKIPCASH_KEY_ID`: Your SkipCash key ID (UUID)
+- `SKIPCASH_WEBHOOK_KEY`: Your webhook verification key
+- `SKIPCASH_MODE`: 'test' for sandbox or 'live' for production
+
+**Important Notes for SkipCash:**
+- Phone numbers can be with or without country code for Qatar (+974)
+- Non-Qatari numbers must include country code with + prefix
+- Email is auto-generated as `{phone}@{domain}.com` if not provided
+- Each payment must use unique phone number and email to avoid fraud detection
+
 ## Some Test Cards
 
+- [SkipCash](https://dev.skipcash.app/doc/api-integration/)
 - [Thawani](https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card)
 - [Kashier](https://developers.kashier.io/payment/testing)
 - [Paymob](https://docs.paymob.com/docs/card-payments)

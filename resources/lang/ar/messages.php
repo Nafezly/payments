@@ -14,4 +14,15 @@ return [
     "The_OTP_number_was_entered_incorrectly"=>"تم إدخال رقم OTP بشكل غير صحيح",
     "An_error_occurred_while_executing_the_operation"=>"حدث خطأ أثناء تنفيذ العملية",
     'Your_card_is_not_authorized_with_3D_secure'=>"لم يتم تأكيد رمز OTP بنجاح",
+    
+    // SkipCash specific messages
+    'SKIPCASH_PAYMENT_NEW'=>'دفعة جديدة',
+    'SKIPCASH_PAYMENT_PENDING'=>'دفعة معلقة',
+    'SKIPCASH_PAYMENT_PAID'=>'تم الدفع بنجاح',
+    'SKIPCASH_PAYMENT_CANCELED'=>'تم إلغاء الدفعة',
+    'SKIPCASH_PAYMENT_FAILED'=>'فشل في الدفع',
+    'SKIPCASH_PAYMENT_REJECTED'=>'تم رفض الدفعة',
+    'SKIPCASH_PAYMENT_REFUNDED'=>'تم استرداد المبلغ',
+    'SKIPCASH_PAYMENT_PENDING_REFUND'=>'استرداد معلق',
+    'SKIPCASH_PAYMENT_REFUND_FAILED'=>'فشل في الاسترداد',
 ];

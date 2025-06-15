@@ -13,5 +13,16 @@ return [
     "The_transaction_was_rejected_by_your_bank_please_check_with_your_bank"=>"The transaction was rejected by your bank please check with your bank",
     "The_OTP_number_was_entered_incorrectly"=>"The OTP number was entered incorrectly",
     "An_error_occurred_while_executing_the_operation"=>"An error occurred while executing the operation",
-    'Your_card_is_not_authorized_with_3D_secure'=>"Your card is not authorized with 3D secure"
+    'Your_card_is_not_authorized_with_3D_secure'=>"Your card is not authorized with 3D secure",
+    
+    // SkipCash specific messages
+    'SKIPCASH_PAYMENT_NEW'=>'New payment',
+    'SKIPCASH_PAYMENT_PENDING'=>'Payment pending',
+    'SKIPCASH_PAYMENT_PAID'=>'Payment successful',
+    'SKIPCASH_PAYMENT_CANCELED'=>'Payment canceled',
+    'SKIPCASH_PAYMENT_FAILED'=>'Payment failed',
+    'SKIPCASH_PAYMENT_REJECTED'=>'Payment rejected',
+    'SKIPCASH_PAYMENT_REFUNDED'=>'Payment refunded',
+    'SKIPCASH_PAYMENT_PENDING_REFUND'=>'Refund pending',
+    'SKIPCASH_PAYMENT_REFUND_FAILED'=>'Refund failed',
 ];
