@@ -12,6 +12,7 @@ class SkipCashPayment extends BaseController implements PaymentInterface
 {
     private $secret_key;
     private $key_id;
+    private $client_id;
     private $base_url;
     private $webhook_key;
     private $mode;
@@ -21,6 +22,7 @@ class SkipCashPayment extends BaseController implements PaymentInterface
     {
         $this->secret_key = config('nafezly-payments.SKIPCASH_SECRET_KEY');
         $this->key_id = config('nafezly-payments.SKIPCASH_KEY_ID');
+        $this->client_id = config('nafezly-payments.SKIPCASH_CLIENT_ID');
         $this->mode = config('nafezly-payments.SKIPCASH_MODE', 'test');
         $this->webhook_key = config('nafezly-payments.SKIPCASH_WEBHOOK_KEY');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
@@ -121,7 +123,7 @@ class SkipCashPayment extends BaseController implements PaymentInterface
    
         // Calculate authorization header
         $authorizationHeader = $this->calculateAuthorizationHeader($paymentData);
-
+         
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
@@ -270,7 +272,7 @@ class SkipCashPayment extends BaseController implements PaymentInterface
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'Authorization' => $this->key_id // Use key_id as client ID for verification
+                'Authorization' => $this->client_id // Use key_id as client ID for verification
             ])->get($this->base_url . '/' . $paymentId);
 
             $responseData = $response->json();
