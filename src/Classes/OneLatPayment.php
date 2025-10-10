@@ -64,7 +64,7 @@ class OneLatPayment extends BaseController implements PaymentInterface
                         'selected_payment_method_id'=>$method['id'],
                         'type' => 'PAYMENT',
                         'custom_urls' => [
-                            //'status_changes_webhook' => route($this->verify_route_name,['payment'=>'onelat','payment_id'=>$unique_id,'step'=>'change']),
+                            'status_changes_webhook' => route($this->verify_route_name,['payment'=>'onelat','payment_id'=>$unique_id,'step'=>'change']),
                             'success_payment_redirect' => route($this->verify_route_name,['payment'=>'onelat','payment_id'=>$unique_id]),
                             'error_payment_redirect' => route($this->verify_route_name,['payment'=>'onelat','payment_id'=>$unique_id]),
                         ],
