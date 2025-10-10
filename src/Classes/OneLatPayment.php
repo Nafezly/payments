@@ -121,7 +121,20 @@ class OneLatPayment extends BaseController implements PaymentInterface
             ])->get($this->onelat_api_base_url."/v1/payment_orders/".$request['entity_id']);
 
             $json_response= $response->json();
-            if($response->ok() && isset($json_response['status']) && in_array($json_response['status'], ["CLOSED"]) && $json_response['external_id'] == $request['payment_id'] ){
+            if($response->ok() && 
+
+                (
+
+                    (isset($json_response['status']) && in_array($json_response['status'], ["CLOSED"]) && $json_response['external_id'] == $request['payment_id'] )
+
+                    ||
+
+                    (isset($json_response['event_type']) && in_array($json_response['event_type'], ["PAYMENT_ORDER.CLOSED"]) && $json_response['external_id'] == $request['payment_id'] )
+
+                )
+
+
+            ){
                 return [
                     'success' => true,
                     'payment_id' => $request['payment_id'],
