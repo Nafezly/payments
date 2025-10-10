@@ -135,7 +135,7 @@ class OneLatPayment extends BaseController implements PaymentInterface
             'success' => false,
             'payment_id' => $request['payment_id'],
             'message' => __('nafezly::messages.PAYMENT_FAILED'),
-            'process_data' => $json_response
+            'process_data' => $request->all()
         ];
     }
 
