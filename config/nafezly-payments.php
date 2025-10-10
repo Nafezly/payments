@@ -171,5 +171,13 @@ return [
     'YALLAPAY_SECRET_KEY'=>env('YALLAPAY_SECRET_KEY',''),
     
 
+    'ONELAT_KEY'=>env('ONELAT_KEY',''),
+    'ONELAT_SECRET'=>env('ONELAT_SECRET',''),
+    'ONELAT_API_BASE_URL'=>env('ONELAT_API_BASE_URL','https://api.one.lat'),
+    'ONELAT_CHECKOUT_BASE_URL'=>env('ONELAT_CHECKOUT_BASE_URL','https://one.lat/checkout'),
+
+
+
+
     
 ];
