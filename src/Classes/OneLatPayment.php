@@ -52,8 +52,8 @@ class OneLatPayment extends BaseController implements PaymentInterface
                     $method = collect($payment_methods['payment_methods'])->where('type','CARD')->where('currency','USD')->first();
 
                     $response = \Http::withHeaders([
-                        'x-api-key' => env('ONE_LAT_API_KEY','0cUeoN7geywVTFv36b'),
-                        'x-api-secret' => env('ONE_LAT_API_SECRET','NXHqday1sT4wQ2nYkh4Y'),
+                        'x-api-key' => $this->onelat_key,
+                        'x-api-secret' => $this->onelat_secret,
                         'Content-Type' => 'application/json',
                     ])->post($this->onelat_api_base_url.'/v1/checkout_preferences', [
                         'amount' => $this->amount,
