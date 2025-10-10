@@ -114,7 +114,7 @@ class OneLatPayment extends BaseController implements PaymentInterface
     {
      
         if(isset($request['entity_id'])){
-            $json_response = Http::withHeaders([
+            $response = Http::withHeaders([
                 'x-api-key' => $this->onelat_key,
                 'x-api-secret' => $this->onelat_secret,
                 'Content-Type' => 'application/json',
