@@ -140,10 +140,13 @@
             @if(isset($data['metadata']))
             metadata: {!! json_encode($data['metadata']) !!},
             @endif
-            on_completed: function(payment) {
+            on_completed: async function(payment) {
                 console.log('Payment completed', payment);
                 document.getElementById('payment-loader').classList.add('active');
                 document.querySelector('.mysr-form').style.display = 'none';
+                
+                // Optional: Save payment to backend
+                // await savePaymentToBackend(payment);
             }
         });
 
