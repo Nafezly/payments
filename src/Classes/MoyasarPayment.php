@@ -124,15 +124,24 @@ class MoyasarPayment extends BaseController implements PaymentInterface
             ];
         }
 
-        // إضافة معلومات العميل إذا كانت متوفرة
+        // إضافة معلومات العميل والـ payment_id في metadata
+        $data['metadata'] = [
+            'order_id' => $unique_id, // المعرف الفريد من النظام
+            'user_id' => $this->user_id,
+        ];
+        
+        // إضافة معلومات إضافية إذا كانت متوفرة
         if ($this->user_email) {
-            $data['metadata'] = [
-                'email' => $this->user_email,
-                'user_id' => $this->user_id,
-                'first_name' => $this->user_first_name,
-                'last_name' => $this->user_last_name,
-                'phone' => $this->user_phone,
-            ];
+            $data['metadata']['email'] = $this->user_email;
+        }
+        if ($this->user_first_name) {
+            $data['metadata']['first_name'] = $this->user_first_name;
+        }
+        if ($this->user_last_name) {
+            $data['metadata']['last_name'] = $this->user_last_name;
+        }
+        if ($this->user_phone) {
+            $data['metadata']['phone'] = $this->user_phone;
         }
 
         return [
@@ -192,23 +201,30 @@ class MoyasarPayment extends BaseController implements PaymentInterface
             }
 
             if (isset($response['status']) && $response['status'] === 'paid') {
+                // استخراج order_id من metadata إذا كان موجوداً
+                $order_id = $response['metadata']['order_id'] ?? $payment_id;
+                
                 return [
                     'success' => true,
-                    'payment_id' => $payment_id,
+                    'payment_id' => $order_id, // استخدام order_id من metadata
                     'message' => __('nafezly::messages.PAYMENT_DONE'),
                     'process_data' => $response
                 ];
             } elseif (isset($response['status']) && $response['status'] === 'failed') {
+                $order_id = $response['metadata']['order_id'] ?? $payment_id;
+                
                 return [
                     'success' => false,
-                    'payment_id' => $payment_id,
+                    'payment_id' => $order_id,
                     'message' => __('nafezly::messages.PAYMENT_FAILED'),
                     'process_data' => $response
                 ];
             } else {
+                $order_id = $response['metadata']['order_id'] ?? $payment_id;
+                
                 return [
                     'success' => false,
-                    'payment_id' => $payment_id,
+                    'payment_id' => $order_id,
                     'message' => __('nafezly::messages.PAYMENT_FAILED'),
                     'process_data' => $response
                 ];
