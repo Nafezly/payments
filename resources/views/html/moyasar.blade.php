@@ -142,19 +142,19 @@
             @endif
             on_initiating: function() {
                 console.log('Payment initiated');
+                return true;
             },
             on_completed: function(payment) {
                 console.log('Payment completed', payment);
                 document.getElementById('payment-loader').classList.add('active');
                 document.querySelector('.mysr-form').style.display = 'none';
+          
                 
-                // Optional: Save payment ID to backend
-                // You can uncomment and implement this if needed
-                // savePaymentToBackend(payment);
+                return true;
             },
             on_failure: function(error) {
                 console.error('Payment failed', error);
-                alert('فشلت عملية الدفع. الرجاء المحاولة مرة أخرى.');
+                return true;
             }
         });
 
