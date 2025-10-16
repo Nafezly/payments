@@ -15,6 +15,7 @@ class MoyasarPayment extends BaseController implements PaymentInterface
     public $app_name;
     private $apple_pay_label;
     private $apple_pay_country;
+    private $payment_methods;
 
     public function __construct()
     {
@@ -25,6 +26,10 @@ class MoyasarPayment extends BaseController implements PaymentInterface
         $this->app_name = config('nafezly-payments.APP_NAME');
         $this->apple_pay_label = config('nafezly-payments.MOYASAR_APPLE_PAY_LABEL');
         $this->apple_pay_country = config('nafezly-payments.MOYASAR_APPLE_PAY_COUNTRY', 'SA');
+        
+        // Parse payment methods from config (comma-separated string to array)
+        $methods = config('nafezly-payments.MOYASAR_PAYMENT_METHODS', 'creditcard,applepay,stcpay');
+        $this->payment_methods = is_array($methods) ? $methods : array_map('trim', explode(',', $methods));
     }
 
     /**
@@ -48,6 +53,21 @@ class MoyasarPayment extends BaseController implements PaymentInterface
     public function setApplePayCountry($country)
     {
         $this->apple_pay_country = $country;
+        return $this;
+    }
+
+    /**
+     * Set payment methods dynamically
+     * 
+     * @param array|string $methods Array of methods or comma-separated string (e.g., ['creditcard', 'stcpay'])
+     * @return $this
+     */
+    public function setPaymentMethods($methods)
+    {
+        if (is_string($methods)) {
+            $methods = array_map('trim', explode(',', $methods));
+        }
+        $this->payment_methods = $methods;
         return $this;
     }
 
@@ -185,6 +205,7 @@ class MoyasarPayment extends BaseController implements PaymentInterface
      */
     private function getPaymentMethods($source = null): array
     {
+        // If source is specified, return only that method
         if ($source === 'stcpay') {
             return ['stcpay'];
         } elseif ($source === 'applepay') {
@@ -193,8 +214,8 @@ class MoyasarPayment extends BaseController implements PaymentInterface
             return ['creditcard'];
         }
         
-        // Default: all methods
-        return ['creditcard', 'applepay', 'stcpay'];
+        // Use configured payment methods (set via constructor or setter)
+        return $this->payment_methods;
     }
 
     /**
