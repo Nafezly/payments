@@ -140,21 +140,10 @@
             @if(isset($data['metadata']))
             metadata: {!! json_encode($data['metadata']) !!},
             @endif
-            on_initiating: function() {
-                console.log('Payment initiated');
-                return true;
-            },
             on_completed: function(payment) {
                 console.log('Payment completed', payment);
                 document.getElementById('payment-loader').classList.add('active');
                 document.querySelector('.mysr-form').style.display = 'none';
-          
-                
-                return true;
-            },
-            on_failure: function(error) {
-                console.error('Payment failed', error);
-                return true;
             }
         });
 
