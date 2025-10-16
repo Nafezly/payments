@@ -13,6 +13,8 @@ class MoyasarPayment extends BaseController implements PaymentInterface
     private $moyasar_publishable_key;
     public $verify_route_name;
     public $app_name;
+    private $apple_pay_label;
+    private $apple_pay_country;
 
     public function __construct()
     {
@@ -21,6 +23,32 @@ class MoyasarPayment extends BaseController implements PaymentInterface
         $this->currency = config('nafezly-payments.MOYASAR_CURRENCY', 'SAR');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
         $this->app_name = config('nafezly-payments.APP_NAME');
+        $this->apple_pay_label = config('nafezly-payments.MOYASAR_APPLE_PAY_LABEL');
+        $this->apple_pay_country = config('nafezly-payments.MOYASAR_APPLE_PAY_COUNTRY', 'SA');
+    }
+
+    /**
+     * Set Apple Pay Label
+     * 
+     * @param string $label
+     * @return $this
+     */
+    public function setApplePayLabel($label)
+    {
+        $this->apple_pay_label = $label;
+        return $this;
+    }
+
+    /**
+     * Set Apple Pay Country
+     * 
+     * @param string $country
+     * @return $this
+     */
+    public function setApplePayCountry($country)
+    {
+        $this->apple_pay_country = $country;
+        return $this;
     }
 
     /**
@@ -70,9 +98,9 @@ class MoyasarPayment extends BaseController implements PaymentInterface
         // Apple Pay Configuration (required if Apple Pay is enabled)
         if (in_array('applepay', $payment_methods)) {
             $data['apple_pay'] = [
-                'label' => config('nafezly-payments.MOYASAR_APPLE_PAY_LABEL', config('nafezly-payments.APP_NAME')),
-                'validate_merchant_url' => config('nafezly-payments.MOYASAR_APPLE_PAY_VALIDATE_URL', url('/')),
-                'country' => config('nafezly-payments.MOYASAR_APPLE_PAY_COUNTRY', 'SA'),
+                'label' => $this->apple_pay_label ?? $this->app_name ?? 'Payment',
+                'validate_merchant_url' => 'https://api.moyasar.com/v1/applepay/initiate',
+                'country' => $this->apple_pay_country ?? 'SA',
             ];
         }
 
