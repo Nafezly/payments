@@ -279,10 +279,13 @@ Route::prefix('payment')->group(function () {
 /*
 Add to .env file:
 
-MOYASAR_API_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxx
 MOYASAR_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxx
 MOYASAR_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxx
 MOYASAR_CURRENCY=SAR
+
+Note: Moyasar uses two types of keys:
+- Secret Key (sk_test_xxx or sk_live_xxx): Used for backend API operations
+- Publishable Key (pk_test_xxx or pk_live_xxx): Used in frontend payment form
 */
 
 // ==========================================

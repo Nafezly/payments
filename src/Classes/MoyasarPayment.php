@@ -9,7 +9,6 @@ use Nafezly\Payments\Classes\BaseController;
 
 class MoyasarPayment extends BaseController implements PaymentInterface
 {
-    private $moyasar_api_key;
     private $moyasar_secret_key;
     private $moyasar_publishable_key;
     public $verify_route_name;
@@ -17,7 +16,6 @@ class MoyasarPayment extends BaseController implements PaymentInterface
 
     public function __construct()
     {
-        $this->moyasar_api_key = config('nafezly-payments.MOYASAR_API_KEY');
         $this->moyasar_secret_key = config('nafezly-payments.MOYASAR_SECRET_KEY');
         $this->moyasar_publishable_key = config('nafezly-payments.MOYASAR_PUBLISHABLE_KEY');
         $this->currency = config('nafezly-payments.MOYASAR_CURRENCY', 'SAR');
@@ -69,6 +67,15 @@ class MoyasarPayment extends BaseController implements PaymentInterface
             'payment_id' => $unique_id,
         ];
 
+        // Apple Pay Configuration (required if Apple Pay is enabled)
+        if (in_array('applepay', $payment_methods)) {
+            $data['apple_pay'] = [
+                'label' => config('nafezly-payments.MOYASAR_APPLE_PAY_LABEL', config('nafezly-payments.APP_NAME')),
+                'validate_merchant_url' => config('nafezly-payments.MOYASAR_APPLE_PAY_VALIDATE_URL', url('/')),
+                'country' => config('nafezly-payments.MOYASAR_APPLE_PAY_COUNTRY', 'SA'),
+            ];
+        }
+
         // إضافة معلومات العميل إذا كانت متوفرة
         if ($this->user_email) {
             $data['metadata'] = [
@@ -106,7 +113,7 @@ class MoyasarPayment extends BaseController implements PaymentInterface
 
         try {
             // Fetch payment details from Moyasar API
-            $response = Http::withBasicAuth($this->moyasar_api_key, '')
+            $response = Http::withBasicAuth($this->moyasar_secret_key, '')
                 ->get('https://api.moyasar.com/v1/payments/' . $payment_id)
                 ->json();
 

@@ -35,7 +35,6 @@
 تم إضافة:
 ```php
 #MOYASAR
-'MOYASAR_API_KEY'=>env('MOYASAR_API_KEY'),
 'MOYASAR_SECRET_KEY'=>env('MOYASAR_SECRET_KEY'),
 'MOYASAR_PUBLISHABLE_KEY'=>env('MOYASAR_PUBLISHABLE_KEY'),
 'MOYASAR_CURRENCY'=>env('MOYASAR_CURRENCY','SAR'),
@@ -58,18 +57,25 @@
 
 ```env
 # Moyasar Payment Gateway
-MOYASAR_API_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxx
 MOYASAR_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxx
 MOYASAR_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxx
 MOYASAR_CURRENCY=SAR
 ```
 
+**ملاحظة مهمة:** Moyasar يستخدم نوعين من المفاتيح فقط:
+- **Secret Key** (`sk_test_xxx` أو `sk_live_xxx`): يُستخدم لجميع عمليات Backend API (التحقق، الاستعلام، إلخ)
+- **Publishable Key** (`pk_test_xxx` أو `pk_live_xxx`): يُستخدم فقط في نموذج الدفع بالـ Frontend
+- **لا تشارك Secret Key أبدًا في كود Frontend!**
+
 ### 2. الحصول على مفاتيح API
 
 1. سجل في [لوحة تحكم Moyasar](https://dashboard.moyasar.com/register/new)
 2. انتقل إلى الإعدادات > API Keys
-3. انسخ مفاتيح الاختبار (تبدأ بـ `pk_test_` و `sk_test_`)
-4. للإنتاج، استخدم المفاتيح الحية (تبدأ بـ `pk_live_` و `sk_live_`)
+3. ستجد مفتاحين:
+   - **Secret Key**: للاستخدام في Backend (يبدأ بـ `sk_test_` أو `sk_live_`)
+   - **Publishable Key**: للاستخدام في Frontend (يبدأ بـ `pk_test_` أو `pk_live_`)
+4. للاختبار، استخدم مفاتيح Test
+5. للإنتاج، استخدم مفاتيح Live
 
 ### 3. إعداد المسارات
 

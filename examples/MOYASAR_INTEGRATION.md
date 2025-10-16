@@ -18,18 +18,37 @@ Add the following variables to your `.env` file:
 
 ```env
 # Moyasar Configuration
-MOYASAR_API_KEY=your_api_key_here
-MOYASAR_SECRET_KEY=your_secret_key_here
-MOYASAR_PUBLISHABLE_KEY=your_publishable_key_here
+MOYASAR_SECRET_KEY=sk_test_your_secret_key_here
+MOYASAR_PUBLISHABLE_KEY=pk_test_your_publishable_key_here
 MOYASAR_CURRENCY=SAR
+
+# Apple Pay Configuration (Optional - Required only if using Apple Pay)
+MOYASAR_APPLE_PAY_LABEL="Your Store Name"
+MOYASAR_APPLE_PAY_VALIDATE_URL="https://yourdomain.com"
+MOYASAR_APPLE_PAY_COUNTRY=SA
 ```
 
 ### Getting API Keys
 1. Sign up for a Moyasar account at [https://dashboard.moyasar.com/register/new](https://dashboard.moyasar.com/register/new)
 2. Navigate to Settings > API Keys
-3. Copy your API Key and Publishable Key
-4. For testing, use test keys (starts with `pk_test_` and `sk_test_`)
-5. For production, use live keys (starts with `pk_live_` and `sk_live_`)
+3. Copy your **Secret Key** (for backend operations) and **Publishable Key** (for frontend form)
+4. For testing, use test keys:
+   - Secret Key: starts with `sk_test_`
+   - Publishable Key: starts with `pk_test_`
+5. For production, use live keys:
+   - Secret Key: starts with `sk_live_`
+   - Publishable Key: starts with `pk_live_`
+
+**Important Notes:**
+- The **Secret Key** is used for all backend API operations (verification, fetching payments, etc.)
+- The **Publishable Key** is used only in the frontend payment form
+- Never expose your Secret Key in frontend code!
+
+**Apple Pay Configuration (Optional):**
+If you plan to use Apple Pay, you must provide:
+- **Label**: Your store name that appears to customers
+- **Validate Merchant URL**: Your website URL (for merchant verification)
+- **Country**: ISO 3166-1 alpha-2 country code (e.g., SA, AE, US)
 
 ## Usage
 

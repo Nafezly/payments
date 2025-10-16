@@ -134,6 +134,9 @@
             @if(in_array('creditcard', $data['methods']))
             supported_networks: {!! json_encode($data['supported_networks']) !!},
             @endif
+            @if(isset($data['apple_pay']))
+            apple_pay: {!! json_encode($data['apple_pay']) !!},
+            @endif
             @if(isset($data['metadata']))
             metadata: {!! json_encode($data['metadata']) !!},
             @endif

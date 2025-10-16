@@ -28,12 +28,16 @@
 
 ## 🚀 الاستخدام السريع
 
-### 1. أضف المفاتيح في `.env`:
+### 1. إضافة المفاتيح في `.env`:
 ```env
-MOYASAR_API_KEY=sk_test_xxxxxxxx
+MOYASAR_SECRET_KEY=sk_test_xxxxxxxx
 MOYASAR_PUBLISHABLE_KEY=pk_test_xxxxxxxx
 MOYASAR_CURRENCY=SAR
 ```
+
+**ملاحظة:** تحتاج فقط لمفتاحين من Moyasar:
+- **Secret Key**: للعمليات في Backend
+- **Publishable Key**: لنموذج الدفع في Frontend
 
 ### 2. استخدم في الكود:
 ```php

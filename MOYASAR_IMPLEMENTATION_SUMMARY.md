@@ -256,11 +256,15 @@ $this->app->bind(MoyasarPayment::class, function () {
 ## 🔧 متطلبات البيئة
 
 ```env
-MOYASAR_API_KEY=sk_test_xxxx
 MOYASAR_SECRET_KEY=sk_test_xxxx
 MOYASAR_PUBLISHABLE_KEY=pk_test_xxxx
 MOYASAR_CURRENCY=SAR
 ```
+
+**توضيح المفاتيح:**
+Moyasar يستخدم نظام مفاتيح مزدوج:
+- **Secret Key** (`sk_test_xxx` أو `sk_live_xxx`): يُستخدم في Backend لجميع عمليات API
+- **Publishable Key** (`pk_test_xxx` أو `pk_live_xxx`): يُستخدم في Frontend لنموذج الدفع فقط
 
 ---
 
