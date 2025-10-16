@@ -34,6 +34,7 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Payrexx](https://payrexx.com/en/)
 - [Creptomus](https://cryptomus.com/)
 - [SkipCash](https://skipcash.app/)
+- [Moyasar](https://moyasar.com/)
 - [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 
 ## Installation
