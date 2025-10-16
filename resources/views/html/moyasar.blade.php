@@ -144,6 +144,7 @@
                 console.log('Payment completed', payment);
                 document.getElementById('payment-loader').classList.add('active');
                 document.querySelector('.mysr-form').style.display = 'none';
+                    return true;
                 
                 // Optional: Save payment to backend
                 // await savePaymentToBackend(payment);

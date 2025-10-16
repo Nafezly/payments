@@ -160,10 +160,36 @@ class MoyasarPayment extends BaseController implements PaymentInterface
         }
 
         try {
+            // Debug: Check if secret key is set
+            if (empty($this->moyasar_secret_key)) {
+                return [
+                    'success' => false,
+                    'payment_id' => $payment_id,
+                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                    'process_data' => ['error' => 'MOYASAR_SECRET_KEY is not configured']
+                ];
+            }
+
             // Fetch payment details from Moyasar API
-            $response = Http::withBasicAuth($this->moyasar_secret_key, '')
-                ->get('https://api.moyasar.com/v1/payments/' . $payment_id)
-                ->json();
+            $httpResponse = Http::withBasicAuth($this->moyasar_secret_key, '')
+                ->get('https://api.moyasar.com/v1/payments/' . $payment_id);
+            
+            $response = $httpResponse->json();
+
+            // Check for HTTP errors
+            if ($httpResponse->failed()) {
+                return [
+                    'success' => false,
+                    'payment_id' => $payment_id,
+                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                    'process_data' => [
+                        'error' => 'API request failed',
+                        'status_code' => $httpResponse->status(),
+                        'response' => $response,
+                        'secret_key_prefix' => substr($this->moyasar_secret_key, 0, 8) . '...' // For debugging only
+                    ]
+                ];
+            }
 
             if (isset($response['status']) && $response['status'] === 'paid') {
                 return [
