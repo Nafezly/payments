@@ -167,59 +167,78 @@ return [
 ];
 ```
 
-## Web.php MUST Have Route with name “verify-payment”
+## Web.php MUST Have Route with name “verify-payment”.
+by using ```->name('verify-payment');``` after route must recieve callback response
 
 ```php
 Route::get('/payments/verify/{payment?}',[FrontController::class,'payment_verify'])->name('verify-payment');
 ```
 
-## How To Use
+## 💳 Usage
 
-```jsx
+### 1️⃣ Send Pay Request
+
+```php
 use Nafezly\Payments\Classes\PaymobPayment;
 
 $payment = new PaymobPayment();
 
-//pay function
-$payment->pay(
-	$amount, 
-	$user_id = null, 
-	$user_first_name = null, 
-	$user_last_name = null, 
-	$user_email = null, 
-	$user_phone = null, 
-	$source = null
+// Quick usage
+$response = $payment->pay(
+    $amount,
+    $user_id,
+    $user_first_name,
+    $user_last_name,
+    $user_email,
+    $user_phone
 );
 
-//or use
-$payment->setUserId($id)
-        ->setUserFirstName($first_name)
-        ->setUserLastName($last_name)
-        ->setUserEmail($email)
-        ->setUserPhone($phone)
-        ->setCurrency($currency)
-        ->setAmount($amount)
-        ->pay();
+// Or Use
+$response = $payment->setUserId($id)
+    ->setUserFirstName($first_name)
+    ->setUserLastName($last_name)
+    ->setUserEmail($email)
+    ->setUserPhone($phone)
+    ->setCurrency($currency)
+    ->setAmount($amount)
+    ->pay();
 
-//pay function response 
+/*
 [
-	'payment_id'=>"", // refrence code that should stored in your orders table
-	'redirect_url'=>"", // redirect url available for some payment gateways
-	'html'=>"" // rendered html available for some payment gateways
+  'payment_id'   => "UNIQUE_CODE",   // Store this in your orders table
+  'redirect_url' => "https://...",   // Redirect link (if available)
+  'html'         => "<form>...</form>" // Rendered HTML (if available)
 ]
-
-//verify function
-$payment->verify($request);
-
-//outputs
-[
-	'success'=>true,//or false
-    'payment_id'=>"PID",
-	'message'=>"Done Successfully",//message for client
-	'process_data'=>""//payment response
-]
-
+*/
 ```
+
+---
+
+### 2️⃣ Verify Payment Response
+
+```php
+// After the customer returns from the payment gateway
+$verify = $payment->verify($request);
+
+/*
+[
+  'success'      => true,            // true/false
+  'payment_id'   => "UNIQUE_CODE",   // Same code stored in orders table
+  'message'      => "Payment completed successfully",
+  'process_data' => [...]            // Full gateway response
+]
+*/
+```
+
+---
+
+## 📌 Notes
+
+- Always save the **payment_id** in your orders table as the reference ID.  
+- Some gateways return a `redirect_url` that you need to redirect the customer to, or an `html` snippet you should render directly.  
+- Always use the **verify** method after the customer returns, to confirm whether the payment was successful.  
+
+---
 ### Factory Pattern Use
 you can pass only method name without payment key word like (Fawry,Paymob,Opay ...etc) 
 and the factory will return the payment instance for you , use it as you want ;)
@@ -244,4 +263,3 @@ and the factory will return the payment instance for you , use it as you want ;)
 - [Tap](https://developers.tap.company/reference/testing-cards)
 - [Opay](https://doc.opaycheckout.com/end-to-end-testing)
 - [PayTabs](https://support.paytabs.com/en/support/solutions/articles/60000712315-what-are-the-test-cards-available-to-perform-payments-)
-
