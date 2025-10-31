@@ -4,15 +4,23 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Made With Love](https://img.shields.io/badge/Made%20With-Love-orange.svg)](https://github.com/chetanraj/awesome-github-badges)
 
-Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccept - Kashier - Hyperpay - Tap - Opay - Paytabs - Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)
-![gateways.jpg](https://github.com/nafezly/payments/blob/master/gateways.jpg?raw=true&v=8)
+A unified payment helper and wrapper supporting global and regional payment gateways:
+
+PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, CoinPayments, PerfectMoney, Cryptomus, Payrexx, Wise, Changelly, OneLat, Kashier — including mobile wallets (Vodafone Cash, Orange Money, Etisalat Cash, Meeza Wallet), and more.
+
+![gateways.jpg](https://github.com/nafezly/payments/blob/master/gateways.jpg?raw=true&v=9)
 
 
 ## Supported gateways
 
+## Supported Gateways
+
 - [PayPal](https://paypal.com/)
+- [PayPal Credit Cards](https://developer.paypal.com/docs/checkout/standard/)
+- [Stripe](https://stripe.com/)
 - [PayMob](https://paymob.com/)
 - [WeAccept](https://paymob.com/)
+- [Paymob Wallets (Vodafone Cash / Orange Money / Etisalat Cash / Meeza Wallet)](https://paymob.com/)
 - [Kashier](https://kashier.io/)
 - [Fawry](https://fawry.com/)
 - [HyperPay](https://www.hyperpay.com/)
@@ -20,20 +28,26 @@ Payment Helper of Payment Gateways ( PayPal - Paymob - Fawry - Thawani - WeAccep
 - [Tap](https://www.tap.company/)
 - [Opay](https://www.opaycheckout.com/)
 - [Paytabs](https://site.paytabs.com/)
-- [Binance](https://www.binance.com/en)
-- [PerfectMoney](https://PerfectMoney.com/)
-- [NowPayments](https://NowPayments.io/)
-- [Payeer](https://payeer.com)
-- [Telr](https://telr.com)
-- [Clickpay](https://clickpay.com.sa/)
-- [Coinpayments](https://www.coinpayments.net/)
+- [Binance](https://www.binance.com/)
+- [PerfectMoney](https://perfectmoney.com/)
+- [NowPayments](https://nowpayments.io/)
+- [NowPayments Invoice](https://nowpayments.io/)
+- [Payeer](https://payeer.com/)
+- [Telr](https://telr.com/)
+- [ClickPay](https://clickpay.com.sa/)
+- [CoinPayments](https://www.coinpayments.net/)
 - [BigPay](https://www.big-pay.com/)
 - [Enot](https://enot.io/)
-- [PAYCEC](https://www.paycec.com/eg-en)
-- [PayPal Credit Cards](https://developer.paypal.com/docs/checkout/standard/)
-- [Payrexx](https://payrexx.com/en/)
-- [Creptomus](https://cryptomus.com/)
-- [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
+- [PAYCEC](https://www.paycec.com/)
+- [Payrexx](https://payrexx.com/)
+- [Cryptomus](https://cryptomus.com/)
+- [PaySky](https://paysky.io/)
+- [Prime Payments](https://primepayments.com/)
+- [Wise](https://wise.com/)
+- [OneLat](https://one.lat/)
+- [Changelly](https://changelly.com/)
+- [YallaPay](https://yallapay.io/)
+
 
 ## Installation
 
