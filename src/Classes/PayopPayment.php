@@ -128,6 +128,13 @@ class PayopPayment extends BaseController implements PaymentInterface
                     'message' => "",
                     'process_data' => $request->all()
                 ];
+            }else{
+                return [
+                    'success' => false,
+                    'payment_id'=>$invoice_id,
+                    'message' => "",
+                    'process_data' => $res
+                ];
             }
         }
         return [
