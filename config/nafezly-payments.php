@@ -177,6 +177,9 @@ return [
     'ONELAT_CHECKOUT_BASE_URL'=>env('ONELAT_CHECKOUT_BASE_URL','https://one.lat/checkout'),
 
 
+    'PAYOP_PUBLIC_KEY'=>env('PAYOP_PUBLIC_KEY'),
+    'PAYOP_SECRET_KEY'=>env('PAYOP_SECRET_KEY'),
+    'PAYOP_JWT'=>env('PAYOP_JWT'),//null
 
 
     
