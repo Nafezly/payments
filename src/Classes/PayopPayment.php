@@ -124,7 +124,7 @@ class PayopPayment extends BaseController implements PaymentInterface
             if(isset($res['data']['status']) && in_array($res['data']['status'], ['success','paid'])){
                 return [
                     'success' => true,
-                    'payment_id'=>$payment_id,
+                    'payment_id'=>$invoice_id,
                     'message' => "",
                     'process_data' => $request->all()
                 ];
@@ -132,7 +132,7 @@ class PayopPayment extends BaseController implements PaymentInterface
         }
         return [
             'success' => false,
-            'payment_id'=>$payment_id,
+            'payment_id'=>$invoice_id,
             'message' => "",
             'process_data' => $request->all()
         ]; 
