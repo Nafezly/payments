@@ -130,6 +130,7 @@ class PayopPayment extends BaseController implements PaymentInterface
                     'process_data' => $response_json
                 ];
             }else{
+                if($response_json = 
                 return [
                     'success' => false,
                     'payment_id'=>$invoice_id,
