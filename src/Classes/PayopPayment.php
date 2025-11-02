@@ -120,20 +120,21 @@ class PayopPayment extends BaseController implements PaymentInterface
         }
 
         if($invoice_id != ""){
-            $res = \Http::get('https://api.payop.com/v1/invoices/'.$invoice_id)->json();
-            if(isset($res['data']['status']) && in_array($res['data']['status'], ['success','paid'])){
+            $response = \Http::get('https://api.payop.com/v1/invoices/'.$invoice_id);
+            $response_json = $response->json();
+            if(isset($response_json['data']['status']) && in_array($response_json['data']['status'], ['success','paid'])){
                 return [
                     'success' => true,
                     'payment_id'=>$invoice_id,
                     'message' => "",
-                    'process_data' => $request->all()
+                    'process_data' => $response_json
                 ];
             }else{
                 return [
                     'success' => false,
                     'payment_id'=>$invoice_id,
                     'message' => "",
-                    'process_data' => $res
+                    'process_data' => $response->body()
                 ];
             }
         }
