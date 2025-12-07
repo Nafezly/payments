@@ -79,31 +79,35 @@ class KashierPayment extends BaseController implements PaymentInterface
         ];
 
 
-        if($this->hosted_payment == false)
+        if($this->hosted_payment == false){
             return [
                 'payment_id' => $unique_id,
                 'html' => $this->generate_html($data),
                 'redirect_url'=>""
             ];
-        else
+        }
+        else{
+            $query = http_build_query([
+                'merchantId'        => $this->kashier_account_key,
+                'orderId'           => $order_id,
+                'amount'            => $data['amount'],
+                'currency'          => $data['currency'],
+                'hash'              => $hash,
+                'mode'              => 'live',
+                'merchantRedirect'  => route($this->verify_route_name, ['payment' => "kashier"]),
+                'serverWebhook'     => route($this->verify_route_name, ['payment' => "kashier"]),
+                'paymentRequestId'  => $order_id,
+                'allowedMethods'    => $this->source??"card,bank_installments,wallet,fawry",
+                'failureRedirect'   => route($this->verify_route_name, ['payment' => "kashier"]),
+            ]);
+
+            $url = "https://payments.kashier.io/?$query";
             return [
                 'payment_id' => $unique_id,
                 'html'=>"",
-                'redirect_url'=>
-                "https://payments.kashier.io/?merchantId=".$mid."&
-                   orderId=".$order_id."&
-                   amount=".$amount."&
-                   currency=".$this->currency."&
-                   hash=".$hash."&
-                   mode=live&
-                   merchantRedirect=".route($this->verify_route_name, ['payment' => "kashier"])."&
-                   serverWebhook=".route($this->verify_route_name, ['payment' => "kashier"])."&
-                  paymentRequestId=".$order_id."&
-                  allowedMethods=".$data['source']."&
-                  defaultMethod=".$data['source']."&
-                  failureRedirect=".route($this->verify_route_name, ['payment' => "kashier"])
-
+                'redirect_url'=>$url
             ];
+        }
 
     }
 
