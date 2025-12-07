@@ -12,6 +12,7 @@ trait SetVariables
     public $source = null;
     public $currency = null;
     public $amount = null;
+    public $language = "ar";
 
 
     public function setPaymentId($value)
@@ -138,6 +139,11 @@ trait SetVariables
         if($user_email!=null)$this->setUserEmail($user_email);
         if($user_phone!=null)$this->setUserPhone($user_phone);
         if($source!=null)$this->setSource($source);
+    }
+
+
+    public function setLanguage($language="ar"){
+        $this->language = $language;
     }
     
 
