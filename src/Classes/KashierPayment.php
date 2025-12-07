@@ -94,6 +94,7 @@ class KashierPayment extends BaseController implements PaymentInterface
                 'currency'          => $data['currency'],
                 'hash'              => $hash,
                 'mode'              => 'live',
+                'language'          => $this->language,
                 'merchantRedirect'  => route($this->verify_route_name, ['payment' => "kashier"]),
                 'serverWebhook'     => route($this->verify_route_name, ['payment' => "kashier"]),
                 'paymentRequestId'  => $order_id,
