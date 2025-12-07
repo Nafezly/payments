@@ -145,6 +145,5 @@ trait SetVariables
     public function setLanguage($language="ar"){
         $this->language = $language;
     }
-    
 
 }
