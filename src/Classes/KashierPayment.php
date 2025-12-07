@@ -93,7 +93,7 @@ class KashierPayment extends BaseController implements PaymentInterface
                 'amount'            => $data['amount'],
                 'currency'          => $data['currency'],
                 'hash'              => $hash,
-                'mode'              => 'live',
+                'mode'              => $this->kashier_mode == "live"?'live':'test',
                 'language'          => $this->language,
                 'display'           => $this->language,
                 'merchantRedirect'  => route($this->verify_route_name, ['payment' => "kashier"]),
@@ -103,7 +103,7 @@ class KashierPayment extends BaseController implements PaymentInterface
                 'failureRedirect'   => route($this->verify_route_name, ['payment' => "kashier"]),
             ]);
 
-            $url = "https://payments.kashier.io/?$query";
+            $url = $this->kashier_url."/?$query";
             return [
                 'payment_id' => $unique_id,
                 'html'=>"",
