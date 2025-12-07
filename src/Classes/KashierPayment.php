@@ -170,10 +170,12 @@ class KashierPayment extends BaseController implements PaymentInterface
 
     public function setAutoRedirectOnFail($value=false){
         $this->auto_redirect_back_on_fail = $value;
+        return $this;
     }
     
     public function setHostedPayment($value=false){
         $this->hosted_payment = $value;
+        return $this;
     }
 
 }
