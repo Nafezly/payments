@@ -62,7 +62,7 @@ class PrimePayment extends BaseController implements PaymentInterface
             'innerID' => $unique_id,
             'payWay' => $this->source??'1', // например 1 для карт, 5 для qiwi
             'directPay'=>"1",
-            'lang'=>"EN",  
+            'lang'=>$this->language,  
             'email' => $this->user_email, // e-mail
             'returnLink' => 1 // returnLink=1 нужно только для API v1
         ];

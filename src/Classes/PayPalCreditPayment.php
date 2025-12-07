@@ -118,7 +118,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
         //dd($data);
         $response = Http::withHeaders([
             'Content-Type'=> 'application/json',
-            'Accept-Language' => 'ar_SA',
+            'Accept-Language' =>  in_array($this->language, ['ar_SA','en_US'])?$this->language:'ar_SA',
             'Authorization'=> 'Basic '.base64_encode($this->paypal_credit_client_id.':'.$this->paypal_credit_secret)
         ])->post('https://api-m'.$mode.'.paypal.com/v2/checkout/orders',$data);
 

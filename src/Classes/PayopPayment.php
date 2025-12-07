@@ -74,7 +74,7 @@ class PayopPayment extends BaseController implements PaymentInterface
                 'name'=>$this->user_first_name." ".$this->user_last_name,
             ],
             "paymentMethod" => $this->source??"700001",
-            "language" => "en",
+            "language" => $this->language,
             "resultUrl" => route($this->verify_route_name,['payment'=>"payop",'payment_id'=>$unique_id]),
             "failPath" => route($this->verify_route_name,['payment'=>"payop",'payment_id'=>$unique_id]),
         ];

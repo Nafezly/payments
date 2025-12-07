@@ -60,7 +60,7 @@ class ClickPayPayment extends BaseController implements PaymentInterface
             "cart_currency" => $this->currency??"SAR",
             "cart_amount" => $this->amount,
             "cart_description" => "Credit",
-            "paypage_lang" => "ar",
+            "paypage_lang" => $this->language,
             "customer_details" => [
                 "name" => $this->user_first_name.' '.$this->user_last_name,
                 "email" => $this->user_email,

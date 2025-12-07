@@ -12,10 +12,13 @@ class KashierPayment extends BaseController implements PaymentInterface
     public  $kashier_url;
     public  $kashier_webhook_url;
     public  $kashier_mode;
-    private $kashier_account_key;
+    public  $kashier_account_key;
     private $kashier_iframe_key;
     private $kashier_token;
     public  $app_name;
+    public  $auto_redirect_back_on_fail = false;
+    public  $hosted_payment = false;
+
 
     private $verify_route_name;
 
@@ -68,15 +71,39 @@ class KashierPayment extends BaseController implements PaymentInterface
             'order_id' => $order_id,
             'path' => $path,
             'hash' => $hash,
-            'source'=>$this->source,
+            'source'=>$this->source??"card,bank_installments,wallet,fawry",
+            'auto_redirect_back_on_fail'=>$this->auto_redirect_back_on_fail,
+            'language'=>$this->language,
+            'hosted_payment'=>$this->hosted_payment,
             'redirect_back' => route($this->verify_route_name, ['payment' => "kashier"])
         ];
 
-        return [
-            'payment_id' => $unique_id,
-            'html' => $this->generate_html($data),
-            'redirect_url'=>""
-        ];
+
+        if($this->hosted_payment == false)
+            return [
+                'payment_id' => $unique_id,
+                'html' => $this->generate_html($data),
+                'redirect_url'=>""
+            ];
+        else
+            return [
+                'payment_id' => $unique_id,
+                'html'=>"",
+                'redirect_url'=>
+                "https://payments.kashier.io/?merchantId=".$mid."&
+                   orderId=".$order_id."&
+                   amount=".$amount."&
+                   currency=".$this->currency."&
+                   hash=".$hash."&
+                   mode=live&
+                   merchantRedirect=".route($this->verify_route_name, ['payment' => "kashier"])."&
+                   serverWebhook=".route($this->verify_route_name, ['payment' => "kashier"])."&
+                  paymentRequestId=".$order_id."&
+                  allowedMethods=".$data['source']."&
+                  defaultMethod=".$data['source']."&
+                  failureRedirect=".route($this->verify_route_name, ['payment' => "kashier"])
+
+            ];
 
     }
 
@@ -139,6 +166,14 @@ class KashierPayment extends BaseController implements PaymentInterface
     private function generate_html($data): string
     {
         return view('nafezly::html.kashier', ['model' => $this, 'data' => $data])->render();
+    }
+
+    public function setAutoRedirectOnFail($value=false){
+        $this->auto_redirect_back_on_fail = $value;
+    }
+    
+    public function setHostedPayment($value=false){
+        $this->hosted_payment = $value;
     }
 
 }

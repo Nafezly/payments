@@ -14,6 +14,8 @@ data-serverWebhook="{{$data['webhook_url']}}"
 data-merchantId="{{ $data['mid'] }}"
 data-merchantRedirect="{{ $data['redirect_back'] }}" 
 data-store="{{ $model->app_name }}"
-data-type="external" data-display="ar">
+data-type="external" data-display="{{$data['language']}}"
+data-failureRedirect="{{$data['auto_redirect_back_on_fail']}}"
+>
 </script>
 </body>
