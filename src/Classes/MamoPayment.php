@@ -113,10 +113,10 @@ class MamoPayment extends BaseController implements PaymentInterface
             }
             $json_response= $response->json();
             if($response->ok() && 
-                (
-                    (isset($json_response['charges'][0]['status']) && 
+                
+                    isset($json_response['charges'][0]['status']) && 
                     $json_response['charges'][0]['status'] == "captured"
-                )
+                
 
             ){
                 return [
