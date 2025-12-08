@@ -53,7 +53,7 @@ class MamoPayment extends BaseController implements PaymentInterface
 
         try{
             $response = \Http::withToken($this->mamopayment_api_key)
-            ->post($this->mamopayment_base_url."/links",$payload);
+            ->post($this->mamopayment_base_url."/manage_api/v1/links",$payload);
             if ($response->failed()) {
                 return [
                     'payment_id'=>$unique_id,
@@ -113,11 +113,8 @@ class MamoPayment extends BaseController implements PaymentInterface
             }
             $json_response= $response->json();
             if($response->ok() && 
-                
                     isset($json_response['charges'][0]['status']) && 
                     $json_response['charges'][0]['status'] == "captured"
-                
-
             ){
                 return [
                     'success' => true,
