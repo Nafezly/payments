@@ -57,7 +57,7 @@ class MamoPayment extends BaseController implements PaymentInterface
             if ($response->failed()) {
                 return [
                     'payment_id'=>$unique_id,
-                    'html'=>$response,
+                    'html'=>$response->body(),
                     'redirect_url'=>""
                 ]; 
             }
