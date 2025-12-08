@@ -182,5 +182,10 @@ return [
     'PAYOP_JWT'=>env('PAYOP_JWT'),//null
 
 
+    'MAMOPAYMENT_BASE_URL'=>env('MAMOPAYMENT_BASE_URL','https://business.mamopay.com'),
+    'MAMOPAYMENT_API_KEY'=>env('MAMOPAYMENT_API_KEY'),
+
+        
     
+
 ];
