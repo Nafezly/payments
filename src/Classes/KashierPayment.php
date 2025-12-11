@@ -89,7 +89,7 @@ class KashierPayment extends BaseController implements PaymentInterface
         else{
             $query = http_build_query([
                 'merchantId'        => $this->kashier_account_key,
-                'orderId'           => $order_id,
+                'orderId'           => $data['order_id'],
                 'amount'            => $data['amount'],
                 'currency'          => $data['currency'],
                 'hash'              => $hash,
@@ -98,7 +98,7 @@ class KashierPayment extends BaseController implements PaymentInterface
                 'display'           => $this->language,
                 'merchantRedirect'  => route($this->verify_route_name, ['payment' => "kashier"]),
                 'serverWebhook'     => route($this->verify_route_name, ['payment' => "kashier"]),
-                'paymentRequestId'  => $order_id,
+                'paymentRequestId'  => $data['order_id'],
                 'allowedMethods'    => $this->source??"card,bank_installments,wallet,fawry",
                 'failureRedirect'   => route($this->verify_route_name, ['payment' => "kashier"]),
             ]);
