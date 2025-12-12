@@ -82,7 +82,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                 "paypal" => [
                     "experience_context" => [
                         "payment_method_preference" => "UNRESTRICTED",
-                        "locale" => "ar-SA",
+                        "locale" => $this->language??"ar-SA",
                         "shipping_preference" => $this->source??"NO_SHIPPING",
                         "return_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
                         "cancel_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
