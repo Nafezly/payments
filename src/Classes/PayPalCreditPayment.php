@@ -127,6 +127,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             return [
                 'payment_id'=>$response['id'],
                 'html' => /*$response*/ $this->generate_html([
+                    'language'=>$this->language,
                     'response'=>$response,
                     'currency'=>$this->currency??"USD",
                     'return_url'=>route($this->verify_route_name,['payment'=>'paypal_credit']),

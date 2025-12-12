@@ -54,6 +54,7 @@ function emulateFetch(intent) {
 document.addEventListener("click", handle_click);
 var paypal_sdk_url = "https://www.paypal.com/sdk/js";
 var client_id = "{{$data['paypal_client_id']}}";
+var language = "{{$data['language']=='en_US'??'en_US':'ar_EG'}}";
 var currency = "USD";
 var intent = "capture";
 var alerts = document.getElementById("alerts");
@@ -65,7 +66,7 @@ var alerts = document.getElementById("alerts");
 
 //PayPal Code
 //https://developer.paypal.com/sdk/js/configuration/#link-queryparameters
-url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&currency=" + currency + "&intent=" + intent+"&locale=ar_EG")
+url_to_head(paypal_sdk_url + "?client-id=" + client_id + "&enable-funding=venmo&currency=" + currency + "&intent=" + intent+"&locale="+language)
 .then(() => {
     //Handle loading spinner
     document.getElementById("loading").classList.add("hide");
