@@ -30,6 +30,16 @@ class TapPayment extends BaseController implements PaymentInterface
     }
 
     /**
+     * Get language in Tap format (ar, en)
+     *
+     * @return string
+     */
+    protected function getTapLang()
+    {
+        return $this->language;
+    }
+
+    /**
      * @param $amount
      * @param null $user_id
      * @param null $user_first_name
@@ -54,10 +64,14 @@ class TapPayment extends BaseController implements PaymentInterface
         else
             $unique_id = $this->payment_id;
 
+        // Use setLanguage() if called, otherwise fall back to config
+        // Tap uses lowercase format (ar, en)
+        $lang_code = $this->language ? $this->getTapLang() : $this->tap_lang_code;
+
         $response = Http::withHeaders([
             "authorization" => "Bearer " . $this->tap_secret_key,
             "Content-Type" => "application/json",
-            'lang_code' => $this->tap_lang_code
+            'lang_code' => $lang_code
         ])->post('https://api.tap.company/v2/charges', [
             "amount" => $this->amount,
             "currency" => $this->currency,

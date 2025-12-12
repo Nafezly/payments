@@ -35,6 +35,21 @@ class PayPalPayment extends BaseController implements PaymentInterface
     }
 
     /**
+     * Get language in PayPal format (en-US, ar-SA)
+     *
+     * @return string
+     */
+    protected function getPayPalLocale()
+    {
+        $localeMap = [
+            'ar' => 'ar-SA',
+            'en' => 'en-US'
+        ];
+        
+        return $localeMap[$this->language] ?? 'en-US';
+    }
+
+    /**
      * @param $amount
      * @param null $user_id
      * @param null $user_first_name
@@ -66,6 +81,10 @@ class PayPalPayment extends BaseController implements PaymentInterface
 
         $request = new OrdersCreateRequest();
         $request->prefer('return=representation');
+        
+        // Get PayPal locale format (en-US, ar-SA)
+        $locale = $this->getPayPalLocale();
+        
         $request->body = [
             "intent" => "CAPTURE",
             "purchase_units" => [[
@@ -76,6 +95,7 @@ class PayPalPayment extends BaseController implements PaymentInterface
                 ]
             ]],
             "application_context" => [
+                "locale" => $locale,
                 "cancel_url" => route($this->verify_route_name, ['payment' => "paypal"]),
                 "return_url" => route($this->verify_route_name, ['payment' => "paypal"])
             ]

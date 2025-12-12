@@ -30,6 +30,21 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
     }
 
     /**
+     * Get language in PayPal format (en-US, ar-SA)
+     *
+     * @return string
+     */
+    protected function getPayPalLocale()
+    {
+        $localeMap = [
+            'ar' => 'ar-SA',
+            'en' => 'en-US'
+        ];
+        
+        return $localeMap[$this->language] ?? 'en-US';
+    }
+
+    /**
      * @param $amount
      * @param null $user_id
      * @param null $user_first_name
@@ -82,7 +97,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
                 "paypal" => [
                     "experience_context" => [
                         "payment_method_preference" => "UNRESTRICTED",
-                        "locale" => str_replace('_','-',$this->language)??"ar-SA",
+                        "locale" => $this->getPayPalLocale(),
                         "shipping_preference" => $this->source??"NO_SHIPPING",
                         "return_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
                         "cancel_url" => route($this->verify_route_name,['payment'=>'paypal_credit']),
@@ -116,9 +131,12 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             ];
         $data= array_replace_recursive($data,$this->custom_values);
         //dd($data);
+        // Get PayPal locale format for Accept-Language header
+        $acceptLanguage = $this->getPayPalLocale();
+        
         $response = Http::withHeaders([
             'Content-Type'=> 'application/json',
-            'Accept-Language' =>  in_array($this->language, ['ar_SA','en_US'])?$this->language:'ar_SA',
+            'Accept-Language' => $acceptLanguage,
             'Authorization'=> 'Basic '.base64_encode($this->paypal_credit_client_id.':'.$this->paypal_credit_secret)
         ])->post('https://api-m'.$mode.'.paypal.com/v2/checkout/orders',$data);
 
@@ -127,7 +145,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             return [
                 'payment_id'=>$response['id'],
                 'html' => /*$response*/ $this->generate_html([
-                    'language'=>$this->language,
+                    'language'=>$this->getPayPalLocale(),
                     'response'=>$response,
                     'currency'=>$this->currency??"USD",
                     'return_url'=>route($this->verify_route_name,['payment'=>'paypal_credit']),

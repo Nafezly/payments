@@ -24,6 +24,16 @@ class ClickPayPayment extends BaseController implements PaymentInterface
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
     }
 
+    /**
+     * Get language in ClickPay format (ar, en)
+     *
+     * @return string
+     */
+    protected function getClickPayLang()
+    {
+        return $this->language;
+    }
+
 
 
     /**
@@ -60,7 +70,7 @@ class ClickPayPayment extends BaseController implements PaymentInterface
             "cart_currency" => $this->currency??"SAR",
             "cart_amount" => $this->amount,
             "cart_description" => "Credit",
-            "paypage_lang" => $this->language,
+            "paypage_lang" => $this->getClickPayLang(),
             "customer_details" => [
                 "name" => $this->user_first_name.' '.$this->user_last_name,
                 "email" => $this->user_email,

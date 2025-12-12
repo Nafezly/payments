@@ -24,6 +24,16 @@ class MamoPayment extends BaseController implements PaymentInterface
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
     }
 
+    /**
+     * Get language in Mamo format (ar, en)
+     *
+     * @return string
+     */
+    protected function getMamoLang()
+    {
+        return $this->language;
+    }
+
  
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
@@ -47,7 +57,7 @@ class MamoPayment extends BaseController implements PaymentInterface
             'failure_return_url'=> route($this->verify_route_name,['payment'=>'mamopayment','payment_id'=>$unique_id]),
             'email'=>$this->user_email,
             'external_id'=>$unique_id,
-            'lang'=>$this->language,
+            'lang'=>$this->getMamoLang(),
             
         ];
 

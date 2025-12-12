@@ -28,6 +28,16 @@ class PrimePayment extends BaseController implements PaymentInterface
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
     }
 
+    /**
+     * Get language in Prime format (ar, en)
+     *
+     * @return string
+     */
+    protected function getPrimeLang()
+    {
+        return $this->language;
+    }
+
 
     /**
      * @param $amount
@@ -62,7 +72,7 @@ class PrimePayment extends BaseController implements PaymentInterface
             'innerID' => $unique_id,
             'payWay' => $this->source??'1', // например 1 для карт, 5 для qiwi
             'directPay'=>"1",
-            'lang'=>$this->language,  
+            'lang'=>$this->getPrimeLang(),  
             'email' => $this->user_email, // e-mail
             'returnLink' => 1 // returnLink=1 нужно только для API v1
         ];

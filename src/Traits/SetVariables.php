@@ -142,7 +142,21 @@ trait SetVariables
     }
 
 
+    /**
+     * Sets language - accepts "ar" or "en" and converts to appropriate format
+     *
+     * @param  string  $language
+     * @return $this
+     */
     public function setLanguage($language="ar"){
+        // Normalize to lowercase for internal storage
+        $language = strtolower($language);
+        
+        // Accept only "ar" or "en", default to "ar"
+        if (!in_array($language, ['ar', 'en'])) {
+            $language = 'ar';
+        }
+        
         $this->language = $language;
         return $this;
     }

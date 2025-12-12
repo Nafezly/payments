@@ -35,6 +35,16 @@ class KashierPayment extends BaseController implements PaymentInterface
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
     }
 
+    /**
+     * Get language in Kashier format (ar, en)
+     *
+     * @return string
+     */
+    protected function getKashierLang()
+    {
+        return $this->language;
+    }
+
     
     /**
      * @param $amount
@@ -73,7 +83,7 @@ class KashierPayment extends BaseController implements PaymentInterface
             'hash' => $hash,
             'source'=>$this->source??"card,bank_installments,wallet,fawry",
             'auto_redirect_back_on_fail'=>$this->auto_redirect_back_on_fail,
-            'language'=>$this->language,
+            'language'=>$this->getKashierLang(),
             'hosted_payment'=>$this->hosted_payment,
             'redirect_back' => route($this->verify_route_name, ['payment' => "kashier"])
         ];

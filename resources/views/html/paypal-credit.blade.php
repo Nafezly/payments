@@ -54,7 +54,8 @@ function emulateFetch(intent) {
 document.addEventListener("click", handle_click);
 var paypal_sdk_url = "https://www.paypal.com/sdk/js";
 var client_id = "{{$data['paypal_client_id']}}";
-var language = "{{$data['language']=='en_US'??'en_US':'ar_EG'}}";
+// Language is already in PayPal format (en-US, ar-SA) from the controller
+var language = "{{$data['language'] ?? 'en-US'}}";
 var currency = "USD";
 var intent = "capture";
 var alerts = document.getElementById("alerts");

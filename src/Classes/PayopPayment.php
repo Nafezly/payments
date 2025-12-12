@@ -28,6 +28,16 @@ class PayopPayment extends BaseController implements PaymentInterface
     }
 
     /**
+     * Get language in Payop format (ar, en)
+     *
+     * @return string
+     */
+    protected function getPayopLang()
+    {
+        return $this->language;
+    }
+
+    /**
      * @param $amount
      * @param null $user_id
      * @param null $user_first_name
@@ -74,7 +84,7 @@ class PayopPayment extends BaseController implements PaymentInterface
                 'name'=>$this->user_first_name." ".$this->user_last_name,
             ],
             "paymentMethod" => $this->source??"700001",
-            "language" => $this->language,
+            "language" => $this->getPayopLang(),
             "resultUrl" => route($this->verify_route_name,['payment'=>"payop",'payment_id'=>$unique_id]),
             "failPath" => route($this->verify_route_name,['payment'=>"payop",'payment_id'=>$unique_id]),
         ];
