@@ -41,7 +41,12 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             'en' => 'en-US'
         ];
         
-        return $localeMap[$this->language] ?? 'en-US';
+        // If language is set, use it; otherwise default to en-US
+        if ($this->language && isset($localeMap[$this->language])) {
+            return $localeMap[$this->language];
+        }
+        
+        return 'en-US';
     }
 
     /**
