@@ -9,12 +9,12 @@ use Nafezly\Payments\Classes\BaseController;
 
 class VoletPayment extends BaseController implements PaymentInterface
 {
-    private $volet_account_email;
-    private $volet_sci_name;
-    private $volet_sci_password;
-    private $volet_sci_url;
-    private $verify_route_name;
-    private $currency;
+    public $volet_account_email;
+    public $volet_sci_name;
+    public $volet_sci_password;
+    public $volet_sci_url;
+    public $verify_route_name;
+    public $currency;
 
     public function __construct()
     {
