@@ -214,6 +214,26 @@ return [
     'XPAY_BASE_URL'=>env('XPAY_BASE_URL','https://staging.xpay.app/api/v1'),
     'XPAY_CURRENCY'=>env('XPAY_CURRENCY','EGP'),
 
+
+    #PAYERMAX
+    /*
+    * Base URLs:
+    * Test: https://pay-gate-uat.payermax.com/aggregate-pay/api/gateway
+    * Live: https://pay-gate.payermax.com/aggregate-pay/api/gateway
+    * Authentication: Uses RSA signature (SHA256WithRSA)
+    * Private Key: PKCS8 format (without headers/footers, or with -----BEGIN/END PRIVATE KEY-----)
+    * Public Key: PayerMax public key for signature verification (without headers/footers, or with -----BEGIN/END PUBLIC KEY-----)
+    */
+    'PAYERMAX_APP_ID'=>env('PAYERMAX_APP_ID'),
+    'PAYERMAX_MERCHANT_NO'=>env('PAYERMAX_MERCHANT_NO'),
+    'PAYERMAX_PRIVATE_KEY'=>env('PAYERMAX_PRIVATE_KEY'),
+    'PAYERMAX_PUBLIC_KEY'=>env('PAYERMAX_PUBLIC_KEY'),
+    'PAYERMAX_BASE_URL'=>env('PAYERMAX_BASE_URL','https://pay-gate-uat.payermax.com/aggregate-pay/api/gateway'),
+    'PAYERMAX_VERSION'=>env('PAYERMAX_VERSION','1.4'),
+    'PAYERMAX_KEY_VERSION'=>env('PAYERMAX_KEY_VERSION','1'),
+    'PAYERMAX_CURRENCY'=>env('PAYERMAX_CURRENCY','USD'),
+    'PAYERMAX_COUNTRY'=>env('PAYERMAX_COUNTRY','US'),
+
         
     
 
