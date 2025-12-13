@@ -15,10 +15,10 @@ use Nafezly\Payments\Classes\BaseController;
 
 class YallaPayPayment extends BaseController implements PaymentInterface
 {
-    private $yallapay_public_key;
-    private $yallapay_secret_key;
-    private $yallapay_webhook_secret;
-    private $verify_route_name;
+    public $yallapay_public_key;
+    public $yallapay_secret_key;
+    public $yallapay_webhook_secret;
+    public $verify_route_name;
 
 
     public function __construct()

@@ -16,11 +16,11 @@ use Nafezly\Payments\Classes\BaseController;
 class PaytabsPayment extends BaseController implements PaymentInterface
 {
 
-    private $paytabs_profile_id;
-    private $paytabs_base_url;
-    private $paytabs_server_key;
-    private $paytabs_checkout_lang;
-    private $verify_route_name;
+    public $paytabs_profile_id;
+    public $paytabs_base_url;
+    public $paytabs_server_key;
+    public $paytabs_checkout_lang;
+    public $verify_route_name;
 
 
     public function __construct()

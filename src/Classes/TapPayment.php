@@ -15,10 +15,10 @@ use Nafezly\Payments\Classes\BaseController;
 
 class TapPayment extends BaseController implements PaymentInterface
 {
-    private $tap_secret_key;
-    private $tap_public_key;
-    private $tap_lang_code;
-    private $verify_route_name;
+    public $tap_secret_key;
+    public $tap_public_key;
+    public $tap_lang_code;
+    public $verify_route_name;
 
     public function __construct()
     {

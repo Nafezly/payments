@@ -10,14 +10,14 @@ use Nafezly\Payments\Classes\BaseController;
 
 class PayermaxPayment extends BaseController implements PaymentInterface
 {
-    private $payermax_app_id;
-    private $payermax_merchant_no;
-    private $payermax_private_key;
-    private $payermax_public_key;
-    private $payermax_base_url;
-    private $payermax_version;
-    private $payermax_key_version;
-    private $verify_route_name;
+    public $payermax_app_id;
+    public $payermax_merchant_no;
+    public $payermax_private_key;
+    public $payermax_public_key;
+    public $payermax_base_url;
+    public $payermax_version;
+    public $payermax_key_version;
+    public $verify_route_name;
     
     // Country property (currency is inherited from SetVariables trait)
     public $country = null;

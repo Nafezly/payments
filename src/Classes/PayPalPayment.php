@@ -18,9 +18,9 @@ use Nafezly\Payments\Classes\BaseController;
 
 class PayPalPayment extends BaseController implements PaymentInterface
 {
-    private $paypal_client_id;
-    private $paypal_secret;
-    private $verify_route_name;
+    public $paypal_client_id;
+    public $paypal_secret;
+    public $verify_route_name;
     public $paypal_mode;
     public $currency;
 

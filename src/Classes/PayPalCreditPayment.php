@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Http;
 
 class PayPalCreditPayment extends BaseController implements PaymentInterface
 {
-    private $paypal_credit_client_id;
-    private $paypal_credit_secret;
-    private $verify_route_name;
+    public $paypal_credit_client_id;
+    public $paypal_credit_secret;
+    public $verify_route_name;
     public $paypal_credit_mode;
     public $currency;
     public $custom_values=[];

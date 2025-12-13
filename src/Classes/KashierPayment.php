@@ -13,14 +13,14 @@ class KashierPayment extends BaseController implements PaymentInterface
     public  $kashier_webhook_url;
     public  $kashier_mode;
     public  $kashier_account_key;
-    private $kashier_iframe_key;
-    private $kashier_token;
+    public $kashier_iframe_key;
+    public $kashier_token;
     public  $app_name;
     public  $auto_redirect_back_on_fail = false;
     public  $hosted_payment = false;
 
 
-    private $verify_route_name;
+    public $verify_route_name;
 
     public function __construct()
     {

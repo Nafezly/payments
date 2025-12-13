@@ -11,10 +11,10 @@ use Nafezly\Payments\Classes\BaseController;
 
 class MyFatoorahPayment extends BaseController implements PaymentInterface
 {
-    private $myfatoorah_api_key;
-    private $myfatoorah_base_url;
-    private $verify_route_name;
-    private $currency;
+    public $myfatoorah_api_key;
+    public $myfatoorah_base_url;
+    public $verify_route_name;
+    public $currency;
 
     public function __construct()
     {

@@ -10,11 +10,11 @@ use Nafezly\Payments\Classes\BaseController;
 
 class PaymobPayment extends BaseController implements PaymentInterface
 {
-    private $paymob_public_key;
-    private $paymob_secret_key;
-    private $paymob_integration_id;
-    private $paymob_currency;
-    private $paymob_hmac;
+    public $paymob_public_key;
+    public $paymob_secret_key;
+    public $paymob_integration_id;
+    public $paymob_currency;
+    public $paymob_hmac;
     public $verify_route_name;
 
     public function __construct()
