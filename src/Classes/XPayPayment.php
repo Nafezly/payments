@@ -10,12 +10,12 @@ use Nafezly\Payments\Classes\BaseController;
 
 class XPayPayment extends BaseController implements PaymentInterface
 {
-    private $xpay_api_key;
-    private $xpay_community_id;
-    private $xpay_variable_amount_id;
-    private $xpay_base_url;
-    private $verify_route_name;
-    private $currency;
+    public $xpay_api_key;
+    public $xpay_community_id;
+    public $xpay_variable_amount_id;
+    public $xpay_base_url;
+    public $verify_route_name;
+    public $currency;
 
     public function __construct()
     {
