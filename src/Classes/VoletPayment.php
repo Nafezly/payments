@@ -27,6 +27,29 @@ class VoletPayment extends BaseController implements PaymentInterface
     }
 
     /**
+     * Generate ac_sign signature for payment request form
+     * Format: SHA256(ac_account_email:ac_sci_name:ac_amount:ac_currency:secret:ac_order_id)
+     *
+     * @param string $accountEmail
+     * @param string $sciName
+     * @param string $amount
+     * @param string $currency
+     * @param string $orderId
+     * @return string
+     */
+    private function generateSign($accountEmail, $sciName, $amount, $currency, $orderId)
+    {
+        $signString = $accountEmail . ':' . 
+                     $sciName . ':' . 
+                     $amount . ':' . 
+                     $currency . ':' . 
+                     $this->volet_sci_password . ':' . 
+                     $orderId;
+
+        return hash('sha256', $signString);
+    }
+
+    /**
      * Verify ac_hash from Volet SCI callback
      * Hash format: SHA256(ac_transfer:ac_start_date:ac_sci_name:ac_src_wallet:ac_dest_wallet:ac_order_id:ac_amount:ac_merchant_currency:SCI's password)
      *
@@ -79,10 +102,12 @@ class VoletPayment extends BaseController implements PaymentInterface
         $currency = $this->currency ?? 'USD';
 
         // Prepare form data according to Volet SCI documentation
+        $amountFormatted = number_format((float)$this->amount, 2, '.', '');
+        
         $formData = [
             'ac_account_email' => $this->volet_account_email,
             'ac_sci_name' => $this->volet_sci_name,
-            'ac_amount' => number_format((float)$this->amount, 2, '.', ''),
+            'ac_amount' => $amountFormatted,
             'ac_currency' => $currency,
             'ac_order_id' => $order_id,
             'ac_success_url' => route($this->verify_route_name, ['payment' => 'volet', 'payment_id' => $order_id]),
@@ -92,6 +117,16 @@ class VoletPayment extends BaseController implements PaymentInterface
             'ac_status_url' => route($this->verify_route_name, ['payment' => 'volet', 'payment_id' => $order_id]),
             'ac_status_url_method' => 'POST',
         ];
+
+        // Generate ac_sign signature (required parameter)
+        // Format: SHA256(ac_account_email:ac_sci_name:ac_amount:ac_currency:secret:ac_order_id)
+        $formData['ac_sign'] = $this->generateSign(
+            $this->volet_account_email,
+            $this->volet_sci_name,
+            $amountFormatted,
+            $currency,
+            $order_id
+        );
 
         // Add optional comments if provided
         if ($this->user_email || $this->user_phone) {
