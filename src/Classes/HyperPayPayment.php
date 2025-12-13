@@ -11,12 +11,12 @@ use Nafezly\Payments\Classes\BaseController;
 
 class HyperPayPayment extends BaseController implements PaymentInterface
 {
-    private $hyperpay_url;
+    public $hyperpay_url;
     public $hyperpay_base_url;
-    private $hyperpay_token;
-    private $hyperpay_credit_id;
-    private $hyperpay_mada_id;
-    private $hyperpay_apple_id;
+    public $hyperpay_token;
+    public $hyperpay_credit_id;
+    public $hyperpay_mada_id;
+    public $hyperpay_apple_id;
     public $app_name;
     public $verify_route_name;
     public $payment_id;

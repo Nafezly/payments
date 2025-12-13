@@ -10,8 +10,8 @@ use Nafezly\Payments\Classes\BaseController;
 
 class PaymobWalletPayment extends BaseController implements PaymentInterface
 {
-    private $paymob_api_key;
-    private $paymob_wallet_integration_id;
+    public $paymob_api_key;
+    public $paymob_wallet_integration_id;
 
     public function __construct()
     {

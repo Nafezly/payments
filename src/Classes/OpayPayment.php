@@ -15,12 +15,12 @@ use Nafezly\Payments\Classes\BaseController;
 
 class OpayPayment extends BaseController implements PaymentInterface
 {
-    private $opay_secret_key;
-    private $opay_public_key;
-    private $opay_merchant_id;
-    private $opay_country_code;
-    private $opay_base_url;
-    private $verify_route_name;
+    public $opay_secret_key;
+    public $opay_public_key;
+    public $opay_merchant_id;
+    public $opay_country_code;
+    public $opay_base_url;
+    public $verify_route_name;
 
 
     public function __construct()

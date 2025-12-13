@@ -41,14 +41,9 @@ class XPayPayment extends BaseController implements PaymentInterface
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
         $this->setPassedVariablesToGlobal($amount, $user_id, $user_first_name, $user_last_name, $user_email, $user_phone, $source);
-        // XPay requires: amount, user_email, user_phone, and at least one of user_first_name or user_last_name
-        $required_fields = ['amount', 'user_email', 'user_phone'];
+        // XPay requires: amount, user_email, user_phone, user_first_name, and user_last_name
+        $required_fields = ['amount', 'user_email', 'user_phone', 'user_first_name', 'user_last_name'];
         $this->checkRequiredFields($required_fields, 'XPay');
-        
-        // Check for name (at least first or last name required)
-        if (!$this->user_first_name && !$this->user_last_name) {
-            throw new MissingPaymentInfoException('XPay requires at least user first name or last name');
-        }
 
         if($this->payment_id == null)
             $unique_id = uniqid() . rand(100000, 999999);
@@ -60,7 +55,7 @@ class XPayPayment extends BaseController implements PaymentInterface
         // Prepare billing data (required fields)
         // Name must contain first and last name in English letters with space between them
         $billingData = [
-            'name' => trim(($this->user_first_name ?? '') . ' ' . ($this->user_last_name ?? '')),
+            'name' => trim($this->user_first_name . ' ' . $this->user_last_name),
             'email' => $this->user_email,
             'phone_number' => $this->user_phone, // Must contain country code prefixed (e.g., +201234567890)
         ];
@@ -102,8 +97,15 @@ class XPayPayment extends BaseController implements PaymentInterface
             $transaction_uuid = $responseData['data']['transaction_uuid'] ?? null;
             
             if ($iframe_url) {
+                // IMPORTANT: XPay redirect URL is configured in the XPay Dashboard, NOT in the API request
+                // To set the redirect URL:
+                // 1. Log into XPay Dashboard (https://staging.xpay.app/admin/ for test or https://community.xpay.app/admin/ for live)
+                // 2. Go to your API Payment (variable_amount_id)
+                // 3. Set the "Redirect URL" field (e.g., route('your-verify-route', ['payment' => 'xpay', 'payment_id' => $unique_id]))
+                // 4. After payment completion (success or failure), XPay will redirect to this URL
+                // 5. The redirect URL will contain query parameters: transaction_uuid, transaction_status, amount, amount_piasters
                 return [
-                    'payment_id' => $unique_id,
+                    'payment_id' => $transaction_uuid,
                     'redirect_url' => $iframe_url,
                     'html' => $responseData
                 ];
@@ -124,40 +126,38 @@ class XPayPayment extends BaseController implements PaymentInterface
      */
     public function verify(Request $request): array
     {
-        $payment_id = $request->input('payment_id') ?? $request->route('payment_id');
+        //$payment_id = $request->input('payment_id') ?? $request->route('payment_id');
         
         // XPay callback sends data as JSON body (POST) or query parameters (GET redirect)
         // Callback structure: { "transaction_uuid": "...", "transaction_status": "SUCCESSFUL" | "FAILED", ... }
         
         // Check for callback data (POST request from XPay)
-        $transaction_uuid = $request->input('transaction_uuid') ?? $request->input('transaction_id');
+        $transaction_uuid = $request->input('transaction_id');
         $transaction_status = $request->input('transaction_status');
         
         // Check for redirect data (GET request - redirect URL)
         if (!$transaction_status) {
             $transaction_status = $request->query('transaction_status');
-            $transaction_uuid = $request->query('transaction_uuid') ?? $request->query('transaction_id');
+            $transaction_uuid = $request->query('transaction_id');
         }
 
-        // If we have transaction status from callback/redirect
-        if ($transaction_status) {
-            // XPay returns "SUCCESSFUL" for successful payments, "FAILED" for failed ones
-            if (strtoupper($transaction_status) === 'SUCCESSFUL') {
-                return [
-                    'success' => true,
-                    'payment_id' => $payment_id ?? $request->input('payment_id') ?? $transaction_uuid,
-                    'message' => __('nafezly::messages.PAYMENT_DONE'),
-                    'process_data' => $request->all()
-                ];
-            } else {
-                return [
-                    'success' => false,
-                    'payment_id' => $payment_id ?? $request->input('payment_id') ?? $transaction_uuid,
-                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
-                    'process_data' => $request->all()
-                ];
-            }
-        }
+        // if ($transaction_status) {
+        //     if (strtoupper($transaction_status) === 'SUCCESSFUL') {
+        //         return [
+        //             'success' => true,
+        //             'payment_id' => $payment_id ?? $request->input('payment_id') ?? $transaction_uuid,
+        //             'message' => __('nafezly::messages.PAYMENT_DONE'),
+        //             'process_data' => $request->all()
+        //         ];
+        //     } else {
+        //         return [
+        //             'success' => false,
+        //             'payment_id' => $payment_id ?? $request->input('payment_id') ?? $transaction_uuid,
+        //             'message' => __('nafezly::messages.PAYMENT_FAILED'),
+        //             'process_data' => $request->all()
+        //         ];
+        //     }
+        // }
 
         // If no status provided, try to query transaction using transaction_uuid
         if ($transaction_uuid) {
@@ -175,7 +175,7 @@ class XPayPayment extends BaseController implements PaymentInterface
                 if (strtoupper($transaction_status) === 'SUCCESSFUL') {
                     return [
                         'success' => true,
-                        'payment_id' => $payment_id ?? $transaction_uuid,
+                        'payment_id' => $transaction_uuid,
                         'message' => __('nafezly::messages.PAYMENT_DONE'),
                         'process_data' => $responseData
                     ];
@@ -184,7 +184,7 @@ class XPayPayment extends BaseController implements PaymentInterface
 
             return [
                 'success' => false,
-                'payment_id' => $payment_id ?? $transaction_uuid,
+                'payment_id' => $transaction_uuid,
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $responseData ?? $request->all()
             ];
@@ -192,7 +192,7 @@ class XPayPayment extends BaseController implements PaymentInterface
 
         return [
             'success' => false,
-            'payment_id' => $payment_id,
+            'payment_id' => $transaction_uuid,
             'message' => __('nafezly::messages.PAYMENT_FAILED'),
             'process_data' => $request->all()
         ];

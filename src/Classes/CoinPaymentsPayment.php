@@ -14,9 +14,9 @@ use Nafezly\Payments\Classes\BaseController;
 
 class CoinPaymentsPayment extends BaseController implements PaymentInterface
 { 
-    private $coinpayments_public_key;
-    private $coinpayments_private_key;
-    private $verify_route_name;
+    public $coinpayments_public_key;
+    public $coinpayments_private_key;
+    public $verify_route_name;
 
     public function __construct()
     {

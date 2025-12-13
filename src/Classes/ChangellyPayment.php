@@ -10,9 +10,9 @@ use Nafezly\Payments\Classes\BaseController;
 
 class ChangellyPayment extends BaseController implements PaymentInterface
 {
-    private $changelly_api_key;
-    private $changelly_private_key;
-    private $paymob_wallet_integration_id;
+    public $changelly_api_key;
+    public $changelly_private_key;
+    public $paymob_wallet_integration_id;
 
     public function __construct()
     {
