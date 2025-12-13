@@ -10,34 +10,21 @@ use Nafezly\Payments\Classes\BaseController;
 
 class XPayPayment extends BaseController implements PaymentInterface
 {
-    private $xpay_public_key;
-    private $xpay_private_key;
+    private $xpay_api_key;
     private $xpay_community_id;
-    private $xpay_payment_id;
+    private $xpay_variable_amount_id;
     private $xpay_base_url;
     private $verify_route_name;
     private $currency;
 
     public function __construct()
     {
-        $this->xpay_public_key = config('nafezly-payments.XPAY_PUBLIC_KEY');
-        $this->xpay_private_key = config('nafezly-payments.XPAY_PRIVATE_KEY');
+        $this->xpay_api_key = config('nafezly-payments.XPAY_API_KEY');
         $this->xpay_community_id = config('nafezly-payments.XPAY_COMMUNITY_ID');
-        $this->xpay_payment_id = config('nafezly-payments.XPAY_PAYMENT_ID');
+        $this->xpay_variable_amount_id = config('nafezly-payments.XPAY_VARIABLE_AMOUNT_ID');
         $this->xpay_base_url = config('nafezly-payments.XPAY_BASE_URL', 'https://staging.xpay.app/api/v1');
         $this->currency = config('nafezly-payments.XPAY_CURRENCY', 'EGP');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
-    }
-
-    /**
-     * Get Basic Auth header for XPay API
-     * XPay uses PublicKey:PrivateKey base64 encoded
-     *
-     * @return string
-     */
-    private function getAuthHeader()
-    {
-        return 'Basic ' . base64_encode($this->xpay_public_key . ':' . $this->xpay_private_key);
     }
 
     /**
@@ -54,8 +41,14 @@ class XPayPayment extends BaseController implements PaymentInterface
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
         $this->setPassedVariablesToGlobal($amount, $user_id, $user_first_name, $user_last_name, $user_email, $user_phone, $source);
-        $required_fields = ['amount'];
+        // XPay requires: amount, user_email, user_phone, and at least one of user_first_name or user_last_name
+        $required_fields = ['amount', 'user_email', 'user_phone'];
         $this->checkRequiredFields($required_fields, 'XPay');
+        
+        // Check for name (at least first or last name required)
+        if (!$this->user_first_name && !$this->user_last_name) {
+            throw new MissingPaymentInfoException('XPay requires at least user first name or last name');
+        }
 
         if($this->payment_id == null)
             $unique_id = uniqid() . rand(100000, 999999);
@@ -64,51 +57,54 @@ class XPayPayment extends BaseController implements PaymentInterface
 
         $currency = $this->currency ?? 'EGP';
 
-        // XPay API accepts form-encoded request bodies
-        $data = [
-            'community_id' => $this->xpay_community_id,
-            'api_payment_id' => $this->xpay_payment_id,
-            'amount' => $this->amount,
-            'currency' => $currency,
-            'order_id' => $unique_id,
-            'redirect_url' => route($this->verify_route_name, ['payment' => 'xpay', 'payment_id' => $unique_id]),
-            'callback_url' => route($this->verify_route_name, ['payment' => 'xpay', 'payment_id' => $unique_id]),
+        // Prepare billing data (required fields)
+        // Name must contain first and last name in English letters with space between them
+        $billingData = [
+            'name' => trim(($this->user_first_name ?? '') . ' ' . ($this->user_last_name ?? '')),
+            'email' => $this->user_email,
+            'phone_number' => $this->user_phone, // Must contain country code prefixed (e.g., +201234567890)
         ];
 
-        // Add customer information if provided
-        if ($this->user_first_name || $this->user_last_name) {
-            $data['customer_name'] = trim(($this->user_first_name ?? '') . ' ' . ($this->user_last_name ?? ''));
+        // XPay API request body structure
+        $data = [
+            'community_id' => $this->xpay_community_id,
+            'variable_amount_id' => $this->xpay_variable_amount_id,
+            'amount' => (float) $this->amount, // Total amount (with fees if fees are included in bill)
+            'original_amount' => (float) $this->amount, // Service cost without fees
+            'currency' => $currency,
+            'billing_data' => $billingData,
+            'pay_using' => 'card', // Default payment method (can be: card, fawry, kiosk, mobile wallets, valU)
+        ];
+
+        // Add language if set
+        if ($this->language) {
+            $data['language'] = $this->getXPayLanguage();
         }
 
-        if ($this->user_email) {
-            $data['customer_email'] = $this->user_email;
-        }
-
-        if ($this->user_phone) {
-            $data['customer_phone'] = $this->user_phone;
-        }
-
+        // Add membership_id if user_id is provided (optional)
         if ($this->user_id) {
-            $data['member_id'] = $this->user_id;
+            $data['membership_id'] = (string) $this->user_id;
         }
 
-        // XPay uses Basic Authentication with PublicKey:PrivateKey
-        $response = Http::asForm()
-            ->withHeaders([
-                'Authorization' => $this->getAuthHeader(),
-                'Accept' => 'application/json'
-            ])
-            ->post($this->xpay_base_url . '/pay', $data);
+        // XPay uses x-api-key header for authentication
+        $response = Http::withHeaders([
+            'x-api-key' => $this->xpay_api_key,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json'
+        ])
+        ->post($this->xpay_base_url . '/payments/pay/variable-amount', $data);
 
         $responseData = $response->json();
 
-        if ($response->successful() && isset($responseData['success']) && $responseData['success']) {
-            $payment_url = $responseData['data']['payment_url'] ?? $responseData['payment_url'] ?? null;
+        // Check response structure: { "status": { "code": ... }, "data": { "iframe_url": ... } }
+        if ($response->successful() && isset($responseData['status']['code']) && $responseData['status']['code'] == 200) {
+            $iframe_url = $responseData['data']['iframe_url'] ?? null;
+            $transaction_uuid = $responseData['data']['transaction_uuid'] ?? null;
             
-            if ($payment_url) {
+            if ($iframe_url) {
                 return [
                     'payment_id' => $unique_id,
-                    'redirect_url' => $payment_url,
+                    'redirect_url' => $iframe_url,
                     'html' => $responseData
                 ];
             }
@@ -129,30 +125,57 @@ class XPayPayment extends BaseController implements PaymentInterface
     public function verify(Request $request): array
     {
         $payment_id = $request->input('payment_id') ?? $request->route('payment_id');
-        $transaction_id = $request->input('transaction_id') ?? $request->input('transactionId');
-        $order_id = $request->input('order_id') ?? $request->input('orderId');
+        
+        // XPay callback sends data as JSON body (POST) or query parameters (GET redirect)
+        // Callback structure: { "transaction_uuid": "...", "transaction_status": "SUCCESSFUL" | "FAILED", ... }
+        
+        // Check for callback data (POST request from XPay)
+        $transaction_uuid = $request->input('transaction_uuid') ?? $request->input('transaction_id');
+        $transaction_status = $request->input('transaction_status');
+        
+        // Check for redirect data (GET request - redirect URL)
+        if (!$transaction_status) {
+            $transaction_status = $request->query('transaction_status');
+            $transaction_uuid = $request->query('transaction_uuid') ?? $request->query('transaction_id');
+        }
 
-        // Get transaction status from XPay
-        // Transaction endpoint: /communities/{community_id}/transactions/{transaction_uuid}/
-        if ($transaction_id || $order_id) {
-            $key = $transaction_id ?? $order_id;
-            
+        // If we have transaction status from callback/redirect
+        if ($transaction_status) {
+            // XPay returns "SUCCESSFUL" for successful payments, "FAILED" for failed ones
+            if (strtoupper($transaction_status) === 'SUCCESSFUL') {
+                return [
+                    'success' => true,
+                    'payment_id' => $payment_id ?? $request->input('payment_id') ?? $transaction_uuid,
+                    'message' => __('nafezly::messages.PAYMENT_DONE'),
+                    'process_data' => $request->all()
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'payment_id' => $payment_id ?? $request->input('payment_id') ?? $transaction_uuid,
+                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                    'process_data' => $request->all()
+                ];
+            }
+        }
+
+        // If no status provided, try to query transaction using transaction_uuid
+        if ($transaction_uuid) {
             $response = Http::withHeaders([
-                'Authorization' => $this->getAuthHeader(),
+                'x-api-key' => $this->xpay_api_key,
                 'Accept' => 'application/json'
             ])
-            ->get($this->xpay_base_url . '/communities/' . $this->xpay_community_id . '/transactions/' . $key . '/');
+            ->get($this->xpay_base_url . '/communities/' . $this->xpay_community_id . '/transactions/' . $transaction_uuid . '/');
 
             $responseData = $response->json();
 
-            if ($response->successful() && isset($responseData['success']) && $responseData['success']) {
-                $transaction_status = $responseData['data']['status'] ?? $responseData['status'] ?? null;
+            if ($response->successful() && isset($responseData['status']['code']) && $responseData['status']['code'] == 200) {
+                $transaction_status = $responseData['data']['transaction_status'] ?? $responseData['data']['status'] ?? null;
                 
-                // Check if payment is successful
-                if ($transaction_status === 'success' || $transaction_status === 'completed' || $transaction_status === 'paid') {
+                if (strtoupper($transaction_status) === 'SUCCESSFUL') {
                     return [
                         'success' => true,
-                        'payment_id' => $payment_id ?? $key,
+                        'payment_id' => $payment_id ?? $transaction_uuid,
                         'message' => __('nafezly::messages.PAYMENT_DONE'),
                         'process_data' => $responseData
                     ];
@@ -161,21 +184,9 @@ class XPayPayment extends BaseController implements PaymentInterface
 
             return [
                 'success' => false,
-                'payment_id' => $payment_id ?? $key,
+                'payment_id' => $payment_id ?? $transaction_uuid,
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $responseData ?? $request->all()
-            ];
-        }
-
-        // If no transaction_id provided, check request parameters for status
-        $status = $request->input('status') ?? $request->input('transaction_status');
-        
-        if ($status === 'success' || $status === 'completed' || $status === 'paid') {
-            return [
-                'success' => true,
-                'payment_id' => $payment_id,
-                'message' => __('nafezly::messages.PAYMENT_DONE'),
-                'process_data' => $request->all()
             ];
         }
 

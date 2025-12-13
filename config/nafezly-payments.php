@@ -202,15 +202,17 @@ return [
 
     #XPAY
     /*
+    * Documentation: https://xpayeg.github.io/docs/
     * Base URLs:
     * Test: https://staging.xpay.app/api/v1
     * Live: https://community.xpay.app/api/v1
-    * Authentication: Uses Basic Auth with PublicKey:PrivateKey (base64 encoded)
+    * Authentication: Uses x-api-key header
+    * Endpoint: /payments/pay/variable-amount
+    * Required: API Key, Community ID (Merchant ID), Variable Amount ID (API Payment ID)
     */
-    'XPAY_PUBLIC_KEY'=>env('XPAY_PUBLIC_KEY'),
-    'XPAY_PRIVATE_KEY'=>env('XPAY_PRIVATE_KEY'),
+    'XPAY_API_KEY'=>env('XPAY_API_KEY'),
     'XPAY_COMMUNITY_ID'=>env('XPAY_COMMUNITY_ID'),
-    'XPAY_PAYMENT_ID'=>env('XPAY_PAYMENT_ID'),
+    'XPAY_VARIABLE_AMOUNT_ID'=>env('XPAY_VARIABLE_AMOUNT_ID'),
     'XPAY_BASE_URL'=>env('XPAY_BASE_URL','https://staging.xpay.app/api/v1'),
     'XPAY_CURRENCY'=>env('XPAY_CURRENCY','EGP'),
 
