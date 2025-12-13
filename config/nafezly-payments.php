@@ -185,6 +185,35 @@ return [
     'MAMOPAYMENT_BASE_URL'=>env('MAMOPAYMENT_BASE_URL','https://business.mamopay.com'),
     'MAMOPAYMENT_API_KEY'=>env('MAMOPAYMENT_API_KEY'),
 
+
+    #MYFATOORAH
+    /*
+    * API URLs by country:
+    * Kuwait, UAE, Bahrain, Jordan, Oman: https://api.myfatoorah.com/
+    * Saudi Arabia: https://api-sa.myfatoorah.com/
+    * Qatar: https://api-qa.myfatoorah.com/
+    * Egypt: https://api-eg.myfatoorah.com/
+    * Demo/Test: https://apitest.myfatoorah.com/
+    */
+    'MYFATOORAH_API_KEY'=>env('MYFATOORAH_API_KEY'),
+    'MYFATOORAH_BASE_URL'=>env('MYFATOORAH_BASE_URL','https://apitest.myfatoorah.com'),
+    'MYFATOORAH_CURRENCY'=>env('MYFATOORAH_CURRENCY','USD'),
+
+
+    #XPAY
+    /*
+    * Base URLs:
+    * Test: https://staging.xpay.app/api/v1
+    * Live: https://community.xpay.app/api/v1
+    * Authentication: Uses Basic Auth with PublicKey:PrivateKey (base64 encoded)
+    */
+    'XPAY_PUBLIC_KEY'=>env('XPAY_PUBLIC_KEY'),
+    'XPAY_PRIVATE_KEY'=>env('XPAY_PRIVATE_KEY'),
+    'XPAY_COMMUNITY_ID'=>env('XPAY_COMMUNITY_ID'),
+    'XPAY_PAYMENT_ID'=>env('XPAY_PAYMENT_ID'),
+    'XPAY_BASE_URL'=>env('XPAY_BASE_URL','https://staging.xpay.app/api/v1'),
+    'XPAY_CURRENCY'=>env('XPAY_CURRENCY','EGP'),
+
         
     
 
