@@ -14,7 +14,7 @@ class PaySkyPayment extends BaseController implements PaymentInterface
     public  $paysky_tid;
     public  $paysky_secret;
     public  $paysky_mode;
-    private $verify_route_name;
+    public $verify_route_name;
 
     public function __construct()
     {

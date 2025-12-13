@@ -15,9 +15,9 @@ use Nafezly\Payments\Classes\BaseController;
 
 class PayrexxPayment extends BaseController implements PaymentInterface
 {
-    private $payrexx_api_key;
-    private $verify_route_name;
-    private $payrexx_instance_name;
+    public $payrexx_api_key;
+    public $verify_route_name;
+    public $payrexx_instance_name;
 
     public function __construct()
     { 

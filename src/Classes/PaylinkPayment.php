@@ -10,10 +10,10 @@ use Nafezly\Payments\Classes\BaseController;
 
 class PaylinkPayment extends BaseController implements PaymentInterface
 {
-    private $paylink_api_key;
-    private $paylink_app_id;
-    private $paylink_mode;
-    private $verify_route_name;
+    public $paylink_api_key;
+    public $paylink_app_id;
+    public $paylink_mode;
+    public $verify_route_name;
 
     public function __construct()
     {

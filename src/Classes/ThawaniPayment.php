@@ -14,10 +14,10 @@ use Nafezly\Payments\Classes\BaseController;
 
 class ThawaniPayment extends BaseController implements PaymentInterface
 {
-    private $thawani_url;
-    private $thawani_api_key;
-    private $thawani_publishable_key;
-    private $verify_route_name;
+    public $thawani_url;
+    public $thawani_api_key;
+    public $thawani_publishable_key;
+    public $verify_route_name;
 
     public function __construct()
     {

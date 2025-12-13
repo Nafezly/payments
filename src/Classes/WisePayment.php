@@ -14,10 +14,10 @@ use Nafezly\Payments\Classes\BaseController;
 
 class WisePayment extends BaseController implements PaymentInterface
 {
-    private $wise_api_key;
-    private $wise_balance_id;
-    private $wise_profile_id;
-    private $verify_route_name;
+    public $wise_api_key;
+    public $wise_balance_id;
+    public $wise_profile_id;
+    public $verify_route_name;
 
     public function __construct()
     {
