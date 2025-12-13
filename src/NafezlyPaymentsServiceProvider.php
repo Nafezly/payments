@@ -13,6 +13,7 @@ use Nafezly\Payments\Classes\ThawaniPayment;
 use Nafezly\Payments\Classes\TapPayment;
 use Nafezly\Payments\Classes\OpayPayment;
 use Nafezly\Payments\Classes\PaymobWalletPayment;
+use Nafezly\Payments\Classes\VoletPayment;
 
 class NafezlyPaymentsServiceProvider extends ServiceProvider
 {
@@ -83,6 +84,9 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         });
         $this->app->bind(PaytabsPayment::class, function () {
             return new PaytabsPayment();
+        });
+        $this->app->bind(VoletPayment::class, function () {
+            return new VoletPayment();
         });
     }
 

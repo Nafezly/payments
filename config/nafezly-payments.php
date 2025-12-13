@@ -234,6 +234,21 @@ return [
     'PAYERMAX_CURRENCY'=>env('PAYERMAX_CURRENCY','USD'),
     'PAYERMAX_COUNTRY'=>env('PAYERMAX_COUNTRY','US'),
 
+
+    #VOLET
+    /*
+    * Shopping Cart Interface (SCI) Documentation: https://volet.com/files/documents/volet-sci-v1.0-en.pdf
+    * SCI URL: https://account.volet.com/sci/
+    * Authentication: Uses SCI password for hash verification (ac_hash)
+    * Hash format: SHA256(ac_transfer:ac_start_date:ac_sci_name:ac_src_wallet:ac_dest_wallet:ac_order_id:ac_amount:ac_merchant_currency:SCI's password)
+    * Status URL IPs: 50.7.115.5, 51.255.40.139, 13.53.55.89
+    */
+    'VOLET_ACCOUNT_EMAIL'=>env('VOLET_ACCOUNT_EMAIL'),
+    'VOLET_SCI_NAME'=>env('VOLET_SCI_NAME'),
+    'VOLET_SCI_PASSWORD'=>env('VOLET_SCI_PASSWORD'),
+    'VOLET_SCI_URL'=>env('VOLET_SCI_URL','https://account.volet.com/sci/'),
+    'VOLET_CURRENCY'=>env('VOLET_CURRENCY','USD'),
+
         
     
 
