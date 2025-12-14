@@ -13,5 +13,7 @@ return [
     "The_transaction_was_rejected_by_your_bank_please_check_with_your_bank"=>"The transaction was rejected by your bank please check with your bank",
     "The_OTP_number_was_entered_incorrectly"=>"The OTP number was entered incorrectly",
     "An_error_occurred_while_executing_the_operation"=>"An error occurred while executing the operation",
-    'Your_card_is_not_authorized_with_3D_secure'=>"Your card is not authorized with 3D secure"
+    'Your_card_is_not_authorized_with_3D_secure'=>"Your card is not authorized with 3D secure",
+    'REDIRECTING_TO_PAYMENT'=>"Redirecting to Volet Payment...",
+    'PLEASE_WAIT_REDIRECT'=>"Please wait while we redirect you to the payment page."
 ];

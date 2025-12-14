@@ -14,4 +14,6 @@ return [
     "The_OTP_number_was_entered_incorrectly"=>"تم إدخال رقم OTP بشكل غير صحيح",
     "An_error_occurred_while_executing_the_operation"=>"حدث خطأ أثناء تنفيذ العملية",
     'Your_card_is_not_authorized_with_3D_secure'=>"لم يتم تأكيد رمز OTP بنجاح",
+    'REDIRECTING_TO_PAYMENT'=>"جاري التوجيه إلى صفحة الدفع...",
+    'PLEASE_WAIT_REDIRECT'=>"يرجى الانتظار بينما نوجهك إلى صفحة الدفع."
 ];

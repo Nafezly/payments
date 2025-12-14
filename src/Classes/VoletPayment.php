@@ -3,6 +3,7 @@
 namespace Nafezly\Payments\Classes;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
 use Nafezly\Payments\Classes\BaseController;
@@ -241,6 +242,21 @@ class VoletPayment extends BaseController implements PaymentInterface
      */
     private function generate_html($data): string
     {
-        return view('nafezly::html.volet', ['data' => $data, 'sci_url' => $this->volet_sci_url])->render();
+        $language = $this->language ?? 'ar';
+        
+        // Set app locale for translations
+        $originalLocale = app()->getLocale();
+        app()->setLocale($language);
+        
+        $html = view('nafezly::html.volet', [
+            'data' => $data, 
+            'sci_url' => $this->volet_sci_url,
+            'language' => $language
+        ])->render();
+        
+        // Restore original locale
+        app()->setLocale($originalLocale);
+        
+        return $html;
     }
 }

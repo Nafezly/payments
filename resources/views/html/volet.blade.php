@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ $language === 'ar' ? 'ar' : 'en' }}" dir="{{ $language === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting to Volet Payment...</title>
+    <title>{{ __('nafezly::messages.REDIRECTING_TO_PAYMENT') }}</title>
     <style>
         body {
             margin: 0;
@@ -31,13 +31,21 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        h3 {
+            margin: 10px 0;
+            color: #333;
+        }
+        p {
+            margin: 5px 0;
+            color: #666;
+        }
     </style>
 </head>
 <body onload="document.getElementById('volet-payment-form').submit()">
     <div class="loading">
         <div class="spinner"></div>
-        <h3>Redirecting to Volet Payment...</h3>
-        <p>Please wait while we redirect you to the payment page.</p>
+        <h3>{{ __('nafezly::messages.REDIRECTING_TO_PAYMENT') }}</h3>
+        <p>{{ __('nafezly::messages.PLEASE_WAIT_REDIRECT') }}</p>
     </div>
     
     <form method="POST" action="{{ $sci_url }}" id="volet-payment-form" style="display: none;">
