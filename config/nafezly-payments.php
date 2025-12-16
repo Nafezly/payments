@@ -6,6 +6,8 @@ return [
     'PAYMOB_INTEGRATION_ID' => env('PAYMOB_INTEGRATION_ID',""), //array of integration ids
     'PAYMOB_CURRENCY'=> env('PAYMOB_CURRENCY',"EGP"),
     'PAYMOB_HMAC' => env('PAYMOB_HMAC'),
+    #PAYMOB_WALLET (vodaphone-cash,orange-money,etisalat-cash,we-cash,meza-wallet) - test phone 01010101010 ,PIN & OTP IS 123456
+    'PAYMOB_WALLET_INTEGRATION_ID'=>env('PAYMOB_WALLET_INTEGRATION_ID'),
 
     #HYPERPAY
     'HYPERPAY_BASE_URL' => env('HYPERPAY_BASE_URL', "https://eu-test.oppwa.com"),
@@ -62,8 +64,6 @@ return [
     'OPAY_BASE_URL'=>env('OPAY_BASE_URL',"https://sandboxapi.opaycheckout.com"),//https://api.opaycheckout.com for production
 
 
-    #PAYMOB_WALLET (vodaphone-cash,orange-money,etisalat-cash,we-cash,meza-wallet) - test phone 01010101010 ,PIN & OTP IS 123456
-    'PAYMOB_WALLET_INTEGRATION_ID'=>env('PAYMOB_WALLET_INTEGRATION_ID'),
 
     #Paytabs
     'PAYTABS_PROFILE_ID'  => env('PAYTABS_PROFILE_ID'),

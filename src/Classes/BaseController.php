@@ -9,5 +9,5 @@ use Nafezly\Payments\Traits\SetRequiredFields;
 
 class BaseController 
 {
-	use SetVariables,SetRequiredFields;
+	use SetVariables, SetRequiredFields;
 }

@@ -194,7 +194,18 @@ use Nafezly\Payments\Classes\PaymobPayment;
 
 $payment = new PaymobPayment();
 
-//pay function
+
+//or use (recommended)
+$payment->setUserId($id)
+        ->setUserFirstName($first_name)
+        ->setUserLastName($last_name)
+        ->setUserEmail($email)
+        ->setUserPhone($phone)
+        ->setCurrency($currency)
+        ->setAmount($amount)
+        ->pay();
+
+//pay function (deprecated and will be disabled later)
 $payment->pay(
 	$amount, 
 	$user_id = null, 
@@ -205,15 +216,7 @@ $payment->pay(
 	$source = null
 );
 
-//or use
-$payment->setUserId($id)
-        ->setUserFirstName($first_name)
-        ->setUserLastName($last_name)
-        ->setUserEmail($email)
-        ->setUserPhone($phone)
-        ->setCurrency($currency)
-        ->setAmount($amount)
-        ->pay();
+
 
 //pay function response 
 [
