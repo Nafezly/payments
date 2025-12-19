@@ -49,7 +49,7 @@ class MyFatoorahPayment extends BaseController implements PaymentInterface
         $currency = $this->currency ?? 'USD';
 
         $data = [
-            'InvoiceAmount' => $this->amount,
+            'InvoiceValue' => $this->amount,
             'NotificationOption'=>"LNK",
             'CurrencyIso' => $currency,
             'CallBackUrl' => route($this->verify_route_name, ['payment' => 'myfatoorah', 'payment_id' => $invoice_id]),
