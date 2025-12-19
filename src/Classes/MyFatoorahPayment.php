@@ -81,7 +81,7 @@ class MyFatoorahPayment extends BaseController implements PaymentInterface
             
             if ($payment_url && $myfatoorah_invoice_id) {
                 // Store the MyFatoorah InvoiceId to use it later in verification
-                Cache::put('myfatoorah_invoice_' . $invoice_id, $myfatoorah_invoice_id, now()->addHours(72));
+                Cache::put('myfatoorah_invoice_' . $invoice_id, $myfatoorah_invoice_id, now()->addHours(72000));
                 
                 return [
                     'payment_id' => $invoice_id,
