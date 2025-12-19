@@ -276,6 +276,4 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
         $this->custom_values=$values;
         return $this;
     }
-
-
 }

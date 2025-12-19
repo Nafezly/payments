@@ -50,12 +50,13 @@ class MyFatoorahPayment extends BaseController implements PaymentInterface
 
         $data = [
             'InvoiceAmount' => $this->amount,
+            'NotificationOption'=>"LNK",
             'CurrencyIso' => $currency,
             'CallBackUrl' => route($this->verify_route_name, ['payment' => 'myfatoorah', 'payment_id' => $invoice_id]),
             'ErrorUrl' => route($this->verify_route_name, ['payment' => 'myfatoorah', 'payment_id' => $invoice_id]),
             'CustomerName' => $this->user_first_name . ' ' . $this->user_last_name,
             'CustomerEmail' => $this->user_email,
-            'CustomerMobile' => $this->user_phone,
+            'CustomerMobile' => !empty($this->user_phone) ? substr($this->user_phone, -11) : null,
             'InvoiceItems' => [
                 [
                     'ItemName' => 'Payment',
@@ -80,7 +81,7 @@ class MyFatoorahPayment extends BaseController implements PaymentInterface
             
             if ($payment_url && $myfatoorah_invoice_id) {
                 // Store the MyFatoorah InvoiceId to use it later in verification
-                Cache::put('myfatoorah_invoice_' . $invoice_id, $myfatoorah_invoice_id, now()->addHours(24));
+                Cache::put('myfatoorah_invoice_' . $invoice_id, $myfatoorah_invoice_id, now()->addHours(72));
                 
                 return [
                     'payment_id' => $invoice_id,
@@ -162,9 +163,9 @@ class MyFatoorahPayment extends BaseController implements PaymentInterface
             
             if ($is_success) {
                 // Clear cache after successful verification
-                if ($invoice_id) {
-                    Cache::forget('myfatoorah_invoice_' . $invoice_id);
-                }
+                // if ($invoice_id) {
+                //     Cache::forget('myfatoorah_invoice_' . $invoice_id);
+                // }
                 
                 return [
                     'success' => true,
