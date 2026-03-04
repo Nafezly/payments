@@ -186,6 +186,18 @@ return [
     'MAMOPAYMENT_API_KEY'=>env('MAMOPAYMENT_API_KEY'),
 
 
+    #ZIINA
+    /*
+    * Documentation: https://docs.ziina.com/api-reference/payment-intent/create
+    * Base URL: https://api-v2.ziina.com/api
+    * Authentication: Bearer token (JWT)
+    * Supported currencies: AED, USD, EUR, GBP, SAR, QAR, BHD, KWD, OMR, INR
+    */
+    'ZIINA_API_KEY' => env('ZIINA_API_KEY'),
+    'ZIINA_BASE_URL' => env('ZIINA_BASE_URL', 'https://api-v2.ziina.com/api'),
+    'ZIINA_CURRENCY' => env('ZIINA_CURRENCY', 'AED'),
+    'ZIINA_TEST' => env('ZIINA_TEST', false),
+
     #MYFATOORAH
     /*
     * API URLs by country:
