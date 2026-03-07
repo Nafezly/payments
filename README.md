@@ -38,15 +38,20 @@ PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, C
 - [CoinPayments](https://www.coinpayments.net/)
 - [BigPay](https://www.big-pay.com/)
 - [Enot](https://enot.io/)
-- [PAYCEC](https://www.paycec.com/)
-- [Payrexx](https://payrexx.com/)
-- [Cryptomus](https://cryptomus.com/)
+- [PAYCEC](https://www.paycec.com/eg-en)
+- [PayPal Credit Cards](https://developer.paypal.com/docs/checkout/standard/)
+- [Payrexx](https://payrexx.com/en/)
+- [Creptomus](https://cryptomus.com/)
+- [SkipCash](https://skipcash.app/)
+- [Moyasar](https://moyasar.com/)
+- [E Wallets (Vodafone Cash - Orange Money - Meza Wallet - Etisalat Cash)](https://paymob.com/)
 - [PaySky](https://paysky.io/)
 - [Prime Payments](https://primepayments.com/)
 - [Wise](https://wise.com/)
 - [OneLat](https://one.lat/)
 - [Changelly](https://changelly.com/)
 - [YallaPay](https://yallapay.io/)
+- [Mastercard Gateway](https://test-gateway.mastercard.com/)
 
 
 ## Installation
@@ -169,11 +174,16 @@ return [
     'TELR_MERCHANT_ID'=>env('TELR_MERCHANT_ID'),
     'TELR_API_KEY'=>env('TELR_API_KEY'),
     'TELR_MODE'=>env('TELR_MODE','test'),//test,live
-
-
     #CLICKPAY
     'CLICKPAY_SERVER_KEY'=>env('CLICKPAY_SERVER_KEY'),
-    'CLICKPAY_PROFILE_ID'=>env('CLICKPAY_PROFILE_ID')
+    'CLICKPAY_PROFILE_ID'=>env('CLICKPAY_PROFILE_ID'),
+
+
+    #SKIPCASH
+    'SKIPCASH_SECRET_KEY'=>env('SKIPCASH_SECRET_KEY'),
+    'SKIPCASH_KEY_ID'=>env('SKIPCASH_KEY_ID'),
+    'SKIPCASH_WEBHOOK_KEY'=>env('SKIPCASH_WEBHOOK_KEY'),
+    'SKIPCASH_MODE'=>env('SKIPCASH_MODE','test'), //test,live
 
     'VERIFY_ROUTE_NAME' => "verify-payment",
     'APP_NAME'=>env('APP_NAME'),
@@ -237,8 +247,53 @@ $payment->verify($request);
 ]
 
 ```
+
+### Mastercard Usage Example
+
+```php
+use Nafezly\Payments\Classes\MastercardPayment;
+
+$payment = new MastercardPayment();
+
+$response = $payment->setUserId($id)
+    ->setUserFirstName($first_name)
+    ->setUserLastName($last_name)
+    ->setUserEmail($email)
+    ->setUserPhone($phone)
+    ->setAmount($amount)
+    ->setCurrency('USD')
+    ->setOperation('PAY') // PAY or AUTHORIZE
+    ->pay();
+
+// $response contains:
+// payment_id, html (Hosted Checkout script), redirect_url
+
+// verify callback in your verify-payment route:
+// $verify = (new MastercardPayment())->verify($request);
+```
+
+### Mastercard Token / Recurring Charge Example
+
+```php
+use Nafezly\Payments\Classes\MastercardPayment;
+
+$gateway = new MastercardPayment();
+
+// 1) Run first payer-initiated payment via Hosted Checkout
+// 2) In verify response, check if token exists in process_data['tokenization']['token']
+// 3) Store token in your project DB
+
+$charge = $gateway->chargeByToken(
+    100.00,
+    $storedToken,
+    'order_12345',
+    'USD',
+    'PAY' // or AUTHORIZE
+);
+```
+
 ### Factory Pattern Use
-you can pass only method name without payment key word like (Fawry,Paymob,Opay ...etc) 
+you can pass only method name without payment key word like (Fawry,Paymob,Opay,SkipCash ...etc) 
 and the factory will return the payment instance for you , use it as you want ;)
 ```php
     $payment = new \Nafezly\Payments\Factories\PaymentFactory();
@@ -252,8 +307,95 @@ and the factory will return the payment instance for you , use it as you want ;)
 	$source = null
 );;
 ```
+
+### SkipCash Usage Example
+
+```php
+use Nafezly\Payments\Classes\SkipCashPayment;
+
+$payment = new SkipCashPayment();
+
+// Using pay function
+$payment->pay(
+    $amount,                    // Required: Payment amount
+    $user_id = null,           // Optional: User ID
+    $user_first_name,          // Required: User first name
+    $user_last_name,           // Required: User last name
+    $user_email,               // Required: User email (auto-generated if empty)
+    $user_phone,               // Required: User phone number
+    $source = null             // Optional: Payment source
+);
+
+// Using setter methods
+$payment->setUserId($id)
+        ->setUserFirstName($first_name)
+        ->setUserLastName($last_name)
+        ->setUserEmail($email)
+        ->setUserPhone($phone)
+        ->setAmount($amount)
+        ->pay();
+```
+
+**SkipCash Configuration Requirements:**
+- `SKIPCASH_SECRET_KEY`: Your SkipCash secret key
+- `SKIPCASH_KEY_ID`: Your SkipCash key ID (UUID)
+- `SKIPCASH_WEBHOOK_KEY`: Your webhook verification key
+- `SKIPCASH_MODE`: 'test' for sandbox or 'live' for production
+
+**Important Notes for SkipCash:**
+- Phone numbers can be with or without country code for Qatar (+974)
+- Non-Qatari numbers must include country code with + prefix
+- Email is auto-generated as `{phone}@{domain}.com` if not provided
+- Each payment must use unique phone number and email to avoid fraud detection
+
+### Garanti BBVA (Sanal POS) Usage Example
+
+```php
+use Nafezly\Payments\Classes\GarantiBbvaPayment;
+
+$payment = new GarantiBbvaPayment();
+
+// Using pay function
+$payment->pay(
+    $amount,                    // Required: Payment amount
+    $user_id = null,            // Optional: User ID
+    $user_first_name,           // Required: User first name
+    $user_last_name,            // Required: User last name
+    $user_email,                // Required: User email
+    $user_phone = null          // Optional: User phone
+);
+
+// Using setter methods
+$payment->setUserId($id)
+        ->setUserFirstName($first_name)
+        ->setUserLastName($last_name)
+        ->setUserEmail($email)
+        ->setUserPhone($phone)
+        ->setAmount($amount)
+        ->pay();
+```
+
+**Garanti BBVA Configuration Requirements:**
+- `GARANTIBBVA_MERCHANT_ID`
+- `GARANTIBBVA_TERMINAL_ID`
+- `GARANTIBBVA_PROV_USER_ID`
+- `GARANTIBBVA_TERMINAL_USER_ID`
+- `GARANTIBBVA_PROVISION_PASSWORD`
+- `GARANTIBBVA_STORE_KEY`
+- `GARANTIBBVA_MODE` (test/live)
+- `GARANTIBBVA_SECURITY_LEVEL` (CUSTOM_PAY, 3D_PAY, 3D_FULL, 3D_HALF)
+- `GARANTIBBVA_CURRENCY_CODE` (949=TRY, 840=USD, 978=EUR, 826=GBP, 392=JPY)
+- `GARANTIBBVA_TXN_TYPE` (sales)
+- `GARANTIBBVA_INSTALLMENT_COUNT` (0 for no installment)
+
+**Important Notes for Garanti BBVA:**
+- The gateway returns the result by POST to the verify route.
+- Hash verification is already implemented; keep the `STORE_KEY` correct.
+- Amount is multiplied by `GARANTIBBVA_AMOUNT_MULTIPLIER` (default 100).
+
 ## Some Test Cards
 
+- [SkipCash](https://dev.skipcash.app/doc/api-integration/)
 - [Thawani](https://docs.thawani.om/docs/thawani-ecommerce-api/ZG9jOjEyMTU2Mjc3-thawani-test-card)
 - [Kashier](https://developers.kashier.io/payment/testing)
 - [Paymob](https://docs.paymob.com/docs/card-payments)

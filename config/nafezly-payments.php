@@ -127,6 +127,17 @@ return [
     'BIGPAY_MODE'=>env('BIGPAY_MODE','test'),/*live,test*/
 
 
+    #MASTERCARD
+    'MASTERCARD_MERCHANT_ID'=>env('MASTERCARD_MERCHANT_ID'),
+    'MASTERCARD_API_USERNAME'=>env('MASTERCARD_API_USERNAME'),
+    'MASTERCARD_API_PASSWORD'=>env('MASTERCARD_API_PASSWORD'),
+    'MASTERCARD_BASE_URL'=>env('MASTERCARD_BASE_URL','https://test-gateway.mastercard.com'),
+    'MASTERCARD_API_VERSION'=>env('MASTERCARD_API_VERSION','100'),
+    'MASTERCARD_CURRENCY'=>env('MASTERCARD_CURRENCY','USD'),
+    'MASTERCARD_OPERATION'=>env('MASTERCARD_OPERATION','PAY'), // PAY or AUTHORIZE
+    'MASTERCARD_SAVE_TOKEN'=>env('MASTERCARD_SAVE_TOKEN',false),
+
+
     'ENOT_KEY'=>env('ENOT_KEY'),
     'ENOT_SECRET'=>env('ENOT_SECRET'),
     'ENOT_SHOP_ID'=>env('ENOT_SHOP_ID'),
@@ -167,9 +178,46 @@ return [
     'PAYSKY_MODE'=>env('PAYSKY_MODE','live'), //test
 
 
+    #YALLAPAY
     'YALLAPAY_PUBLIC_KEY'=>env('YALLAPAY_PUBLIC_KEY',''),
     'YALLAPAY_SECRET_KEY'=>env('YALLAPAY_SECRET_KEY',''),
     
+
+    #SKIPCASH
+    'SKIPCASH_SECRET_KEY'=>env('SKIPCASH_SECRET_KEY'),
+    'SKIPCASH_CLIENT_ID'=>env('SKIPCASH_CLIENT_ID'),
+    'SKIPCASH_KEY_ID'=>env('SKIPCASH_KEY_ID'),
+    'SKIPCASH_WEBHOOK_KEY'=>env('SKIPCASH_WEBHOOK_KEY'),
+    'SKIPCASH_MODE'=>env('SKIPCASH_MODE','test'), //test,live
+
+
+    #MOYASAR
+    'MOYASAR_SECRET_KEY'=>env('MOYASAR_SECRET_KEY'),
+    'MOYASAR_PUBLISHABLE_KEY'=>env('MOYASAR_PUBLISHABLE_KEY'),
+    'MOYASAR_CURRENCY'=>env('MOYASAR_CURRENCY','SAR'),
+    'MOYASAR_PAYMENT_METHODS'=>env('MOYASAR_PAYMENT_METHODS','creditcard,applepay,stcpay'), // comma-separated: creditcard,applepay,stcpay
+    'MOYASAR_APPLE_PAY_LABEL'=>env('MOYASAR_APPLE_PAY_LABEL'),
+    'MOYASAR_APPLE_PAY_COUNTRY'=>env('MOYASAR_APPLE_PAY_COUNTRY','SA'),
+
+
+    #GARANTIBBVA
+    'GARANTIBBVA_MERCHANT_ID'=>env('GARANTIBBVA_MERCHANT_ID','7000679'),
+    'GARANTIBBVA_TERMINAL_ID'=>env('GARANTIBBVA_TERMINAL_ID','30691297'),
+    'GARANTIBBVA_PROV_USER_ID'=>env('GARANTIBBVA_PROV_USER_ID','PROVAUT'),
+    'GARANTIBBVA_TERMINAL_USER_ID'=>env('GARANTIBBVA_TERMINAL_USER_ID','GARANTI'),
+    'GARANTIBBVA_PROVISION_PASSWORD'=>env('GARANTIBBVA_PROVISION_PASSWORD','123qweASD/'),
+    'GARANTIBBVA_STORE_KEY'=>env('GARANTIBBVA_STORE_KEY','12345678'),
+    'GARANTIBBVA_MODE'=>env('GARANTIBBVA_MODE','test'), // test,live
+    'GARANTIBBVA_API_VERSION'=>env('GARANTIBBVA_API_VERSION','512'),
+    'GARANTIBBVA_SECURITY_LEVEL'=>env('GARANTIBBVA_SECURITY_LEVEL','3D_PAY'), // CUSTOM_PAY,3D_PAY,3D_FULL,3D_HALF
+    'GARANTIBBVA_CURRENCY_CODE'=>env('GARANTIBBVA_CURRENCY_CODE','949'), // 949=TRY, 840=USD, 978=EUR, 826=GBP, 392=JPY
+    'GARANTIBBVA_LANG'=>env('GARANTIBBVA_LANG','tr'),
+    'GARANTIBBVA_TXN_TYPE'=>env('GARANTIBBVA_TXN_TYPE','sales'),
+    'GARANTIBBVA_INSTALLMENT_COUNT'=>env('GARANTIBBVA_INSTALLMENT_COUNT','0'),
+    'GARANTIBBVA_AMOUNT_MULTIPLIER'=>env('GARANTIBBVA_AMOUNT_MULTIPLIER',100),
+    'GARANTIBBVA_COMPANY_NAME'=>env('GARANTIBBVA_COMPANY_NAME',env('APP_NAME')),
+    'GARANTIBBVA_TEST_URL'=>env('GARANTIBBVA_TEST_URL','https://sanalposprovtest.garantibbva.com.tr/servlet/gt3dengine'),
+    'GARANTIBBVA_LIVE_URL'=>env('GARANTIBBVA_LIVE_URL','https://sanalposprov.garanti.com.tr/servlet/gt3dengine'),
 
     'ONELAT_KEY'=>env('ONELAT_KEY',''),
     'ONELAT_SECRET'=>env('ONELAT_SECRET',''),
@@ -263,7 +311,21 @@ return [
     'VOLET_SCI_URL'=>env('VOLET_SCI_URL','https://account.volet.com/sci/'),
     'VOLET_CURRENCY'=>env('VOLET_CURRENCY','USD'),
 
-        
-    
+
+    #TABBY
+    /*
+    * Tabby - Buy Now Pay Later
+    * Documentation: https://docs.tabby.ai/
+    * API Base URL: https://api.tabby.ai/api/v2
+    * Authentication: Bearer token using secret key
+    * Flow: Create checkout session -> Redirect to web_url -> Verify -> Capture
+    * Test credentials: email otp.success@tabby.ai, phone +966500000001, OTP 8888
+    */
+    'TABBY_SECRET_KEY'=>env('TABBY_SECRET_KEY'),
+    'TABBY_PUBLIC_KEY'=>env('TABBY_PUBLIC_KEY'),
+    'TABBY_MERCHANT_CODE'=>env('TABBY_MERCHANT_CODE'),
+    'TABBY_MODE'=>env('TABBY_MODE','test'),
+    'TABBY_CURRENCY'=>env('TABBY_CURRENCY','SAR'),
+
 
 ];

@@ -13,7 +13,11 @@ use Nafezly\Payments\Classes\ThawaniPayment;
 use Nafezly\Payments\Classes\TapPayment;
 use Nafezly\Payments\Classes\OpayPayment;
 use Nafezly\Payments\Classes\PaymobWalletPayment;
+use Nafezly\Payments\Classes\MoyasarPayment;
+use Nafezly\Payments\Classes\GarantiBbvaPayment;
 use Nafezly\Payments\Classes\VoletPayment;
+use Nafezly\Payments\Classes\MastercardPayment;
+use Nafezly\Payments\Classes\TabbyPayment;
 
 class NafezlyPaymentsServiceProvider extends ServiceProvider
 {
@@ -85,8 +89,20 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         $this->app->bind(PaytabsPayment::class, function () {
             return new PaytabsPayment();
         });
+        $this->app->bind(MoyasarPayment::class, function () {
+            return new MoyasarPayment();
+        });
+        $this->app->bind(GarantiBbvaPayment::class, function () {
+            return new GarantiBbvaPayment();
+        });
         $this->app->bind(VoletPayment::class, function () {
             return new VoletPayment();
+        });
+        $this->app->bind(MastercardPayment::class, function () {
+            return new MastercardPayment();
+        });
+        $this->app->bind(TabbyPayment::class, function () {
+            return new TabbyPayment();
         });
     }
 
