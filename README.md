@@ -6,7 +6,7 @@
 
 A unified payment helper and wrapper supporting global and regional payment gateways:
 
-PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, CoinPayments, PerfectMoney, Cryptomus, Payrexx, Wise, Changelly, OneLat, Kashier — including mobile wallets (Vodafone Cash, Orange Money, Etisalat Cash, Meeza Wallet), and more.
+PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, CoinPayments, PerfectMoney, Cryptomus, OxaPay, Payrexx, Wise, Changelly, OneLat, Kashier — including mobile wallets (Vodafone Cash, Orange Money, Etisalat Cash, Meeza Wallet), and more.
 
 ![gateways.jpg](https://github.com/nafezly/payments/blob/master/gateways.jpg?raw=true&v=9)
 
@@ -32,6 +32,7 @@ PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, C
 - [PerfectMoney](https://perfectmoney.com/)
 - [NowPayments](https://nowpayments.io/)
 - [NowPayments Invoice](https://nowpayments.io/)
+- [OxaPay](https://oxapay.com/)
 - [Payeer](https://payeer.com/)
 - [Telr](https://telr.com/)
 - [ClickPay](https://clickpay.com.sa/)
@@ -194,8 +195,10 @@ return [
 ## Web.php MUST Have Route with name “verify-payment”
 
 ```php
-Route::get('/payments/verify/{payment?}',[FrontController::class,'payment_verify'])->name('verify-payment');
+Route::match(['get', 'post'], '/payments/verify/{payment?}',[FrontController::class,'payment_verify'])->name('verify-payment');
 ```
+
+For gateways that send server-to-server callbacks or webhooks (such as OxaPay), make sure the verify path accepts `POST` requests and is excluded from Laravel CSRF protection when needed.
 
 ## How To Use
 
@@ -292,8 +295,134 @@ $charge = $gateway->chargeByToken(
 );
 ```
 
+### OxaPay Configuration
+
+```env
+OXAPAY_MERCHANT_API_KEY=your_merchant_api_key
+OXAPAY_PAYMENT_TYPE=invoice
+OXAPAY_CURRENCY=USD
+OXAPAY_PAY_CURRENCY=USDT
+OXAPAY_NETWORK=Tron
+OXAPAY_LIFETIME=60
+OXAPAY_CALLBACK_URL=
+OXAPAY_RETURN_URL=
+OXAPAY_SANDBOX=true
+```
+
+`OXAPAY_CALLBACK_URL` and `OXAPAY_RETURN_URL` are optional. If you leave them empty, the package will use the named `verify-payment` route automatically.
+
+### OxaPay Invoice Example
+
+```php
+use Nafezly\Payments\Classes\OxaPayPayment;
+
+$payment = new OxaPayPayment();
+
+$response = $payment->setPaymentId('ORD-10001') // your internal order / reference id
+    ->setAmount(150.50)
+    ->setCurrency('USD')
+    ->setDescription('Order #10001')
+    ->setUserEmail('customer@example.com')
+    ->pay();
+
+// $response contains:
+// payment_id   => your internal reference/order id
+// track_id     => OxaPay track_id
+// redirect_url => hosted OxaPay invoice url
+```
+
+### OxaPay White-label Example
+
+```php
+use Nafezly\Payments\Classes\OxaPayPayment;
+
+$response = (new OxaPayPayment())
+    ->setPaymentType('white_label')
+    ->setPaymentId('ORD-10002')
+    ->setAmount(150.50)
+    ->setCurrency('USD')
+    ->setPayCurrency('USDT')
+    ->setNetwork('Tron') // use a valid network name returned by OxaPay
+    ->setUserEmail('customer@example.com')
+    ->pay();
+
+// $response['html'] contains a ready-to-render payment instructions page
+// $response['process_data'] contains the raw OxaPay response
+```
+
+### OxaPay Static Address Example
+
+```php
+use Nafezly\Payments\Classes\OxaPayPayment;
+
+$response = (new OxaPayPayment())
+    ->setPaymentType('static_address')
+    ->setPaymentId('WALLET-10003')
+    ->setNetwork('Tron') // use a valid network name returned by OxaPay
+    ->setToCurrency('USDT')
+    ->setUserEmail('customer@example.com')
+    ->pay();
+
+// $response['html'] contains the address + QR instructions page
+```
+
+### OxaPay Verification / Webhook Example
+
+```php
+use Illuminate\Http\Request;
+use Nafezly\Payments\Classes\OxaPayPayment;
+
+public function payment_verify(Request $request, $payment = null)
+{
+    if ($payment !== 'oxapay') {
+        return;
+    }
+
+    $gateway = new OxaPayPayment();
+
+    if ($request->isMethod('post') && !$gateway->verifyWebhookSignature($request)) {
+        return response('Invalid HMAC signature', 400);
+    }
+
+    $verify = $gateway->verify($request);
+
+    // $verify['payment_id'] => your local order/reference id
+    // $verify['track_id']   => OxaPay track_id
+    // $verify['success']    => true only when payment status is paid/manual_accept
+
+    if ($request->isMethod('post')) {
+        return response('ok', 200);
+    }
+
+    return $verify['success']
+        ? redirect('/payment-success')
+        : redirect('/payment-failed');
+}
+```
+
+**Important OxaPay notes:**
+- OxaPay usually sends a first webhook with `paying` status, then a second one with `paid` after confirmation. Deliver goods/services only after the final successful status.
+- `setPaymentId()` is sent to OxaPay as `order_id`, while the returned `track_id` is the OxaPay reference used for inquiry and verification.
+- Webhook HMAC verification uses the same `OXAPAY_MERCHANT_API_KEY`.
+- `verify()` supports both browser return flow and signed webhook flow.
+- You can also use the shortcut methods `payInvoice()`, `payWhiteLabel()` and `payStaticAddress()`.
+
+### OxaPay Helper Methods
+
+```php
+$gateway = new \Nafezly\Payments\Classes\OxaPayPayment();
+
+$accepted = $gateway->acceptedCurrencies();
+$supportedCurrencies = $gateway->supportedCurrencies();
+$supportedNetworks = $gateway->supportedNetworks();
+$paymentInfo = $gateway->paymentInformation('151811887');
+$history = $gateway->paymentHistory(['status' => 'Paid', 'page' => 1, 'size' => 20]);
+$staticAddresses = $gateway->staticAddressList(['have_tx' => false, 'page' => 1, 'size' => 20]);
+$revoke = $gateway->revokeStaticAddress('YOUR_STATIC_ADDRESS');
+```
+
 ### Factory Pattern Use
-you can pass only method name without payment key word like (Fawry,Paymob,Opay,SkipCash ...etc) 
+you can pass only method name without payment key word like (Fawry,Paymob,Opay,SkipCash,OxaPay ...etc)
 and the factory will return the payment instance for you , use it as you want ;)
 ```php
     $payment = new \Nafezly\Payments\Factories\PaymentFactory();
@@ -403,4 +532,3 @@ $payment->setUserId($id)
 - [Tap](https://developers.tap.company/reference/testing-cards)
 - [Opay](https://doc.opaycheckout.com/end-to-end-testing)
 - [PayTabs](https://support.paytabs.com/en/support/solutions/articles/60000712315-what-are-the-test-cards-available-to-perform-payments-)
-
