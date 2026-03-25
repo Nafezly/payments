@@ -166,7 +166,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
     {
         $this->setPassedVariablesToGlobal($amount, $user_id, $user_first_name, $user_last_name, $user_email, $user_phone, $source);
 
-        if (!empty($source) && in_array($this->normalizePaymentType($source), ['invoice', 'white_label', 'static_address'], true)) {
+        if (! empty($source) && in_array($this->normalizePaymentType($source), ['invoice', 'white_label', 'static_address'], true)) {
             $this->setPaymentType($source);
         }
 
@@ -178,7 +178,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
         $data = isset($body['data']) && is_array($body['data']) ? $body['data'] : [];
         $track_id = $data['track_id'] ?? null;
 
-        if (!empty($track_id)) {
+        if (! empty($track_id)) {
             $this->storeTrackMapping($reference_id, $track_id);
         }
 
@@ -198,22 +198,22 @@ class OxaPayPayment extends BaseController implements PaymentInterface
         $raw_body = $request->getContent();
         $payload = $this->parseWebhookPayload($raw_body);
 
-        if ($this->hasWebhookSignature($request) && !$this->verifyWebhookSignature($request)) {
+        if ($this->hasWebhookSignature($request) && ! $this->verifyWebhookSignature($request)) {
             return [
                 'success' => false,
                 'payment_id' => $request->get('payment_id'),
                 'track_id' => $payload['track_id'] ?? null,
                 'message' => 'Invalid HMAC signature',
-                'process_data' => !empty($payload) ? $payload : $request->all(),
+                'process_data' => ! empty($payload) ? $payload : $request->all(),
             ];
         }
 
         $track_id = $this->resolveTrackId($request, $payload);
-        if (!empty($track_id)) {
+        if (! empty($track_id)) {
             $payment_information = $this->paymentInformation($track_id);
             $payment_data = isset($payment_information['data']) && is_array($payment_information['data']) ? $payment_information['data'] : [];
 
-            if (!empty($payment_data)) {
+            if (! empty($payment_data)) {
                 return $this->buildVerifyResponse(
                     $payment_data,
                     $this->isSuccessfulStatus($payment_data['status'] ?? null),
@@ -222,7 +222,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
             }
         }
 
-        if (!empty($payload)) {
+        if (! empty($payload)) {
             return $this->buildVerifyResponse(
                 $payload,
                 $this->isSuccessfulStatus($payload['status'] ?? null),
@@ -243,36 +243,42 @@ class OxaPayPayment extends BaseController implements PaymentInterface
     {
         $this->assertRequiredValue($track_id, 'track_id', 'OXAPAY');
         $response = $this->request('get', '/payment/' . $track_id);
+
         return $response['body'];
     }
 
     public function paymentHistory(array $filters = []): array
     {
         $response = $this->request('get', '/payment', [], $this->cleanQueryFilters($filters));
+
         return $response['body'];
     }
 
     public function acceptedCurrencies(): array
     {
         $response = $this->request('get', '/payment/accepted-currencies');
+
         return $response['body'];
     }
 
     public function supportedCurrencies(): array
     {
         $response = $this->request('get', '/common/currencies');
+
         return $response['body'];
     }
 
     public function supportedNetworks(): array
     {
         $response = $this->request('get', '/common/networks');
+
         return $response['body'];
     }
 
     public function staticAddressList(array $filters = []): array
     {
         $response = $this->request('get', '/payment/static-address', [], $this->cleanQueryFilters($filters));
+
         return $response['body'];
     }
 
@@ -282,6 +288,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
         $response = $this->request('post', '/payment/static-address/revoke', [
             'address' => $address,
         ]);
+
         return $response['body'];
     }
 
@@ -310,15 +317,18 @@ class OxaPayPayment extends BaseController implements PaymentInterface
         if ($payment_type === 'white_label') {
             $this->assertRequiredValue($this->amount, 'amount', 'OXAPAY');
             $this->assertRequiredValue($this->pay_currency, 'pay_currency', 'OXAPAY');
+
             return $this->request('post', '/payment/white-label', $this->buildWhiteLabelPayload($reference_id));
         }
 
         if ($payment_type === 'static_address') {
             $this->assertRequiredValue($this->network, 'network', 'OXAPAY');
+
             return $this->request('post', '/payment/static-address', $this->buildStaticAddressPayload($reference_id));
         }
 
         $this->assertRequiredValue($this->amount, 'amount', 'OXAPAY');
+
         return $this->request('post', '/payment/invoice', $this->buildInvoicePayload($reference_id));
     }
 
@@ -383,7 +393,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
 
     private function buildPaymentHtml($payment_type, array $data)
     {
-        if ($payment_type === 'invoice' || !$this->render_payment_details || empty($data)) {
+        if ($payment_type === 'invoice' || ! $this->render_payment_details || empty($data)) {
             return '';
         }
 
@@ -399,7 +409,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
         $track_id = $payment_data['track_id'] ?? null;
         $payment_id = $payment_data['order_id'] ?? null;
 
-        if (empty($payment_id) && !empty($track_id)) {
+        if (empty($payment_id) && ! empty($track_id)) {
             $payment_id = Cache::get($this->referenceCacheKey($track_id));
         }
 
@@ -429,7 +439,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
         }
 
         $body = $http_response->json();
-        if (!is_array($body)) {
+        if (! is_array($body)) {
             $body = [
                 'data' => [],
                 'message' => $http_response->body(),
@@ -438,7 +448,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
             ];
         }
 
-        if (!isset($body['status'])) {
+        if (! isset($body['status'])) {
             $body['status'] = $http_response->status();
         }
 
@@ -453,7 +463,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
 
     private function resolveCallbackUrl($reference_id)
     {
-        if (!empty($this->callback_url)) {
+        if (! empty($this->callback_url)) {
             return $this->callback_url;
         }
 
@@ -465,7 +475,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
 
     private function resolveReturnUrl($reference_id)
     {
-        if (!empty($this->return_url)) {
+        if (! empty($this->return_url)) {
             return $this->return_url;
         }
 
@@ -477,7 +487,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
 
     private function resolveDescription($reference_id)
     {
-        if (!empty($this->description)) {
+        if (! empty($this->description)) {
             return $this->description;
         }
 
@@ -487,14 +497,14 @@ class OxaPayPayment extends BaseController implements PaymentInterface
     private function resolveTrackId(Request $request, array $payload = []): ?string
     {
         $track_id = $payload['track_id'] ?? $request->get('track_id') ?? $request->get('payment_track_id');
-        if (!empty($track_id)) {
+        if (! empty($track_id)) {
             return (string) $track_id;
         }
 
         $payment_id = $request->get('payment_id');
-        if (!empty($payment_id)) {
+        if (! empty($payment_id)) {
             $cached_track_id = Cache::get($this->trackCacheKey($payment_id));
-            if (!empty($cached_track_id)) {
+            if (! empty($cached_track_id)) {
                 return (string) $cached_track_id;
             }
         }
@@ -514,6 +524,7 @@ class OxaPayPayment extends BaseController implements PaymentInterface
         }
 
         $decoded = json_decode($raw_body, true);
+
         return is_array($decoded) ? $decoded : [];
     }
 
@@ -636,6 +647,11 @@ class OxaPayPayment extends BaseController implements PaymentInterface
     private function isSuccessfulStatus($status): bool
     {
         $normalized_status = strtolower((string) $status);
+
         return in_array($normalized_status, ['paid', 'manual_accept'], true);
     }
+}
+
+class OxapayPayment extends OxaPayPayment
+{
 }
