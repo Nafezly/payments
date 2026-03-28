@@ -651,7 +651,3 @@ class OxaPayPayment extends BaseController implements PaymentInterface
         return in_array($normalized_status, ['paid', 'manual_accept'], true);
     }
 }
-
-class OxapayPayment extends OxaPayPayment
-{
-}
