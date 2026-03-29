@@ -6,7 +6,7 @@
 
 A unified payment helper and wrapper supporting global and regional payment gateways:
 
-PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, CoinPayments, PerfectMoney, Cryptomus, Payrexx, Wise, Changelly, OneLat, Kashier — including mobile wallets (Vodafone Cash, Orange Money, Etisalat Cash, Meeza Wallet), and more.
+PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, CoinPayments, PerfectMoney, Cryptomus, Heleket, Payrexx, Wise, Changelly, OneLat, Kashier — including mobile wallets (Vodafone Cash, Orange Money, Etisalat Cash, Meeza Wallet), and more.
 
 ![gateways.jpg](https://github.com/nafezly/payments/blob/master/gateways.jpg?raw=true&v=9)
 
@@ -41,6 +41,7 @@ PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, C
 - [PAYCEC](https://www.paycec.com/)
 - [Payrexx](https://payrexx.com/)
 - [Cryptomus](https://cryptomus.com/)
+- [Heleket](https://doc.heleket.com/)
 - [PaySky](https://paysky.io/)
 - [Prime Payments](https://primepayments.com/)
 - [Wise](https://wise.com/)

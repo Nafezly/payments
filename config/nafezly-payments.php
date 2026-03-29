@@ -150,6 +150,9 @@ return [
     'CRYPTOMUS_MERCHANT_ID'=>env('CRYPTOMUS_MERCHANT_ID'),
     'CRYPTOMUS_API_KEY'=>env('CRYPTOMUS_API_KEY'),
 
+    #HELEKET — https://doc.heleket.com/ (same API shape as Cryptomus: merchant + sign headers)
+    'HELEKET_MERCHANT_ID'=>env('HELEKET_MERCHANT_ID'),
+    'HELEKET_API_KEY'=>env('HELEKET_API_KEY'),
 
 
     'PRIME_PROJECT_ID'=>env('PRIME_PROJECT_ID'),
