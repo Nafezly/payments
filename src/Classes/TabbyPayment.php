@@ -133,7 +133,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
 
             if (isset($responseData['configuration']['available_products']) && (empty($installments) || $rejectionReason !== null)) {
                 $rejectionReason = $rejectionReason ?? 'not_available';
-                $errorMessage = __('nafezly::messages.TABBY_PAYMENT_REJECTED', ['reason' => $rejectionReason]);
+                $errorMessage = $this->translateTabbyRejectionMessage($rejectionReason);
             }
 
             $this->logTabbyResponse('checkout_failed', $response, $responseData, [
@@ -326,9 +326,29 @@ class TabbyPayment extends BaseController implements PaymentInterface
         }
 
         return $responseData['rejection_reason']
+            ?? $responseData['rejection_reason_code']
             ?? $responseData['error']
             ?? $responseData['message']
             ?? null;
+    }
+
+    /**
+     * @return string
+     */
+    private function translateTabbyRejectionMessage(string $reason)
+    {
+        $key = 'nafezly::messages.TABBY_PAYMENT_REJECTED';
+        $message = __($key, ['reason' => $reason]);
+
+        if ($message !== $key) {
+            return $message;
+        }
+
+        if (strpos(app()->getLocale(), 'ar') === 0) {
+            return 'تعذر إكمال الدفع عبر تابي. السبب: ' . $reason;
+        }
+
+        return 'Unable to complete the payment through Tabby. Reason: ' . $reason;
     }
 
     /**
