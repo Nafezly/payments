@@ -4,6 +4,7 @@ namespace Nafezly\Payments\Classes;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
 use Nafezly\Payments\Classes\BaseController;
@@ -113,6 +114,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
             ])->post($this->base_url . '/checkout', $payload);
 
             $responseData = $response->json();
+            $responseData = is_array($responseData) ? $responseData : [];
 
             if ($response->successful() && isset($responseData['configuration']['available_products']['installments'][0]['web_url'])) {
                 $webUrl = $responseData['configuration']['available_products']['installments'][0]['web_url'];
@@ -126,11 +128,19 @@ class TabbyPayment extends BaseController implements PaymentInterface
             }
 
             $errorMessage = $responseData['error'] ?? $responseData['message'] ?? 'Tabby checkout session creation failed';
+            $installments = $responseData['configuration']['available_products']['installments'] ?? [];
+            $rejectionReason = $this->extractRejectionReason($responseData);
 
-            if (isset($responseData['configuration']['available_products']) && empty($responseData['configuration']['available_products']['installments'])) {
-                $rejectionReason = $responseData['configuration']['products']['installments'][0]['rejection_reason'] ?? 'not_available';
+            if (isset($responseData['configuration']['available_products']) && (empty($installments) || $rejectionReason !== null)) {
+                $rejectionReason = $rejectionReason ?? 'not_available';
                 $errorMessage = __('nafezly::messages.TABBY_PAYMENT_REJECTED', ['reason' => $rejectionReason]);
             }
+
+            $this->logTabbyResponse('checkout_failed', $response, $responseData, [
+                'payment_id' => $unique_id,
+                'currency' => $currencyCode,
+                'rejection_reason' => $rejectionReason,
+            ]);
 
             return [
                 'payment_id' => $unique_id,
@@ -138,6 +148,13 @@ class TabbyPayment extends BaseController implements PaymentInterface
                 'html' => $errorMessage,
             ];
         } catch (\Exception $e) {
+            Log::error('Tabby checkout exception', [
+                'payment_id' => $unique_id,
+                'mode' => $this->mode,
+                'currency' => $currencyCode,
+                'error' => $e->getMessage(),
+            ]);
+
             return [
                 'payment_id' => $unique_id,
                 'redirect_url' => '',
@@ -169,8 +186,13 @@ class TabbyPayment extends BaseController implements PaymentInterface
             ])->get($this->base_url . '/payments/' . $paymentId);
 
             $responseData = $response->json();
+            $responseData = is_array($responseData) ? $responseData : [];
 
             if (! $response->successful()) {
+                $this->logTabbyResponse('verify_failed', $response, $responseData, [
+                    'payment_id' => $paymentId,
+                ]);
+
                 return [
                     'success' => false,
                     'payment_id' => $paymentId,
@@ -193,6 +215,12 @@ class TabbyPayment extends BaseController implements PaymentInterface
                     ];
                 }
 
+                $this->logTabbyResponse('capture_failed_after_authorization', $response, $responseData, [
+                    'payment_id' => $paymentId,
+                    'status' => $status,
+                    'capture_response' => $captureResponse['data'],
+                ]);
+
                 return [
                     'success' => false,
                     'payment_id' => $paymentId,
@@ -210,6 +238,11 @@ class TabbyPayment extends BaseController implements PaymentInterface
                 ];
             }
 
+            $this->logTabbyResponse('verify_unsuccessful_status', $response, $responseData, [
+                'payment_id' => $paymentId,
+                'status' => $status,
+            ]);
+
             return [
                 'success' => false,
                 'payment_id' => $paymentId,
@@ -217,6 +250,12 @@ class TabbyPayment extends BaseController implements PaymentInterface
                 'process_data' => $responseData,
             ];
         } catch (\Exception $e) {
+            Log::error('Tabby verification exception', [
+                'payment_id' => $paymentId,
+                'mode' => $this->mode,
+                'error' => $e->getMessage(),
+            ]);
+
             return [
                 'success' => false,
                 'payment_id' => $paymentId,
@@ -244,14 +283,68 @@ class TabbyPayment extends BaseController implements PaymentInterface
             ]);
 
             $responseData = $response->json();
+            $responseData = is_array($responseData) ? $responseData : [];
 
             if ($response->successful()) {
                 return ['success' => true, 'data' => $responseData];
             }
 
+            $this->logTabbyResponse('capture_failed', $response, $responseData, [
+                'payment_id' => $paymentId,
+                'amount' => $amount,
+            ]);
+
             return ['success' => false, 'data' => $responseData];
         } catch (\Exception $e) {
+            Log::error('Tabby capture exception', [
+                'payment_id' => $paymentId,
+                'mode' => $this->mode,
+                'amount' => $amount,
+                'error' => $e->getMessage(),
+            ]);
+
             return ['success' => false, 'data' => ['error' => $e->getMessage()]];
         }
+    }
+
+    /**
+     * @param array<string, mixed>|null $responseData
+     * @return string|null
+     */
+    private function extractRejectionReason($responseData)
+    {
+        if (! is_array($responseData)) {
+            return null;
+        }
+
+        $installments = $responseData['configuration']['available_products']['installments'] ?? [];
+
+        foreach ($installments as $installment) {
+            if (! empty($installment['rejection_reason'])) {
+                return $installment['rejection_reason'];
+            }
+        }
+
+        return $responseData['rejection_reason']
+            ?? $responseData['error']
+            ?? $responseData['message']
+            ?? null;
+    }
+
+    /**
+     * @param array<string, mixed>|null $responseData
+     * @param array<string, mixed> $context
+     * @return void
+     */
+    private function logTabbyResponse(string $event, $response, $responseData, array $context = [])
+    {
+        Log::warning('Tabby payment response: ' . $event, array_merge([
+            'mode' => $this->mode,
+            'merchant_code' => $this->merchant_code,
+            'http_status' => $response->status(),
+            'successful' => $response->successful(),
+            'tabby_response' => $responseData,
+            'tabby_response_body' => $response->body(),
+        ], $context));
     }
 }
