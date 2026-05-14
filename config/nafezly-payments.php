@@ -333,11 +333,12 @@ return [
     * Flow: Create checkout session -> Redirect to web_url -> Verify -> Capture
     * Test credentials: email otp.success@tabby.ai, phone +966500000001, OTP 8888
     */
-    'TABBY_SECRET_KEY'=>env('TABBY_SECRET_KEY'),
-    'TABBY_PUBLIC_KEY'=>env('TABBY_PUBLIC_KEY'),
-    'TABBY_MERCHANT_CODE'=>env('TABBY_MERCHANT_CODE'),
-    'TABBY_MODE'=>env('TABBY_MODE','test'),
-    'TABBY_CURRENCY'=>env('TABBY_CURRENCY','SAR'),
+    'TABBY_SECRET_KEY' => env('TABBY_SECRET_KEY'),
+    'TABBY_PUBLIC_KEY' => env('TABBY_PUBLIC_KEY'),
+    'TABBY_MERCHANT_CODE' => env('TABBY_MERCHANT_CODE'),
+    'TABBY_MODE' => env('TABBY_MODE', 'test'),
+    'TABBY_BASE_URL' => env('TABBY_BASE_URL', 'https://api.tabby.ai/api/v2'),
+    'TABBY_CURRENCY' => env('TABBY_CURRENCY', 'SAR'),
 
 
 ];

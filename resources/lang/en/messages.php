@@ -5,6 +5,7 @@ return [
     'PAYMENT_FAILED' => 'An error occurred while executing the operation',
     'PAYMENT_FAILED_WITH_CODE' => 'An error occurred while executing the operation, error code: :CODE',
     'TABBY_PAYMENT_REJECTED' => 'Unable to complete the payment through Tabby. Reason: :reason',
+    'TABBY_UNSUPPORTED_CURRENCY' => 'Tabby supports AED, KWD, and SAR only.',
     'Process_Has_Been_Blocked_From_System'=>"Process Has Been Blocked From System",
     'Security_checks_are_not_passed_by_the_system'=>"Security checks are not passed by the system",
     "Balance_is_not_enough"=>"Balance is not enough",

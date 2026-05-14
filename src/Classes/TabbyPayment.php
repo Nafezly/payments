@@ -26,7 +26,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
         $this->mode = config('nafezly-payments.TABBY_MODE', 'test');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
 
-        $this->base_url = 'https://api.tabby.ai/api/v2';
+        $this->base_url = $this->normalizeBaseUrl(config('nafezly-payments.TABBY_BASE_URL', 'https://api.tabby.ai/api/v2'));
     }
 
     /**
@@ -48,7 +48,16 @@ class TabbyPayment extends BaseController implements PaymentInterface
 
         $unique_id = $this->payment_id ?? uniqid('tabby_') . rand(100000, 999999);
 
-        $currencyCode = $this->currency ?? config('nafezly-payments.TABBY_CURRENCY', 'SAR');
+        $currencyCode = $this->resolveCurrencyCode($this->currency ?? config('nafezly-payments.TABBY_CURRENCY', 'SAR'));
+        if (! in_array($currencyCode, ['AED', 'KWD', 'SAR'], true)) {
+            return [
+                'payment_id' => $unique_id,
+                'redirect_url' => '',
+                'html' => __('nafezly::messages.TABBY_UNSUPPORTED_CURRENCY'),
+            ];
+        }
+
+        $language = $this->resolveLanguage($this->language ?? app()->getLocale());
 
         $verifyUrl = route($this->verify_route_name, ['payment' => 'tabby']);
 
@@ -98,7 +107,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
                     ],
                 ],
             ],
-            'lang' => $this->language ?? app()->getLocale(),
+            'lang' => $language,
             'merchant_code' => $this->merchant_code,
             'merchant_urls' => [
                 'success' => $verifyUrl,
@@ -111,7 +120,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secret_key,
                 'Content-Type' => 'application/json',
-            ])->post($this->base_url . '/checkout', $payload);
+            ])->timeout(15)->connectTimeout(5)->post($this->base_url . '/checkout', $payload);
 
             $responseData = $response->json();
             $responseData = is_array($responseData) ? $responseData : [];
@@ -158,7 +167,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
             return [
                 'payment_id' => $unique_id,
                 'redirect_url' => '',
-                'html' => 'Error: ' . $e->getMessage(),
+                'html' => __('nafezly::messages.PAYMENT_FAILED'),
             ];
         }
     }
@@ -183,7 +192,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
         try {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secret_key,
-            ])->get($this->base_url . '/payments/' . $paymentId);
+            ])->timeout(15)->connectTimeout(5)->get($this->base_url . '/payments/' . $paymentId);
 
             $responseData = $response->json();
             $responseData = is_array($responseData) ? $responseData : [];
@@ -278,8 +287,9 @@ class TabbyPayment extends BaseController implements PaymentInterface
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secret_key,
                 'Content-Type' => 'application/json',
-            ])->post($this->base_url . '/payments/' . $paymentId . '/captures', [
+            ])->timeout(15)->connectTimeout(5)->post($this->base_url . '/payments/' . $paymentId . '/captures', [
                 'amount' => $amount,
+                'reference_id' => 'capture_' . $paymentId,
             ]);
 
             $responseData = $response->json();
@@ -361,10 +371,59 @@ class TabbyPayment extends BaseController implements PaymentInterface
         Log::warning('Tabby payment response: ' . $event, array_merge([
             'mode' => $this->mode,
             'merchant_code' => $this->merchant_code,
+            'base_url' => $this->base_url,
             'http_status' => $response->status(),
             'successful' => $response->successful(),
-            'tabby_response' => $responseData,
-            'tabby_response_body' => $response->body(),
+            'tabby_response' => $this->redactTabbyResponseData($responseData),
         ], $context));
+    }
+
+    private function normalizeBaseUrl($baseUrl): string
+    {
+        $baseUrl = rtrim((string) $baseUrl, '/');
+
+        $allowedBaseUrls = [
+            'https://api.tabby.ai' => 'https://api.tabby.ai/api/v2',
+            'https://api.tabby.ai/api/v2' => 'https://api.tabby.ai/api/v2',
+            'https://api.tabby.sa' => 'https://api.tabby.sa/api/v2',
+            'https://api.tabby.sa/api/v2' => 'https://api.tabby.sa/api/v2',
+        ];
+
+        return $allowedBaseUrls[$baseUrl] ?? 'https://api.tabby.ai/api/v2';
+    }
+
+    private function resolveCurrencyCode($currency): string
+    {
+        return strtoupper(trim((string) $currency));
+    }
+
+    private function resolveLanguage($language): string
+    {
+        $language = strtolower(substr(trim((string) $language), 0, 2));
+
+        return in_array($language, ['ar', 'en'], true) ? $language : 'ar';
+    }
+
+    private function redactTabbyResponseData($value)
+    {
+        if (! is_array($value)) {
+            return $value;
+        }
+
+        $sensitiveKeys = ['phone', 'email', 'name', 'token'];
+
+        foreach ($value as $key => $item) {
+            if (in_array(strtolower((string) $key), $sensitiveKeys, true)) {
+                $value[$key] = '[REDACTED]';
+
+                continue;
+            }
+
+            if (is_array($item)) {
+                $value[$key] = $this->redactTabbyResponseData($item);
+            }
+        }
+
+        return $value;
     }
 }

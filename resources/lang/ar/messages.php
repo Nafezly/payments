@@ -5,6 +5,7 @@ return [
     'PAYMENT_FAILED' => 'حدث خطأ أثناء تنفيذ العملية',
     'PAYMENT_FAILED_WITH_CODE' => 'حدث خطأ أثناء تنفيذ العملية، الخطأ : :CODE',
     'TABBY_PAYMENT_REJECTED' => 'تعذر إكمال الدفع عبر تابي. السبب: :reason',
+    'TABBY_UNSUPPORTED_CURRENCY' => 'تابي يدعم عملات AED و KWD و SAR فقط.',
     'Process_Has_Been_Blocked_From_System'=>"تم رفض المعاملة من قبل النظام",
     'Security_checks_are_not_passed_by_the_system'=>"لم يتم اجتياز اختبارات الحماية من قبل النظام",
     "Balance_is_not_enough"=>"الرصيد غير كافي",
