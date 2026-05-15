@@ -74,7 +74,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
             'countryCode'=>""
         ];
         try{
-            $fetch_address = \Http::get('http://ip-api.com/json/'.$this->get_ip())->json();
+            $fetch_address = Http::get('http://ip-api.com/json/'.$this->get_ip())->json();
             if(is_array($fetch_address))
                 $country = array_replace_recursive($country,$fetch_address);
         }catch(\Exception $e){}
@@ -242,7 +242,7 @@ class PayPalCreditPayment extends BaseController implements PaymentInterface
         else
             $ipaddress = 'UNKNOWN';
         if($ipaddress=="127.0.0.1"){
-            $ip = \Http::get('https://api.ipify.org/?format=json')->json();
+            $ip = Http::get('https://api.ipify.org/?format=json')->json();
             return $ip['ip'];
         }
         return $ipaddress;

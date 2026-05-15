@@ -60,7 +60,7 @@ class ClickPayPayment extends BaseController implements PaymentInterface
         else
             $unique_id = $this->payment_id;
 
-        $response = \Http::withHeaders([
+        $response = Http::withHeaders([
             'authorization' => $this->clickpay_server_key
         ])->post('https://secure.clickpay.com.sa/payment/request', [
             "profile_id" => $this->clickpay_profile_id,
@@ -125,7 +125,7 @@ class ClickPayPayment extends BaseController implements PaymentInterface
     public function verify(Request $request)
     {
 
-        $response = \Http::withHeaders([
+        $response = Http::withHeaders([
             'authorization' => $this->clickpay_server_key
         ])->post('https://secure.clickpay.com.sa/payment/query', [
             'profile_id' => $this->clickpay_profile_id,
