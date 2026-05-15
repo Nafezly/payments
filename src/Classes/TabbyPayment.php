@@ -58,12 +58,13 @@ class TabbyPayment extends BaseController implements PaymentInterface
         }
 
         $language = $this->resolveLanguage($this->language ?? app()->getLocale());
+        $formattedAmount = $this->formatAmount($this->amount, $currencyCode);
 
         $verifyUrl = route($this->verify_route_name, ['payment' => 'tabby']);
 
         $payload = [
             'payment' => [
-                'amount' => number_format($this->amount, 2, '.', ''),
+                'amount' => $formattedAmount,
                 'currency' => $currencyCode,
                 'description' => 'Order #' . $unique_id,
                 'buyer' => [
@@ -86,7 +87,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
                         [
                             'title' => 'Order #' . $unique_id,
                             'quantity' => 1,
-                            'unit_price' => number_format($this->amount, 2, '.', ''),
+                            'unit_price' => $formattedAmount,
                             'tax_amount' => '0.00',
                             'discount_amount' => '0.00',
                             'reference_id' => $unique_id,
@@ -101,7 +102,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
                 'order_history' => [
                     [
                         'purchased_at' => now()->subMonth()->toIso8601String(),
-                        'amount' => number_format($this->amount, 2, '.', ''),
+                        'amount' => $formattedAmount,
                         'payment_method' => 'card',
                         'status' => 'new',
                     ],
@@ -117,10 +118,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
         ];
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->secret_key,
-                'Content-Type' => 'application/json',
-            ])->timeout(15)->connectTimeout(5)->post($this->base_url . '/checkout', $payload);
+            $response = Http::withHeaders($this->jsonHeaders())->timeout(15)->connectTimeout(5)->post($this->base_url . '/checkout', $payload);
 
             $responseData = $response->json();
             $responseData = is_array($responseData) ? $responseData : [];
@@ -190,30 +188,23 @@ class TabbyPayment extends BaseController implements PaymentInterface
         }
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->secret_key,
-            ])->timeout(15)->connectTimeout(5)->get($this->base_url . '/payments/' . $paymentId);
+            $retrieveResponse = $this->retrievePayment($paymentId);
 
-            $responseData = $response->json();
-            $responseData = is_array($responseData) ? $responseData : [];
-
-            if (! $response->successful()) {
-                $this->logTabbyResponse('verify_failed', $response, $responseData, [
-                    'payment_id' => $paymentId,
-                ]);
-
+            if (! $retrieveResponse['success']) {
                 return [
                     'success' => false,
                     'payment_id' => $paymentId,
                     'message' => __('nafezly::messages.PAYMENT_FAILED'),
-                    'process_data' => $responseData,
+                    'process_data' => $retrieveResponse['data'],
                 ];
             }
+
+            $responseData = $retrieveResponse['data'];
 
             $status = $responseData['status'] ?? '';
 
             if ($status === 'AUTHORIZED') {
-                $captureResponse = $this->capturePayment($paymentId, $responseData['amount'] ?? '0.00');
+                $captureResponse = $this->captureAuthorizedPayment($paymentId, $responseData['amount'] ?? '0.00');
 
                 if ($captureResponse['success']) {
                     return [
@@ -224,10 +215,13 @@ class TabbyPayment extends BaseController implements PaymentInterface
                     ];
                 }
 
-                $this->logTabbyResponse('capture_failed_after_authorization', $response, $responseData, [
+                Log::warning('Tabby capture failed after authorization', [
+                    'mode' => $this->mode,
+                    'merchant_code' => $this->merchant_code,
+                    'base_url' => $this->base_url,
                     'payment_id' => $paymentId,
                     'status' => $status,
-                    'capture_response' => $captureResponse['data'],
+                    'capture_response' => $this->redactTabbyResponseData($captureResponse['data']),
                 ]);
 
                 return [
@@ -247,9 +241,13 @@ class TabbyPayment extends BaseController implements PaymentInterface
                 ];
             }
 
-            $this->logTabbyResponse('verify_unsuccessful_status', $response, $responseData, [
+            Log::warning('Tabby verification returned unsuccessful status', [
+                'mode' => $this->mode,
+                'merchant_code' => $this->merchant_code,
+                'base_url' => $this->base_url,
                 'payment_id' => $paymentId,
                 'status' => $status,
+                'tabby_response' => $this->redactTabbyResponseData($responseData),
             ]);
 
             return [
@@ -275,6 +273,312 @@ class TabbyPayment extends BaseController implements PaymentInterface
     }
 
     /**
+     * Retrieve a Tabby payment without performing any side effects.
+     *
+     * @param string $paymentId
+     * @return array
+     */
+    public function retrievePayment(string $paymentId): array
+    {
+        if (trim($paymentId) === '') {
+            return [
+                'success' => false,
+                'payment_id' => '',
+                'status' => '',
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                'data' => [],
+            ];
+        }
+
+        try {
+            $response = Http::withHeaders($this->authorizationHeaders())->timeout(15)->connectTimeout(5)->get($this->base_url . '/payments/' . $paymentId);
+
+            $responseData = $response->json();
+            $responseData = is_array($responseData) ? $responseData : [];
+
+            if (! $response->successful()) {
+                $this->logTabbyResponse('retrieve_payment_failed', $response, $responseData, [
+                    'payment_id' => $paymentId,
+                ]);
+
+                return [
+                    'success' => false,
+                    'payment_id' => $paymentId,
+                    'status' => $responseData['status'] ?? '',
+                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                    'data' => $responseData,
+                ];
+            }
+
+            return [
+                'success' => true,
+                'payment_id' => $paymentId,
+                'status' => $responseData['status'] ?? '',
+                'message' => __('nafezly::messages.PAYMENT_DONE'),
+                'data' => $responseData,
+            ];
+        } catch (\Exception $e) {
+            Log::error('Tabby retrieve payment exception', [
+                'payment_id' => $paymentId,
+                'mode' => $this->mode,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'payment_id' => $paymentId,
+                'status' => '',
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+        }
+    }
+
+    /**
+     * Run Tabby's background pre-scoring check through the checkout API.
+     *
+     * @param mixed $amount
+     * @param mixed $user_email
+     * @param mixed $user_phone
+     * @param mixed $currency
+     * @param array<string, mixed> $context
+     * @return array
+     */
+    public function checkEligibility($amount, $user_email, $user_phone, $currency = null, array $context = []): array
+    {
+        $currencyCode = $this->resolveCurrencyCode($currency ?? config('nafezly-payments.TABBY_CURRENCY', 'SAR'));
+        $formattedAmount = $this->formatAmount($amount, $currencyCode);
+        $referenceId = $context['payment']['order']['reference_id'] ?? uniqid('tabby_prescore_');
+
+        if (! in_array($currencyCode, ['AED', 'KWD', 'SAR'], true)) {
+            return [
+                'success' => true,
+                'eligible' => false,
+                'status' => 'rejected',
+                'rejection_reason' => 'unsupported_currency',
+                'message' => __('nafezly::messages.TABBY_UNSUPPORTED_CURRENCY'),
+                'data' => [],
+            ];
+        }
+
+        $payload = array_replace_recursive([
+            'payment' => [
+                'amount' => $formattedAmount,
+                'currency' => $currencyCode,
+                'description' => 'Order #' . $referenceId,
+                'buyer' => [
+                    'email' => (string) $user_email,
+                    'phone' => (string) $user_phone,
+                    'name' => (string) ($context['payment']['buyer']['name'] ?? 'Guest'),
+                ],
+                'shipping_address' => [
+                    'city' => 'N/A',
+                    'address' => 'N/A',
+                    'zip' => '00000',
+                ],
+                'order' => [
+                    'tax_amount' => '0.00',
+                    'shipping_amount' => '0.00',
+                    'discount_amount' => '0.00',
+                    'updated_at' => now()->toIso8601String(),
+                    'reference_id' => $referenceId,
+                    'items' => [
+                        [
+                            'title' => 'Order #' . $referenceId,
+                            'quantity' => 1,
+                            'unit_price' => $formattedAmount,
+                            'tax_amount' => '0.00',
+                            'discount_amount' => '0.00',
+                            'reference_id' => $referenceId,
+                            'category' => 'digital',
+                        ],
+                    ],
+                ],
+                'buyer_history' => [
+                    'registered_since' => now()->subYear()->toIso8601String(),
+                    'loyalty_level' => 0,
+                ],
+                'order_history' => [
+                    [
+                        'purchased_at' => now()->subMonth()->toIso8601String(),
+                        'amount' => $formattedAmount,
+                        'payment_method' => 'card',
+                        'status' => 'new',
+                    ],
+                ],
+            ],
+            'lang' => $this->resolveLanguage(app()->getLocale()),
+            'merchant_code' => $this->merchant_code,
+        ], $context);
+
+        try {
+            $response = Http::withHeaders($this->jsonHeaders())->timeout(15)->connectTimeout(5)->post($this->base_url . '/checkout', $payload);
+
+            $responseData = $response->json();
+            $responseData = is_array($responseData) ? $responseData : [];
+            $status = strtolower((string) ($responseData['status'] ?? ''));
+            $rejectionReason = $this->extractRejectionReason($responseData);
+
+            if (! $response->successful()) {
+                $this->logTabbyResponse('eligibility_failed', $response, $responseData, [
+                    'currency' => $currencyCode,
+                    'amount' => $formattedAmount,
+                    'rejection_reason' => $rejectionReason,
+                ]);
+
+                return [
+                    'success' => false,
+                    'eligible' => true,
+                    'status' => $status,
+                    'rejection_reason' => $rejectionReason,
+                    'message' => $responseData['message'] ?? __('nafezly::messages.PAYMENT_FAILED'),
+                    'data' => $responseData,
+                ];
+            }
+
+            return [
+                'success' => true,
+                'eligible' => $status !== 'rejected',
+                'status' => $status,
+                'rejection_reason' => $rejectionReason,
+                'message' => $rejectionReason ? $this->translateTabbyRejectionMessage($rejectionReason) : '',
+                'data' => $responseData,
+            ];
+        } catch (\Exception $e) {
+            Log::error('Tabby eligibility exception', [
+                'mode' => $this->mode,
+                'currency' => $currencyCode,
+                'amount' => $formattedAmount,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'eligible' => true,
+                'status' => '',
+                'rejection_reason' => null,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+        }
+    }
+
+    /**
+     * Retrieve all configured Tabby webhooks for the current merchant code.
+     *
+     * @return array
+     */
+    public function listWebhooks(): array
+    {
+        try {
+            $response = Http::withHeaders($this->webhookHeaders())->timeout(15)->connectTimeout(5)->get($this->webhookBaseUrl() . '/webhooks');
+
+            $responseData = $response->json();
+            $responseData = is_array($responseData) ? $responseData : [];
+
+            if (! $response->successful()) {
+                $this->logTabbyResponse('list_webhooks_failed', $response, $responseData);
+
+                return [
+                    'success' => false,
+                    'message' => $responseData['message'] ?? __('nafezly::messages.PAYMENT_FAILED'),
+                    'data' => $responseData,
+                ];
+            }
+
+            return [
+                'success' => true,
+                'message' => '',
+                'data' => $responseData,
+            ];
+        } catch (\Exception $e) {
+            Log::error('Tabby list webhooks exception', [
+                'mode' => $this->mode,
+                'merchant_code' => $this->merchant_code,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+        }
+    }
+
+    /**
+     * Register a Tabby webhook for the current merchant code.
+     *
+     * @param string $url
+     * @param string $headerTitle
+     * @param string $headerValue
+     * @param bool $isTest
+     * @return array
+     */
+    public function registerWebhook(string $url, string $headerTitle, string $headerValue, bool $isTest = false): array
+    {
+        $payload = [
+            'url' => $url,
+            'is_test' => $isTest,
+            'header' => [
+                'title' => $headerTitle,
+                'value' => $headerValue,
+            ],
+        ];
+
+        try {
+            $response = Http::withHeaders($this->webhookHeaders())->timeout(15)->connectTimeout(5)->post($this->webhookBaseUrl() . '/webhooks', $payload);
+
+            $responseData = $response->json();
+            $responseData = is_array($responseData) ? $responseData : [];
+
+            if (! $response->successful()) {
+                $this->logTabbyResponse('register_webhook_failed', $response, $responseData, [
+                    'webhook_url' => $url,
+                    'is_test' => $isTest,
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => $responseData['message'] ?? __('nafezly::messages.PAYMENT_FAILED'),
+                    'data' => $responseData,
+                ];
+            }
+
+            return [
+                'success' => true,
+                'message' => '',
+                'data' => $responseData,
+            ];
+        } catch (\Exception $e) {
+            Log::error('Tabby register webhook exception', [
+                'mode' => $this->mode,
+                'merchant_code' => $this->merchant_code,
+                'webhook_url' => $url,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+        }
+    }
+
+    /**
+     * Capture an authorized Tabby payment.
+     *
+     * @param string $paymentId
+     * @param mixed $amount
+     * @return array{success: bool, data: array}
+     */
+    public function captureAuthorizedPayment(string $paymentId, $amount): array
+    {
+        return $this->capturePayment($paymentId, (string) $amount);
+    }
+
+    /**
      * Capture an authorized Tabby payment
      *
      * @param string $paymentId
@@ -284,10 +588,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
     private function capturePayment(string $paymentId, string $amount): array
     {
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->secret_key,
-                'Content-Type' => 'application/json',
-            ])->timeout(15)->connectTimeout(5)->post($this->base_url . '/payments/' . $paymentId . '/captures', [
+            $response = Http::withHeaders($this->jsonHeaders())->timeout(15)->connectTimeout(5)->post($this->base_url . '/payments/' . $paymentId . '/captures', [
                 'amount' => $amount,
                 'reference_id' => 'capture_' . $paymentId,
             ]);
@@ -378,6 +679,32 @@ class TabbyPayment extends BaseController implements PaymentInterface
         ], $context));
     }
 
+    private function authorizationHeaders(): array
+    {
+        return [
+            'Authorization' => 'Bearer ' . $this->secret_key,
+        ];
+    }
+
+    private function jsonHeaders(): array
+    {
+        return array_merge($this->authorizationHeaders(), [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    private function webhookHeaders(): array
+    {
+        return array_merge($this->jsonHeaders(), [
+            'X-Merchant-Code' => (string) $this->merchant_code,
+        ]);
+    }
+
+    private function webhookBaseUrl(): string
+    {
+        return str_replace('/api/v2', '/api/v1', $this->base_url);
+    }
+
     private function normalizeBaseUrl($baseUrl): string
     {
         $baseUrl = rtrim((string) $baseUrl, '/');
@@ -395,6 +722,13 @@ class TabbyPayment extends BaseController implements PaymentInterface
     private function resolveCurrencyCode($currency): string
     {
         return strtoupper(trim((string) $currency));
+    }
+
+    private function formatAmount($amount, string $currencyCode): string
+    {
+        $decimals = $currencyCode === 'KWD' ? 3 : 2;
+
+        return number_format((float) $amount, $decimals, '.', '');
     }
 
     private function resolveLanguage($language): string
