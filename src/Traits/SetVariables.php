@@ -13,6 +13,8 @@ trait SetVariables
     public $currency = null;
     public $amount = null;
     public $language = "ar";
+    public $buyer_history = null;
+    public $order_history = null;
 
 
     public function setPaymentId($value)
@@ -151,13 +153,37 @@ trait SetVariables
     public function setLanguage($language="ar"){
         // Normalize to lowercase for internal storage
         $language = strtolower($language);
-        
+
         // Accept only "ar" or "en", default to "ar"
         if (!in_array($language, ['ar', 'en'])) {
             $language = 'ar';
         }
-        
+
         $this->language = $language;
+        return $this;
+    }
+
+    /**
+     * Sets buyer history for Tabby and similar BNPL gateways.
+     *
+     * @param  array  $value
+     * @return $this
+     */
+    public function setBuyerHistory(array $value)
+    {
+        $this->buyer_history = $value;
+        return $this;
+    }
+
+    /**
+     * Sets order history for Tabby and similar BNPL gateways.
+     *
+     * @param  array  $value
+     * @return $this
+     */
+    public function setOrderHistory(array $value)
+    {
+        $this->order_history = $value;
         return $this;
     }
 

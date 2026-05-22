@@ -95,16 +95,26 @@ class TabbyPayment extends BaseController implements PaymentInterface
                         ],
                     ],
                 ],
-                'buyer_history' => [
+                'buyer_history' => $this->buyer_history ?? [
                     'registered_since' => now()->subYear()->toIso8601String(),
                     'loyalty_level' => 0,
                 ],
-                'order_history' => [
+                'order_history' => $this->order_history ?? [
                     [
                         'purchased_at' => now()->subMonth()->toIso8601String(),
                         'amount' => $formattedAmount,
                         'payment_method' => 'card',
                         'status' => 'new',
+                        'buyer' => [
+                            'phone' => $this->user_phone,
+                            'email' => $this->user_email,
+                            'name' => trim($this->user_first_name . ' ' . $this->user_last_name),
+                        ],
+                        'shipping_address' => [
+                            'city' => 'N/A',
+                            'address' => 'N/A',
+                            'zip' => '00000',
+                        ],
                     ],
                 ],
             ],
@@ -253,6 +263,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
             return [
                 'success' => false,
                 'payment_id' => $paymentId,
+                'status' => $status,
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $responseData,
             ];
@@ -266,6 +277,7 @@ class TabbyPayment extends BaseController implements PaymentInterface
             return [
                 'success' => false,
                 'payment_id' => $paymentId,
+                'status' => '',
                 'message' => $e->getMessage(),
                 'process_data' => [],
             ];
@@ -394,16 +406,26 @@ class TabbyPayment extends BaseController implements PaymentInterface
                         ],
                     ],
                 ],
-                'buyer_history' => [
+                'buyer_history' => $this->buyer_history ?? [
                     'registered_since' => now()->subYear()->toIso8601String(),
                     'loyalty_level' => 0,
                 ],
-                'order_history' => [
+                'order_history' => $this->order_history ?? [
                     [
                         'purchased_at' => now()->subMonth()->toIso8601String(),
                         'amount' => $formattedAmount,
                         'payment_method' => 'card',
                         'status' => 'new',
+                        'buyer' => [
+                            'phone' => $this->user_phone,
+                            'email' => $this->user_email,
+                            'name' => trim($this->user_first_name . ' ' . $this->user_last_name),
+                        ],
+                        'shipping_address' => [
+                            'city' => 'N/A',
+                            'address' => 'N/A',
+                            'zip' => '00000',
+                        ],
                     ],
                 ],
             ],
