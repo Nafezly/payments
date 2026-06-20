@@ -48,6 +48,7 @@ PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, C
 - [OneLat](https://one.lat/)
 - [Changelly](https://changelly.com/)
 - [YallaPay](https://yallapay.io/)
+- [Payzink](https://docs.payzink.com/) (Hosted + Direct API)
 
 
 ## Installation

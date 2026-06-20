@@ -266,7 +266,19 @@ return [
     'VOLET_SCI_URL'=>env('VOLET_SCI_URL','https://account.volet.com/sci/'),
     'VOLET_CURRENCY'=>env('VOLET_CURRENCY','USD'),
 
-        
-    
+    #PAYZINK
+    /*
+    * Documentation: https://docs.payzink.com/
+    * Sandbox Merchant API: https://merchant-dev.payzink.com
+    * Production Merchant API: https://merchant.payzink.com
+    * PayzinkPayment: Hosted Payment Page (redirect checkout)
+    * PayzinkDirectPayment: Direct API (server-side card, POST /api/v1/payment/card)
+    */
+    'PAYZINK_PUBLISHABLE_KEY'=>env('PAYZINK_PUBLISHABLE_KEY'),
+    'PAYZINK_SECRET_KEY'=>env('PAYZINK_SECRET_KEY'),
+    'PAYZINK_BASE_URL'=>env('PAYZINK_BASE_URL','https://merchant-dev.payzink.com'),
+    'PAYZINK_CURRENCY'=>env('PAYZINK_CURRENCY','USD'),
+    'PAYZINK_ACTION'=>env('PAYZINK_ACTION','PURCHASE'), // PURCHASE or AUTH
+    'PAYZINK_WEBHOOK_URL'=>env('PAYZINK_WEBHOOK_URL'),
 
 ];
