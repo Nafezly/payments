@@ -112,19 +112,46 @@ class PayzinkPayment extends BaseController implements PaymentInterface
     }
 
     /**
+     * Resolve Payzink transaction reference from redirect query params or webhook JSON body.
+     *
+     * Webhooks send nested payloads such as {"result": {"reference": "uuid", "state": "PURCHASED"}}.
+     */
+    protected function resolvePayzinkReference(Request $request): ?string
+    {
+        foreach ([
+            $request->input('reference'),
+            $request->input('ref'),
+            $request->input('payment_id'),
+            $request->route('payment_id'),
+            data_get($request->all(), 'result.reference'),
+            data_get($request->all(), 'data.reference'),
+            data_get($request->all(), 'transaction.reference'),
+            data_get($request->all(), 'extra.orderId'),
+        ] as $candidate) {
+            if (is_string($candidate) && trim($candidate) !== '') {
+                return trim($candidate);
+            }
+        }
+
+        $internalId = $request->input('payment_id') ?? $request->route('payment_id');
+        if ($internalId) {
+            $cached = Cache::get('payzink_reference_' . $internalId);
+            if ($cached) {
+                return $cached;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param Request $request
      * @return array
      */
     public function verify(Request $request): array
     {
-        $internalId = $request->route('payment_id') ?? $request->input('payment_id');
-        $reference = $request->input('ref')
-            ?? $request->input('reference')
-            ?? $internalId;
-
-        if (!$reference && $internalId) {
-            $reference = Cache::get('payzink_reference_' . $internalId);
-        }
+        $internalId = $request->input('payment_id') ?? $request->route('payment_id');
+        $reference = $this->resolvePayzinkReference($request);
 
         if (!$reference) {
             return [
