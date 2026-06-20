@@ -280,5 +280,19 @@ return [
     'PAYZINK_CURRENCY'=>env('PAYZINK_CURRENCY','USD'),
     'PAYZINK_ACTION'=>env('PAYZINK_ACTION','PURCHASE'), // PURCHASE or AUTH
     'PAYZINK_WEBHOOK_URL'=>env('PAYZINK_WEBHOOK_URL'),
+    'PAYZINK_MUST_3D_SECURE'=>env('PAYZINK_MUST_3D_SECURE', false), // Direct API only
+
+    #KORAPAY
+    /*
+    * Documentation: https://developers.korapay.com/docs/checkout-redirect
+    * Production API: https://api.korapay.com
+    * KoraPayPayment: Hosted Checkout Redirect (Visa/Mastercard)
+    */
+    'KORAPAY_PUBLIC_KEY'=>env('KORAPAY_PUBLIC_KEY'),
+    'KORAPAY_SECRET_KEY'=>env('KORAPAY_SECRET_KEY'),
+    'KORAPAY_ENCRYPTION_KEY'=>env('KORAPAY_ENCRYPTION_KEY'),
+    'KORAPAY_BASE_URL'=>env('KORAPAY_BASE_URL','https://api.korapay.com'),
+    'KORAPAY_CURRENCY'=>env('KORAPAY_CURRENCY','USD'),
+    'KORAPAY_WEBHOOK_URL'=>env('KORAPAY_WEBHOOK_URL'),
 
 ];
