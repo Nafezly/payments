@@ -119,14 +119,12 @@ class PayzinkPayment extends BaseController implements PaymentInterface
     protected function resolvePayzinkReference(Request $request): ?string
     {
         foreach ([
+            $request->input('pz_reference'),
             $request->input('reference'),
             $request->input('ref'),
-            $request->input('payment_id'),
-            $request->route('payment_id'),
             data_get($request->all(), 'result.reference'),
             data_get($request->all(), 'data.reference'),
             data_get($request->all(), 'transaction.reference'),
-            data_get($request->all(), 'extra.orderId'),
         ] as $candidate) {
             if (is_string($candidate) && trim($candidate) !== '') {
                 return trim($candidate);
@@ -144,13 +142,29 @@ class PayzinkPayment extends BaseController implements PaymentInterface
         return null;
     }
 
+    protected function resolvePayzinkInternalPaymentId(Request $request, ?array $gatewayResponse = null): ?string
+    {
+        $internalId = $request->input('payment_id') ?? $request->route('payment_id');
+
+        if ($internalId) {
+            return trim((string) $internalId);
+        }
+
+        $orderId = data_get($gatewayResponse, 'result.extra.orderId');
+        if (is_string($orderId) && trim($orderId) !== '') {
+            return trim($orderId);
+        }
+
+        return null;
+    }
+
     /**
      * @param Request $request
      * @return array
      */
     public function verify(Request $request): array
     {
-        $internalId = $request->input('payment_id') ?? $request->route('payment_id');
+        $internalId = $this->resolvePayzinkInternalPaymentId($request);
         $reference = $this->resolvePayzinkReference($request);
 
         if (!$reference) {
@@ -166,7 +180,7 @@ class PayzinkPayment extends BaseController implements PaymentInterface
         if (!$accessToken) {
             return [
                 'success' => false,
-                'payment_id' => $reference,
+                'payment_id' => $internalId,
                 'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $request->all(),
             ];
@@ -177,12 +191,13 @@ class PayzinkPayment extends BaseController implements PaymentInterface
             'Content-Type' => 'application/json',
         ])->get($this->payzink_base_url . '/api/v1/payment/transaction/' . $reference . '/info')->json();
 
+        $paymentId = $this->resolvePayzinkInternalPaymentId($request, $response) ?: $internalId;
         $state = $response['result']['state'] ?? null;
 
         if (in_array($state, ['PURCHASED', 'CAPTURED', 'AUTHORISED'], true)) {
             return [
                 'success' => true,
-                'payment_id' => $reference,
+                'payment_id' => $paymentId,
                 'message' => __('nafezly::messages.PAYMENT_DONE'),
                 'process_data' => $response,
             ];
@@ -190,7 +205,7 @@ class PayzinkPayment extends BaseController implements PaymentInterface
 
         return [
             'success' => false,
-            'payment_id' => $reference,
+            'payment_id' => $paymentId,
             'message' => __('nafezly::messages.PAYMENT_FAILED'),
             'process_data' => $response ?? $request->all(),
         ];
