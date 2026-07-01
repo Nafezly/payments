@@ -56,9 +56,9 @@ class ClickPayPayment extends BaseController implements PaymentInterface
 
 
         if($this->payment_id==null)
-            $unique_id = uniqid().rand(100000,999999);
+            $uniqid = uniqid().rand(100000,999999);
         else
-            $unique_id = $this->payment_id;
+            $uniqid = $this->payment_id;
 
         $response = \Http::withHeaders([
             'authorization' => $this->clickpay_server_key
