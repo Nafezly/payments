@@ -295,4 +295,21 @@ return [
     'KORAPAY_CURRENCY'=>env('KORAPAY_CURRENCY','USD'),
     'KORAPAY_WEBHOOK_URL'=>env('KORAPAY_WEBHOOK_URL'),
 
+    #FAWATERAK
+    /*
+    * Documentation: https://fawaterak-api.readme.io/
+    * Portal docs: https://app.fawaterk.com/documentation
+    * Staging API: https://staging.fawaterk.com
+    * Production API: https://app.fawaterk.com
+    * FawaterakPayment: Hosted invoice link (createInvoiceLink) or direct gateway (invoiceInitPay)
+    * Webhook hash uses FAWATERAK_VENDOR_KEY (HMAC SHA256)
+    * For JSON webhooks, use a URL containing "_json" (ex: /payments/verify/fawaterak_json)
+    */
+    'FAWATERAK_API_KEY'=>env('FAWATERAK_API_KEY'),
+    'FAWATERAK_VENDOR_KEY'=>env('FAWATERAK_VENDOR_KEY'),
+    'FAWATERAK_BASE_URL'=>env('FAWATERAK_BASE_URL','https://staging.fawaterk.com'),
+    'FAWATERAK_CURRENCY'=>env('FAWATERAK_CURRENCY','EGP'),
+    'FAWATERAK_WEBHOOK_URL'=>env('FAWATERAK_WEBHOOK_URL'),
+    'FAWATERAK_PAYMENT_METHOD_ID'=>env('FAWATERAK_PAYMENT_METHOD_ID'), // optional: 2=Visa/MC, 3=Fawry, 4=Meeza
+
 ];

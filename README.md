@@ -49,6 +49,7 @@ PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, C
 - [Changelly](https://changelly.com/)
 - [YallaPay](https://yallapay.io/)
 - [Payzink](https://docs.payzink.com/) (Hosted + Direct API)
+- [Fawaterak](https://fawaterak-api.readme.io/) (Hosted invoice link + invoiceInitPay)
 
 
 ## Installation
