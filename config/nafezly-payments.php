@@ -312,4 +312,21 @@ return [
     'FAWATERAK_WEBHOOK_URL'=>env('FAWATERAK_WEBHOOK_URL'),
     'FAWATERAK_PAYMENT_METHOD_ID'=>env('FAWATERAK_PAYMENT_METHOD_ID'), // optional: 2=Visa/MC, 3=Fawry, 4=Meeza
 
+    #TOTALPAY
+    /*
+    * Documentation: https://docs.totalpay.global/docs/guides/checkout_integration
+    * Checkout session: POST {CHECKOUT_URL}/api/v1/session
+    * Status check: POST {CHECKOUT_URL}/api/v1/payment/status
+    * Hash default: SHA1(MD5(UPPERCASE(payload + password)))
+    * Set TOTALPAY_USE_SHA256_HASH=true if enabled in Protocol Mapping
+    * notification_URL is configured in TotalPay admin panel
+    */
+    'TOTALPAY_CHECKOUT_URL'=>env('TOTALPAY_CHECKOUT_URL'),
+    'TOTALPAY_MERCHANT_KEY'=>env('TOTALPAY_MERCHANT_KEY'),
+    'TOTALPAY_PASSWORD'=>env('TOTALPAY_PASSWORD'),
+    'TOTALPAY_CURRENCY'=>env('TOTALPAY_CURRENCY','USD'),
+    'TOTALPAY_OPERATION'=>env('TOTALPAY_OPERATION','purchase'),
+    'TOTALPAY_METHODS'=>env('TOTALPAY_METHODS'), // optional JSON/array, e.g. ["card"]
+    'TOTALPAY_USE_SHA256_HASH'=>env('TOTALPAY_USE_SHA256_HASH', false),
+
 ];

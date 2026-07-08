@@ -50,6 +50,7 @@ PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, C
 - [YallaPay](https://yallapay.io/)
 - [Payzink](https://docs.payzink.com/) (Hosted + Direct API)
 - [Fawaterak](https://fawaterak-api.readme.io/) (Hosted invoice link + invoiceInitPay)
+- [TotalPay](https://docs.totalpay.global/docs/guides/checkout_integration) (Hosted Checkout redirect)
 
 
 ## Installation
