@@ -150,12 +150,52 @@ class PayzinkPayment extends BaseController implements PaymentInterface
             return trim((string) $internalId);
         }
 
-        $orderId = data_get($gatewayResponse, 'result.extra.orderId');
-        if (is_string($orderId) && trim($orderId) !== '') {
-            return trim($orderId);
+        foreach ([
+            data_get($request->all(), 'data.extra.orderId'),
+            data_get($gatewayResponse, 'result.extra.orderId'),
+        ] as $orderId) {
+            if (is_string($orderId) && trim($orderId) !== '') {
+                return trim($orderId);
+            }
         }
 
         return null;
+    }
+
+    /**
+     * Collect every merchant-side ID that may have been stored as payment_id.
+     *
+     * Webhooks usually send Payzink reference + merchant orderId; hosted retries may
+     * update the stored payment_id to a different reference than the webhook event.
+     */
+    public function resolvePayzinkLookupIds(Request $request, ?array $verifyResult = null): array
+    {
+        $gatewayResponse = is_array($verifyResult['process_data'] ?? null)
+            ? $verifyResult['process_data']
+            : null;
+
+        $candidates = array_values(array_unique(array_filter([
+            $verifyResult['payment_id'] ?? null,
+            $this->resolvePayzinkInternalPaymentId($request, $gatewayResponse),
+            $request->input('payment_id'),
+            $request->route('payment_id'),
+            $request->input('pz_reference'),
+            $request->input('reference'),
+            $this->resolvePayzinkReference($request),
+            data_get($request->all(), 'data.extra.orderId'),
+            data_get($gatewayResponse, 'result.reference'),
+            data_get($gatewayResponse, 'result.extra.orderId'),
+        ], fn ($value) => is_string($value) && trim($value) !== '')));
+
+        foreach ($candidates as $candidate) {
+            $cachedReference = Cache::get('payzink_reference_' . $candidate);
+
+            if (is_string($cachedReference) && trim($cachedReference) !== '') {
+                $candidates[] = trim($cachedReference);
+            }
+        }
+
+        return array_values(array_unique($candidates));
     }
 
     /**
