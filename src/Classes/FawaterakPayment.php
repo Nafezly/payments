@@ -72,6 +72,8 @@ class FawaterakPayment extends BaseController implements PaymentInterface
             if (is_array($this->source) && array_key_exists('redirectOption', $this->source)) {
                 $payload['redirectOption'] = filter_var($this->source['redirectOption'], FILTER_VALIDATE_BOOLEAN);
             }
+
+            $payload['lang'] = $this->resolveLang();
         }
 
         $response = $this->apiRequest('POST', $endpoint, $payload);
@@ -286,6 +288,21 @@ class FawaterakPayment extends BaseController implements PaymentInterface
         }
 
         return $payload;
+    }
+
+    protected function resolveLang(): string
+    {
+        if (is_array($this->source) && !empty($this->source['lang'])) {
+            $lang = strtolower((string) $this->source['lang']);
+
+            return in_array($lang, ['ar', 'en'], true) ? $lang : 'ar';
+        }
+
+        if (!empty($this->language) && in_array($this->language, ['ar', 'en'], true)) {
+            return $this->language;
+        }
+
+        return 'ar';
     }
 
     protected function resolvePaymentMethodId(): ?int
