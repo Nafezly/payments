@@ -68,7 +68,7 @@ class ChangellyPayment extends BaseController implements PaymentInterface
 
         //dd($key);
 
-        $response = \Http::withHeaders([
+        $response = Http::withHeaders([
             "X-Api-Key" => $this->changelly_api_key,
             'X-Signature'=> $key,
             'Content-type'=>'application/json'

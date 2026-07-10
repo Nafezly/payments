@@ -42,7 +42,7 @@ class OneLatPayment extends BaseController implements PaymentInterface
 
         
         try{
-            $payment_methods = \Http::withHeaders([
+            $payment_methods = Http::withHeaders([
                 'x-api-key' => $this->onelat_key,
                 'x-api-secret' => $this->onelat_secret,
                 'Content-Type' => 'application/json',
@@ -51,7 +51,7 @@ class OneLatPayment extends BaseController implements PaymentInterface
                 if(null !== collect($payment_methods['payment_methods'])->where('type','CARD')->where('currency','USD')->first() ){
                     $method = collect($payment_methods['payment_methods'])->where('type','CARD')->where('currency','USD')->first();
 
-                    $response = \Http::withHeaders([
+                    $response = Http::withHeaders([
                         'x-api-key' => $this->onelat_key,
                         'x-api-secret' => $this->onelat_secret,
                         'Content-Type' => 'application/json',
