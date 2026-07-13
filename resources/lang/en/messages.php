@@ -41,5 +41,10 @@ return [
     'OXAPAY_COPY_ADDRESS'=>'Copy address',
     'OXAPAY_OPEN_QR'=>'Open QR',
     'REDIRECTING_TO_PAYMENT'=>"Redirecting to Volet Payment...",
-    'PLEASE_WAIT_REDIRECT'=>"Please wait while we redirect you to the payment page."
+    'PLEASE_WAIT_REDIRECT'=>"Please wait while we redirect you to the payment page.",
+
+    // Lahza specific messages
+    'LAHZA_PAYMENT_SUCCESS'=>'Payment successful',
+    'LAHZA_PAYMENT_FAILED'=>'Payment failed',
+    'LAHZA_INVALID_SIGNATURE'=>'Invalid webhook signature',
 ];

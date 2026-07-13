@@ -341,4 +341,23 @@ return [
     'TABBY_CURRENCY' => env('TABBY_CURRENCY', 'SAR'),
 
 
+    #LAHZA
+    /*
+    * Lahza - Palestinian payment gateway
+    * Documentation: https://docs.lahza.io/
+    * API Base URL: https://api.lahza.io
+    * Authentication: Bearer token using secret key
+    * Flow: Initialize transaction -> Redirect to authorization_url -> Verify (webhook + callback)
+    * Currencies: ILS, JOD, USD (amounts in lowest unit, multiply by 100)
+    * Webhook: x-lahza-signature = HMAC-SHA256(raw_payload, secret_key) hex
+    * IP whitelist (optional): 161.35.20.140, 209.38.219.189
+    * Test card: 4111111111111111 / CVV 004 / Exp 03/30
+    */
+    'LAHZA_PUBLIC_KEY'=>env('LAHZA_PUBLIC_KEY'),
+    'LAHZA_SECRET_KEY'=>env('LAHZA_SECRET_KEY'),
+    'LAHZA_CURRENCY'=>env('LAHZA_CURRENCY','ILS'),
+    'LAHZA_MODE'=>env('LAHZA_MODE','test'), // test,live
+    'LAHZA_BASE_URL'=>env('LAHZA_BASE_URL','https://api.lahza.io'),
+
+
 ];

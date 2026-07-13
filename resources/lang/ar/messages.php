@@ -41,5 +41,10 @@ return [
     'OXAPAY_COPY_ADDRESS'=>'نسخ العنوان',
     'OXAPAY_OPEN_QR'=>'فتح رمز QR',
     'REDIRECTING_TO_PAYMENT'=>"جاري التوجيه إلى صفحة الدفع...",
-    'PLEASE_WAIT_REDIRECT'=>"يرجى الانتظار بينما نوجهك إلى صفحة الدفع."
+    'PLEASE_WAIT_REDIRECT'=>"يرجى الانتظار بينما نوجهك إلى صفحة الدفع.",
+
+    // Lahza specific messages
+    'LAHZA_PAYMENT_SUCCESS'=>'تم الدفع بنجاح',
+    'LAHZA_PAYMENT_FAILED'=>'فشل في الدفع',
+    'LAHZA_INVALID_SIGNATURE'=>'توقيع Webhook غير صالح',
 ];

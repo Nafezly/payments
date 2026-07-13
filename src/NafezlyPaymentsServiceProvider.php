@@ -19,6 +19,7 @@ use Nafezly\Payments\Classes\GarantiBbvaPayment;
 use Nafezly\Payments\Classes\VoletPayment;
 use Nafezly\Payments\Classes\MastercardPayment;
 use Nafezly\Payments\Classes\TabbyPayment;
+use Nafezly\Payments\Classes\LahzaPayment;
 
 class NafezlyPaymentsServiceProvider extends ServiceProvider
 {
@@ -107,6 +108,9 @@ class NafezlyPaymentsServiceProvider extends ServiceProvider
         });
         $this->app->bind(TabbyPayment::class, function () {
             return new TabbyPayment();
+        });
+        $this->app->bind(LahzaPayment::class, function () {
+            return new LahzaPayment();
         });
     }
 
