@@ -13,7 +13,6 @@ class LahzaPayment extends BaseController implements PaymentInterface
 {
     private $secret_key;
     private $public_key;
-    private $currency;
     private $mode;
     private $base_url;
     public $verify_route_name;
@@ -106,7 +105,7 @@ class LahzaPayment extends BaseController implements PaymentInterface
             ]);
 
             return [
-                'payment_id' => $unique_id,
+                'payment_id' => null,
                 'redirect_url' => '',
                 'html' => __('nafezly::messages.LAHZA_PAYMENT_FAILED'),
             ];
@@ -119,7 +118,7 @@ class LahzaPayment extends BaseController implements PaymentInterface
             ]);
 
             return [
-                'payment_id' => $unique_id,
+                'payment_id' => null,
                 'redirect_url' => '',
                 'html' => __('nafezly::messages.LAHZA_PAYMENT_FAILED'),
             ];
