@@ -64,15 +64,25 @@ class TotalPayPayment extends BaseController implements PaymentInterface
             'payment_id' => $orderNumber,
         ]);
 
+        if (is_array($this->source) && !empty($this->source['redirect_url'])) {
+            $verifyUrl = (string) $this->source['redirect_url'];
+        }
+
+        $merchantAttributes = [
+            'redirectUrl' => $verifyUrl,
+        ];
+
+        if (is_array($this->source) && !empty($this->source['offer_only'])) {
+            $merchantAttributes['offerOnly'] = (string) $this->source['offer_only'];
+        }
+
         $payload = [
             'action' => $this->resolveAction(),
             'amount' => [
                 'currencyCode' => $this->currency,
                 'value' => $this->toMinorUnits($this->amount),
             ],
-            'merchantAttributes' => [
-                'redirectUrl' => $verifyUrl,
-            ],
+            'merchantAttributes' => $merchantAttributes,
         ];
 
         if ($this->user_email) {
@@ -94,7 +104,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
         if ($redirectUrl) {
             return [
                 'payment_id' => (string) $orderNumber,
-                'redirect_url' => (string) $redirectUrl,
+                'redirect_url' => $this->formatPaypageUrl((string) $redirectUrl),
                 'html' => '',
                 'process_data' => array_merge(is_array($response) ? $response : [], [
                     'ngenius_order_reference' => $orderReference,
@@ -240,6 +250,32 @@ class TotalPayPayment extends BaseController implements PaymentInterface
     protected function toMinorUnits($amount): int
     {
         return (int) round(((float) $amount) * 100);
+    }
+
+    protected function formatPaypageUrl(string $url): string
+    {
+        $params = [];
+        $source = is_array($this->source) ? $this->source : [];
+
+        $useSlim = array_key_exists('paypage_slim', $source)
+            ? filter_var($source['paypage_slim'], FILTER_VALIDATE_BOOLEAN)
+            : filter_var(config('nafezly-payments.TOTALPAY_PAYPAGE_SLIM', false), FILTER_VALIDATE_BOOLEAN);
+
+        if ($useSlim) {
+            $params['slim'] = 'true';
+        }
+
+        if (!empty($source['paypage_language'])) {
+            $params['language'] = (string) $source['paypage_language'];
+        }
+
+        if ($params === []) {
+            return $url;
+        }
+
+        $separator = str_contains($url, '?') ? '&' : '?';
+
+        return $url . $separator . http_build_query($params);
     }
 
     /**
