@@ -3,6 +3,7 @@
 namespace Nafezly\Payments\Classes;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
@@ -239,5 +240,128 @@ class TotalPayPayment extends BaseController implements PaymentInterface
     protected function toMinorUnits($amount): int
     {
         return (int) round(((float) $amount) * 100);
+    }
+
+    /**
+     * Complete a Hosted Session SDK payment (card or digital wallet).
+     *
+     * @throws MissingPaymentInfoException
+     */
+    public function payHostedSession(?string $sessionId = null): array
+    {
+        $this->checkRequiredFields(['amount'], 'TotalPay Hosted Session');
+        $sessionId = trim((string) ($sessionId ?: (is_array($this->source) ? ($this->source['session_id'] ?? '') : '')));
+
+        if ($sessionId === '') {
+            throw new MissingPaymentInfoException('session_id', 'TotalPay Hosted Session');
+        }
+
+        if (!$this->ngenius_api_key || !$this->ngenius_outlet_id) {
+            return [
+                'payment_id' => (string) ($this->payment_id ?: ''),
+                'redirect_url' => '',
+                'html' => '',
+                'success' => false,
+                'message' => 'TotalPay (N-Genius) credentials are missing',
+                'payment_response' => null,
+                'process_data' => [],
+            ];
+        }
+
+        $paymentId = (string) ($this->payment_id ?: ('tphs_' . uniqid() . rand(100000, 999999)));
+        $token = $this->requestAccessToken();
+
+        if (!$token) {
+            return [
+                'payment_id' => $paymentId,
+                'redirect_url' => '',
+                'html' => '',
+                'success' => false,
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                'payment_response' => null,
+                'process_data' => [],
+            ];
+        }
+
+        $payload = [
+            'action' => $this->resolveAction(),
+            'amount' => [
+                'currencyCode' => $this->currency,
+                'value' => $this->toMinorUnits($this->amount),
+            ],
+        ];
+
+        $response = Http::withHeaders($this->paymentHeaders($token))
+            ->timeout(30)
+            ->post(
+                $this->ngenius_gateway_url . '/transactions/outlets/' . $this->ngenius_outlet_id . '/payment/hosted-session/' . $sessionId,
+                $payload
+            )->json();
+
+        $orderReference = data_get($response, 'reference')
+            ?? data_get($response, 'orderReference')
+            ?? data_get($response, '_embedded.payment.0.orderReference');
+
+        Cache::put($this->hostedSessionCacheKey($paymentId), [
+            'order_reference' => $orderReference,
+            'session_id' => $sessionId,
+            'response' => $response,
+        ], now()->addHours(2));
+
+        $state = strtoupper((string) data_get($response, 'state', ''));
+        $paid = in_array($state, ['PURCHASED', 'CAPTURED', 'AUTHORISED'], true);
+
+        return [
+            'payment_id' => $paymentId,
+            'redirect_url' => '',
+            'html' => '',
+            'success' => $paid,
+            'message' => $paid
+                ? __('nafezly::messages.PAYMENT_DONE')
+                : data_get($response, 'errors.0.message', __('nafezly::messages.PAYMENT_FAILED')),
+            'payment_response' => is_array($response) ? $response : null,
+            'process_data' => is_array($response) ? $response : [],
+        ];
+    }
+
+    public function verifyHostedSessionPayment(string $paymentId): array
+    {
+        $cached = Cache::get($this->hostedSessionCacheKey($paymentId), []);
+        $orderReference = data_get($cached, 'order_reference');
+
+        if (!$orderReference) {
+            return [
+                'success' => false,
+                'payment_id' => $paymentId,
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                'process_data' => $cached,
+            ];
+        }
+
+        $order = $this->fetchOrder((string) $orderReference);
+        $paid = $this->isPaidOrder($order);
+
+        return [
+            'success' => $paid,
+            'payment_id' => $paymentId,
+            'message' => $paid
+                ? __('nafezly::messages.PAYMENT_DONE')
+                : __('nafezly::messages.PAYMENT_FAILED'),
+            'process_data' => $order ?? $cached,
+        ];
+    }
+
+    protected function hostedSessionCacheKey(string $paymentId): string
+    {
+        return 'totalpay_hosted_session_' . $paymentId;
+    }
+
+    protected function paymentHeaders(string $token): array
+    {
+        return [
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/vnd.ni-payment.v2+json',
+            'Accept' => 'application/vnd.ni-payment.v2+json',
+        ];
     }
 }

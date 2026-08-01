@@ -320,9 +320,11 @@ return [
     * Use Merchant Service Account API key (not Hosted Session key) to create orders.
     */
     'NGENIUS_API_KEY'=>env('NGENIUS_API_KEY'),
+    'NGENIUS_HOSTED_SESSION_API_KEY'=>env('NGENIUS_HOSTED_SESSION_API_KEY'),
     'NGENIUS_OUTLET_ID'=>env('NGENIUS_OUTLET_ID'),
     'NGENIUS_REALM'=>env('NGENIUS_REALM','NetworkInternational'),
     'NGENIUS_GATEWAY_URL'=>env('NGENIUS_GATEWAY_URL','https://api-gateway.ngenius-payments.com'),
+    'NGENIUS_PAYPAGE_URL'=>env('NGENIUS_PAYPAGE_URL','https://paypage.ngenius-payments.com'),
     'NGENIUS_CURRENCY'=>env('NGENIUS_CURRENCY', env('TOTALPAY_CURRENCY', 'AED')),
     'TOTALPAY_CURRENCY'=>env('TOTALPAY_CURRENCY','AED'),
     'TOTALPAY_OPERATION'=>env('TOTALPAY_OPERATION','purchase'),
