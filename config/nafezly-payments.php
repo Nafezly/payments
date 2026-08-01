@@ -312,21 +312,19 @@ return [
     'FAWATERAK_WEBHOOK_URL'=>env('FAWATERAK_WEBHOOK_URL'),
     'FAWATERAK_PAYMENT_METHOD_ID'=>env('FAWATERAK_PAYMENT_METHOD_ID'), // optional: 2=Visa/MC, 3=Fawry, 4=Meeza
 
-    #TOTALPAY
+    #TOTALPAY / N-GENIUS (Network International)
     /*
-    * Documentation: https://docs.totalpay.global/docs/guides/checkout_integration
-    * Checkout session: POST {CHECKOUT_URL}/api/v1/session
-    * Status check: POST {CHECKOUT_URL}/api/v1/payment/status
-    * Hash default: SHA1(MD5(UPPERCASE(payload + password)))
-    * Set TOTALPAY_USE_SHA256_HASH=true if enabled in Protocol Mapping
-    * notification_URL is configured in TotalPay admin panel
+    * TotalPay merchants use N-Genius Online hosted payment page.
+    * Portal: https://portal.ngenius-payments.com
+    * Docs: https://docs.ngenius-payments.com/reference/create-an-order-paypage
+    * Use Merchant Service Account API key (not Hosted Session key) to create orders.
     */
-    'TOTALPAY_CHECKOUT_URL'=>env('TOTALPAY_CHECKOUT_URL'),
-    'TOTALPAY_MERCHANT_KEY'=>env('TOTALPAY_MERCHANT_KEY'),
-    'TOTALPAY_PASSWORD'=>env('TOTALPAY_PASSWORD'),
-    'TOTALPAY_CURRENCY'=>env('TOTALPAY_CURRENCY','USD'),
+    'NGENIUS_API_KEY'=>env('NGENIUS_API_KEY'),
+    'NGENIUS_OUTLET_ID'=>env('NGENIUS_OUTLET_ID'),
+    'NGENIUS_REALM'=>env('NGENIUS_REALM','NetworkInternational'),
+    'NGENIUS_GATEWAY_URL'=>env('NGENIUS_GATEWAY_URL','https://api-gateway.ngenius-payments.com'),
+    'NGENIUS_CURRENCY'=>env('NGENIUS_CURRENCY', env('TOTALPAY_CURRENCY', 'AED')),
+    'TOTALPAY_CURRENCY'=>env('TOTALPAY_CURRENCY','AED'),
     'TOTALPAY_OPERATION'=>env('TOTALPAY_OPERATION','purchase'),
-    'TOTALPAY_METHODS'=>env('TOTALPAY_METHODS'), // optional JSON/array, e.g. ["card"]
-    'TOTALPAY_USE_SHA256_HASH'=>env('TOTALPAY_USE_SHA256_HASH', false),
 
 ];
