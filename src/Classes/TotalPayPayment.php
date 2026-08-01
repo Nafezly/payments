@@ -68,13 +68,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
             $verifyUrl = (string) $this->source['redirect_url'];
         }
 
-        $merchantAttributes = [
-            'redirectUrl' => $verifyUrl,
-        ];
-
-        if (is_array($this->source) && !empty($this->source['offer_only'])) {
-            $merchantAttributes['offerOnly'] = (string) $this->source['offer_only'];
-        }
+        $merchantAttributes = $this->buildMerchantAttributes($verifyUrl);
 
         $payload = [
             'action' => $this->resolveAction(),
@@ -84,6 +78,11 @@ class TotalPayPayment extends BaseController implements PaymentInterface
             ],
             'merchantAttributes' => $merchantAttributes,
         ];
+
+        $paypageLanguage = $this->resolvePaypageLanguage();
+        if ($paypageLanguage !== null) {
+            $payload['language'] = $paypageLanguage;
+        }
 
         if ($this->user_email) {
             $payload['emailAddress'] = (string) $this->user_email;
@@ -252,6 +251,62 @@ class TotalPayPayment extends BaseController implements PaymentInterface
         return (int) round(((float) $amount) * 100);
     }
 
+    protected function buildMerchantAttributes(string $verifyUrl): array
+    {
+        $merchantAttributes = [
+            'redirectUrl' => $verifyUrl,
+        ];
+        $source = is_array($this->source) ? $this->source : [];
+
+        if (!empty($source['offer_only'])) {
+            $merchantAttributes['offerOnly'] = (string) $source['offer_only'];
+        }
+
+        $maskPaymentInfo = array_key_exists('mask_payment_info', $source)
+            ? filter_var($source['mask_payment_info'], FILTER_VALIDATE_BOOLEAN)
+            : filter_var(config('nafezly-payments.TOTALPAY_MASK_PAYMENT_INFO', true), FILTER_VALIDATE_BOOLEAN);
+
+        if ($maskPaymentInfo) {
+            $merchantAttributes['maskPaymentInfo'] = true;
+        }
+
+        $paymentAttempts = $source['payment_attempts']
+            ?? config('nafezly-payments.TOTALPAY_PAYMENT_ATTEMPTS');
+
+        if ($paymentAttempts !== null && $paymentAttempts !== '') {
+            $merchantAttributes['paymentAttempts'] = (string) $paymentAttempts;
+        }
+
+        return $merchantAttributes;
+    }
+
+    protected function resolvePaypageLanguage(): ?string
+    {
+        $source = is_array($this->source) ? $this->source : [];
+
+        if (!empty($source['paypage_language'])) {
+            return $this->normalizePaypageLanguage((string) $source['paypage_language']);
+        }
+
+        $fromConfig = config('nafezly-payments.TOTALPAY_PAYPAGE_LANGUAGE');
+        if ($fromConfig) {
+            return $this->normalizePaypageLanguage((string) $fromConfig);
+        }
+
+        if (!empty($this->language)) {
+            return $this->normalizePaypageLanguage((string) $this->language);
+        }
+
+        return null;
+    }
+
+    protected function normalizePaypageLanguage(string $language): string
+    {
+        $language = strtolower(trim($language));
+
+        return in_array($language, ['ar', 'en'], true) ? $language : 'en';
+    }
+
     protected function formatPaypageUrl(string $url): string
     {
         $params = [];
@@ -265,8 +320,9 @@ class TotalPayPayment extends BaseController implements PaymentInterface
             $params['slim'] = 'true';
         }
 
-        if (!empty($source['paypage_language'])) {
-            $params['language'] = (string) $source['paypage_language'];
+        $paypageLanguage = $this->resolvePaypageLanguage();
+        if ($paypageLanguage !== null) {
+            $params['language'] = $paypageLanguage;
         }
 
         if ($params === []) {
