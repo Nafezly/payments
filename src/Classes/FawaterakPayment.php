@@ -122,22 +122,27 @@ class FawaterakPayment extends BaseController implements PaymentInterface
         $merchantReference = $this->resolveFawaterakMerchantReference($request);
 
         if ($this->isPaidWebhook($request)) {
-            if (!$this->isValidPaidWebhook($request)) {
+            if ($this->isValidPaidWebhook($request)) {
+                $merchantReference = $this->resolveFawaterakMerchantReference($request)
+                    ?: $merchantReference;
+
                 return [
-                    'success' => false,
+                    'success' => true,
                     'payment_id' => $merchantReference,
-                    'message' => __('nafezly::messages.PAYMENT_FAILED'),
+                    'message' => __('nafezly::messages.PAYMENT_DONE'),
                     'process_data' => $request->all(),
                 ];
             }
 
-            $merchantReference = $this->resolveFawaterakMerchantReference($request)
-                ?: $merchantReference;
+            $apiResult = $this->verifyPaidInvoiceFromRequest($request, $merchantReference);
+            if ($apiResult !== null) {
+                return $apiResult;
+            }
 
             return [
-                'success' => true,
+                'success' => false,
                 'payment_id' => $merchantReference,
-                'message' => __('nafezly::messages.PAYMENT_DONE'),
+                'message' => __('nafezly::messages.PAYMENT_FAILED'),
                 'process_data' => $request->all(),
             ];
         }
@@ -363,6 +368,31 @@ class FawaterakPayment extends BaseController implements PaymentInterface
         return null;
     }
 
+    protected function verifyPaidInvoiceFromRequest(Request $request, ?string $merchantReference): ?array
+    {
+        $merchantReference = $merchantReference ?: $this->resolveFawaterakMerchantReference($request);
+        $invoiceId = $this->resolveInvoiceId($request, $merchantReference);
+
+        if (!$invoiceId) {
+            return null;
+        }
+
+        $response = $this->apiRequest('GET', '/api/v2/getInvoiceData/' . $invoiceId);
+        $paid = (int) data_get($response, 'data.paid', 0) === 1;
+        $merchantReference = $this->resolveMerchantReferenceFromInvoiceData($response) ?: $merchantReference;
+
+        if (data_get($response, 'status') !== 'success' || !$paid) {
+            return null;
+        }
+
+        return [
+            'success' => true,
+            'payment_id' => $merchantReference,
+            'message' => __('nafezly::messages.PAYMENT_DONE'),
+            'process_data' => is_array($response) ? $response : $request->all(),
+        ];
+    }
+
     protected function resolveInvoiceId(Request $request, ?string $merchantReference = null): ?int
     {
         $invoiceId = data_get($request->all(), 'invoice_id');
@@ -415,10 +445,6 @@ class FawaterakPayment extends BaseController implements PaymentInterface
 
     protected function isValidPaidWebhook(Request $request): bool
     {
-        if (!$this->fawaterak_vendor_key) {
-            return true;
-        }
-
         $providedHash = (string) data_get($request->all(), 'hashKey', '');
         if ($providedHash === '') {
             return false;
@@ -427,11 +453,9 @@ class FawaterakPayment extends BaseController implements PaymentInterface
         $invoiceId = data_get($request->all(), 'invoice_id');
         $invoiceKey = (string) data_get($request->all(), 'invoice_key', '');
         $paymentMethod = (string) data_get($request->all(), 'payment_method', '');
-
         $queryParam = 'InvoiceId=' . $invoiceId . '&InvoiceKey=' . $invoiceKey . '&PaymentMethod=' . $paymentMethod;
-        $expectedHash = hash_hmac('sha256', $queryParam, $this->fawaterak_vendor_key, false);
 
-        return hash_equals($expectedHash, $providedHash);
+        return $this->matchesFawaterakHash($queryParam, $providedHash);
     }
 
     protected function isValidExpiredWebhook(Request $request): bool
@@ -444,9 +468,27 @@ class FawaterakPayment extends BaseController implements PaymentInterface
         $referenceId = (string) data_get($request->all(), 'referenceId', '');
         $paymentMethod = (string) data_get($request->all(), 'paymentMethod', '');
         $queryParam = 'referenceId=' . $referenceId . '&PaymentMethod=' . $paymentMethod;
-        $expectedHash = hash_hmac('sha256', $queryParam, $this->fawaterak_vendor_key, false);
 
-        return hash_equals($expectedHash, $providedHash);
+        return $this->matchesFawaterakHash($queryParam, $providedHash);
+    }
+
+    /**
+     * Fawaterak docs mention VENDOR_KEY, but live paid webhooks are signed with the API key.
+     * Accept either secret so both dashboard setups keep working.
+     */
+    protected function matchesFawaterakHash(string $queryParam, string $providedHash): bool
+    {
+        foreach (array_filter([
+            $this->fawaterak_api_key,
+            $this->fawaterak_vendor_key,
+        ]) as $secret) {
+            $expectedHash = hash_hmac('sha256', $queryParam, (string) $secret, false);
+            if (hash_equals($expectedHash, $providedHash)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function apiRequest(string $method, string $endpoint, ?array $payload = null): ?array
