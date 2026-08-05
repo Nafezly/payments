@@ -187,10 +187,13 @@ class TotalPayPayment extends BaseController implements PaymentInterface
     protected function verifyByStatusApi(Request $request, string $orderNumber): array
     {
         $gatewayPaymentId = $this->resolveGatewayPaymentId($request);
+        $response = [];
 
         if ($gatewayPaymentId !== null) {
             $response = $this->fetchStatusByPaymentId($gatewayPaymentId);
-        } else {
+        }
+
+        if ($gatewayPaymentId === null || $this->isStatusErrorResponse($response)) {
             $response = $this->fetchStatusByOrderId($orderNumber);
         }
 
@@ -209,9 +212,22 @@ class TotalPayPayment extends BaseController implements PaymentInterface
         return [
             'success' => false,
             'payment_id' => $resolvedOrderNumber,
-            'message' => data_get($response, 'reason', __('nafezly::messages.PAYMENT_FAILED')),
+            'message' => data_get($response, 'error_message', data_get($response, 'reason', __('nafezly::messages.PAYMENT_FAILED'))),
             'process_data' => $response ?: $request->all(),
         ];
+    }
+
+    protected function isStatusErrorResponse(?array $response): bool
+    {
+        if (!is_array($response) || $response === []) {
+            return true;
+        }
+
+        if (data_get($response, 'error_code') || data_get($response, 'error_message')) {
+            return true;
+        }
+
+        return !data_get($response, 'status');
     }
 
     protected function fetchStatusByPaymentId(string $paymentId): array
@@ -267,10 +283,11 @@ class TotalPayPayment extends BaseController implements PaymentInterface
 
     protected function resolveGatewayPaymentId(Request $request): ?string
     {
+        // TotalPay status API expects payment_id (public), not trans_id (transaction).
         foreach ([
-            $request->input('trans_id'),
-            $request->input('id'),
             $request->input('payment_id'),
+            $request->input('id'),
+            $request->input('trans_id'),
         ] as $candidate) {
             if (is_string($candidate) && trim($candidate) !== '' && $this->looksLikeGatewayPaymentId($candidate)) {
                 return trim($candidate);
