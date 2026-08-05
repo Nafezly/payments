@@ -8,21 +8,21 @@ use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 use Nafezly\Payments\Interfaces\PaymentInterface;
 
-class TotalPayPayment extends BaseController implements PaymentInterface
+class NgeniusPayment extends BaseController implements PaymentInterface
 {
-    public $totalpay_api_key;
-    public $totalpay_outlet_id;
-    public $totalpay_realm;
-    public $totalpay_gateway_url;
+    public $ngenius_api_key;
+    public $ngenius_outlet_id;
+    public $ngenius_realm;
+    public $ngenius_gateway_url;
     public $verify_route_name;
 
     public function __construct()
     {
-        $this->currency = strtoupper(config('nafezly-payments.TOTALPAY_CURRENCY', 'AED'));
-        $this->totalpay_api_key = config('nafezly-payments.TOTALPAY_API_KEY');
-        $this->totalpay_outlet_id = config('nafezly-payments.TOTALPAY_OUTLET_ID');
-        $this->totalpay_realm = config('nafezly-payments.TOTALPAY_REALM', 'NetworkInternational');
-        $this->totalpay_gateway_url = rtrim((string) config('nafezly-payments.TOTALPAY_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com'), '/');
+        $this->currency = strtoupper(config('nafezly-payments.NGENIUS_CURRENCY', 'AED'));
+        $this->ngenius_api_key = config('nafezly-payments.NGENIUS_API_KEY');
+        $this->ngenius_outlet_id = config('nafezly-payments.NGENIUS_OUTLET_ID');
+        $this->ngenius_realm = config('nafezly-payments.NGENIUS_REALM', 'NetworkInternational');
+        $this->ngenius_gateway_url = rtrim((string) config('nafezly-payments.NGENIUS_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com'), '/');
         $this->verify_route_name = config('nafezly-payments.VERIFY_ROUTE_NAME');
     }
 
@@ -32,15 +32,15 @@ class TotalPayPayment extends BaseController implements PaymentInterface
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
         $this->setPassedVariablesToGlobal($amount, $user_id, $user_first_name, $user_last_name, $user_email, $user_phone, $source);
-        $this->checkRequiredFields(['amount'], 'TotalPay');
+        $this->checkRequiredFields(['amount'], 'N-Genius');
 
-        if (!$this->totalpay_api_key || !$this->totalpay_outlet_id) {
+        if (!$this->ngenius_api_key || !$this->ngenius_outlet_id) {
             return [
                 'payment_id' => $this->payment_id,
                 'redirect_url' => '',
                 'html' => '',
                 'success' => false,
-                'message' => 'TotalPay credentials are missing',
+                'message' => 'N-Genius credentials are missing',
                 'process_data' => [],
             ];
         }
@@ -60,7 +60,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
         }
 
         $verifyUrl = route($this->verify_route_name, [
-            'payment' => 'totalpay',
+            'payment' => 'ngenius',
             'payment_id' => $orderNumber,
         ]);
 
@@ -93,7 +93,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
             'Content-Type' => 'application/vnd.ni-payment.v2+json',
             'Accept' => 'application/vnd.ni-payment.v2+json',
         ])->timeout(30)->post(
-            $this->totalpay_gateway_url . '/transactions/outlets/' . $this->totalpay_outlet_id . '/orders',
+            $this->ngenius_gateway_url . '/transactions/outlets/' . $this->ngenius_outlet_id . '/orders',
             $payload
         )->json();
 
@@ -106,7 +106,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
                 'redirect_url' => $this->formatPaypageUrl((string) $redirectUrl),
                 'html' => '',
                 'process_data' => array_merge(is_array($response) ? $response : [], [
-                    'totalpay_order_reference' => $orderReference,
+                    'ngenius_order_reference' => $orderReference,
                 ]),
             ];
         }
@@ -147,7 +147,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
         ];
     }
 
-    public function resolveTotalPayLookupIds(Request $request, ?array $verifyResult = null): array
+    public function resolveNgeniusLookupIds(Request $request, ?array $verifyResult = null): array
     {
         return array_values(array_unique(array_filter([
             $verifyResult['payment_id'] ?? null,
@@ -158,14 +158,14 @@ class TotalPayPayment extends BaseController implements PaymentInterface
             $request->input('order_id'),
             $request->input('order_number'),
             data_get($verifyResult, 'process_data.reference'),
-            data_get($verifyResult, 'process_data.totalpay_order_reference'),
             data_get($verifyResult, 'process_data.ngenius_order_reference'),
+            data_get($verifyResult, 'process_data.totalpay_order_reference'),
         ], fn ($value) => is_string($value) && trim($value) !== '')));
     }
 
     protected function resolveAction(): string
     {
-        $operation = config('nafezly-payments.TOTALPAY_OPERATION', 'purchase');
+        $operation = config('nafezly-payments.NGENIUS_OPERATION', 'purchase');
 
         if (is_array($this->source) && !empty($this->source['operation'])) {
             $operation = (string) $this->source['operation'];
@@ -178,11 +178,11 @@ class TotalPayPayment extends BaseController implements PaymentInterface
     {
         $response = Http::withHeaders([
             'Accept' => 'application/vnd.ni-identity.v1+json',
-            'Authorization' => 'Basic ' . $this->totalpay_api_key,
+            'Authorization' => 'Basic ' . $this->ngenius_api_key,
             'Content-Type' => 'application/vnd.ni-identity.v1+json',
         ])->timeout(30)->post(
-            $this->totalpay_gateway_url . '/identity/auth/access-token',
-            ['realmName' => $this->totalpay_realm]
+            $this->ngenius_gateway_url . '/identity/auth/access-token',
+            ['realmName' => $this->ngenius_realm]
         )->json();
 
         return data_get($response, 'access_token');
@@ -192,7 +192,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
     {
         $token = $this->requestAccessToken();
 
-        if (!$token || !$this->totalpay_outlet_id) {
+        if (!$token || !$this->ngenius_outlet_id) {
             return null;
         }
 
@@ -200,7 +200,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/vnd.ni-payment.v2+json',
         ])->timeout(30)->get(
-            $this->totalpay_gateway_url . '/transactions/outlets/' . $this->totalpay_outlet_id . '/orders/' . $orderReference
+            $this->ngenius_gateway_url . '/transactions/outlets/' . $this->ngenius_outlet_id . '/orders/' . $orderReference
         )->json();
 
         return is_array($response) ? $response : null;
@@ -265,14 +265,14 @@ class TotalPayPayment extends BaseController implements PaymentInterface
 
         $maskPaymentInfo = array_key_exists('mask_payment_info', $source)
             ? filter_var($source['mask_payment_info'], FILTER_VALIDATE_BOOLEAN)
-            : filter_var(config('nafezly-payments.TOTALPAY_MASK_PAYMENT_INFO', true), FILTER_VALIDATE_BOOLEAN);
+            : filter_var(config('nafezly-payments.NGENIUS_MASK_PAYMENT_INFO', true), FILTER_VALIDATE_BOOLEAN);
 
         if ($maskPaymentInfo) {
             $merchantAttributes['maskPaymentInfo'] = true;
         }
 
         $paymentAttempts = $source['payment_attempts']
-            ?? config('nafezly-payments.TOTALPAY_PAYMENT_ATTEMPTS');
+            ?? config('nafezly-payments.NGENIUS_PAYMENT_ATTEMPTS');
 
         if ($paymentAttempts !== null && $paymentAttempts !== '') {
             $merchantAttributes['paymentAttempts'] = (string) $paymentAttempts;
@@ -289,7 +289,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
             return $this->normalizePaypageLanguage((string) $source['paypage_language']);
         }
 
-        $fromConfig = config('nafezly-payments.TOTALPAY_PAYPAGE_LANGUAGE');
+        $fromConfig = config('nafezly-payments.NGENIUS_PAYPAGE_LANGUAGE');
         if ($fromConfig) {
             return $this->normalizePaypageLanguage((string) $fromConfig);
         }
@@ -315,7 +315,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
 
         $useSlim = array_key_exists('paypage_slim', $source)
             ? filter_var($source['paypage_slim'], FILTER_VALIDATE_BOOLEAN)
-            : filter_var(config('nafezly-payments.TOTALPAY_PAYPAGE_SLIM', false), FILTER_VALIDATE_BOOLEAN);
+            : filter_var(config('nafezly-payments.NGENIUS_PAYPAGE_SLIM', false), FILTER_VALIDATE_BOOLEAN);
 
         if ($useSlim) {
             $params['slim'] = 'true';
@@ -342,20 +342,20 @@ class TotalPayPayment extends BaseController implements PaymentInterface
      */
     public function payHostedSession(?string $sessionId = null): array
     {
-        $this->checkRequiredFields(['amount'], 'TotalPay Hosted Session');
+        $this->checkRequiredFields(['amount'], 'N-Genius Hosted Session');
         $sessionId = trim((string) ($sessionId ?: (is_array($this->source) ? ($this->source['session_id'] ?? '') : '')));
 
         if ($sessionId === '') {
-            throw new MissingPaymentInfoException('session_id', 'TotalPay Hosted Session');
+            throw new MissingPaymentInfoException('session_id', 'N-Genius Hosted Session');
         }
 
-        if (!$this->totalpay_api_key || !$this->totalpay_outlet_id) {
+        if (!$this->ngenius_api_key || !$this->ngenius_outlet_id) {
             return [
                 'payment_id' => (string) ($this->payment_id ?: ''),
                 'redirect_url' => '',
                 'html' => '',
                 'success' => false,
-                'message' => 'TotalPay credentials are missing',
+                'message' => 'N-Genius credentials are missing',
                 'payment_response' => null,
                 'process_data' => [],
             ];
@@ -387,7 +387,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
         $response = Http::withHeaders($this->paymentHeaders($token))
             ->timeout(30)
             ->post(
-                $this->totalpay_gateway_url . '/transactions/outlets/' . $this->totalpay_outlet_id . '/payment/hosted-session/' . $sessionId,
+                $this->ngenius_gateway_url . '/transactions/outlets/' . $this->ngenius_outlet_id . '/payment/hosted-session/' . $sessionId,
                 $payload
             )->json();
 
@@ -446,7 +446,7 @@ class TotalPayPayment extends BaseController implements PaymentInterface
 
     protected function hostedSessionCacheKey(string $paymentId): string
     {
-        return 'totalpay_hosted_session_' . $paymentId;
+        return 'ngenius_hosted_session_' . $paymentId;
     }
 
     protected function paymentHeaders(string $token): array

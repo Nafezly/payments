@@ -312,23 +312,23 @@ return [
     'FAWATERAK_WEBHOOK_URL'=>env('FAWATERAK_WEBHOOK_URL'),
     'FAWATERAK_PAYMENT_METHOD_ID'=>env('FAWATERAK_PAYMENT_METHOD_ID'), // optional: 2=Visa/MC, 3=Fawry, 4=Meeza
 
-    #TOTALPAY (Network International hosted checkout)
+    # N-GENIUS (Network International hosted checkout)
     /*
-    * TotalPay uses Network International hosted payment page.
-    * Legacy env names NGENIUS_* are still supported as fallbacks.
+    * N-Genius Online hosted payment page.
+    * Legacy env names TOTALPAY_* are still supported as fallbacks.
     */
-    'TOTALPAY_API_KEY'=>env('TOTALPAY_API_KEY', env('NGENIUS_API_KEY')),
-    'TOTALPAY_HOSTED_SESSION_API_KEY'=>env('TOTALPAY_HOSTED_SESSION_API_KEY', env('NGENIUS_HOSTED_SESSION_API_KEY')),
-    'TOTALPAY_OUTLET_ID'=>env('TOTALPAY_OUTLET_ID', env('NGENIUS_OUTLET_ID')),
-    'TOTALPAY_REALM'=>env('TOTALPAY_REALM', env('NGENIUS_REALM', 'NetworkInternational')),
-    'TOTALPAY_GATEWAY_URL'=>env('TOTALPAY_GATEWAY_URL', env('NGENIUS_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com')),
-    'TOTALPAY_PAYPAGE_URL'=>env('TOTALPAY_PAYPAGE_URL', env('NGENIUS_PAYPAGE_URL', 'https://paypage.ngenius-payments.com')),
-    'TOTALPAY_CURRENCY'=>env('TOTALPAY_CURRENCY', env('NGENIUS_CURRENCY', 'AED')),
-    'TOTALPAY_OPERATION'=>env('TOTALPAY_OPERATION','purchase'),
-    'TOTALPAY_DIRECT_MUST_3DS'=>env('TOTALPAY_DIRECT_MUST_3DS', true),
-    'TOTALPAY_PAYPAGE_SLIM'=>env('TOTALPAY_PAYPAGE_SLIM', false),
-    'TOTALPAY_PAYPAGE_LANGUAGE'=>env('TOTALPAY_PAYPAGE_LANGUAGE'),
-    'TOTALPAY_MASK_PAYMENT_INFO'=>env('TOTALPAY_MASK_PAYMENT_INFO', true),
-    'TOTALPAY_PAYMENT_ATTEMPTS'=>env('TOTALPAY_PAYMENT_ATTEMPTS', '3'),
+    'NGENIUS_API_KEY'=>env('NGENIUS_API_KEY', env('TOTALPAY_API_KEY')),
+    'NGENIUS_HOSTED_SESSION_API_KEY'=>env('NGENIUS_HOSTED_SESSION_API_KEY', env('TOTALPAY_HOSTED_SESSION_API_KEY')),
+    'NGENIUS_OUTLET_ID'=>env('NGENIUS_OUTLET_ID', env('TOTALPAY_OUTLET_ID')),
+    'NGENIUS_REALM'=>env('NGENIUS_REALM', env('TOTALPAY_REALM', 'NetworkInternational')),
+    'NGENIUS_GATEWAY_URL'=>env('NGENIUS_GATEWAY_URL', env('TOTALPAY_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com')),
+    'NGENIUS_PAYPAGE_URL'=>env('NGENIUS_PAYPAGE_URL', env('TOTALPAY_PAYPAGE_URL', 'https://paypage.ngenius-payments.com')),
+    'NGENIUS_CURRENCY'=>env('NGENIUS_CURRENCY', env('TOTALPAY_CURRENCY', 'AED')),
+    'NGENIUS_OPERATION'=>env('NGENIUS_OPERATION', env('TOTALPAY_OPERATION', 'purchase')),
+    'NGENIUS_DIRECT_MUST_3DS'=>env('NGENIUS_DIRECT_MUST_3DS', env('TOTALPAY_DIRECT_MUST_3DS', true)),
+    'NGENIUS_PAYPAGE_SLIM'=>env('NGENIUS_PAYPAGE_SLIM', env('TOTALPAY_PAYPAGE_SLIM', false)),
+    'NGENIUS_PAYPAGE_LANGUAGE'=>env('NGENIUS_PAYPAGE_LANGUAGE', env('TOTALPAY_PAYPAGE_LANGUAGE')),
+    'NGENIUS_MASK_PAYMENT_INFO'=>env('NGENIUS_MASK_PAYMENT_INFO', env('TOTALPAY_MASK_PAYMENT_INFO', true)),
+    'NGENIUS_PAYMENT_ATTEMPTS'=>env('NGENIUS_PAYMENT_ATTEMPTS', env('TOTALPAY_PAYMENT_ATTEMPTS', '3')),
 
 ];

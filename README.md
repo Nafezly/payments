@@ -50,7 +50,7 @@ PayPal, Stripe, Paymob, Fawry, HyperPay, Thawani, Tap, Opay, PayTabs, Binance, C
 - [YallaPay](https://yallapay.io/)
 - [Payzink](https://docs.payzink.com/) (Hosted + Direct API)
 - [Fawaterak](https://fawaterak-api.readme.io/) (Hosted invoice link + invoiceInitPay)
-- [TotalPay](https://docs.ngenius-payments.com/reference/create-an-order-paypage) (Network International hosted checkout)
+- [N-Genius](https://docs.ngenius-payments.com/reference/create-an-order-paypage) (Network International hosted checkout)
 
 
 ## Installation

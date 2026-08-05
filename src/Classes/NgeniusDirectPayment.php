@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nafezly\Payments\Exceptions\MissingPaymentInfoException;
 
-class TotalPayDirectPayment extends TotalPayPayment
+class NgeniusDirectPayment extends NgeniusPayment
 {
     public $must_3d_secure = false;
 
@@ -15,7 +15,7 @@ class TotalPayDirectPayment extends TotalPayPayment
     {
         parent::__construct();
         $this->must_3d_secure = filter_var(
-            config('nafezly-payments.TOTALPAY_DIRECT_MUST_3DS', true),
+            config('nafezly-payments.NGENIUS_DIRECT_MUST_3DS', true),
             FILTER_VALIDATE_BOOLEAN
         );
     }
@@ -26,20 +26,20 @@ class TotalPayDirectPayment extends TotalPayPayment
     public function pay($amount = null, $user_id = null, $user_first_name = null, $user_last_name = null, $user_email = null, $user_phone = null, $source = null): array
     {
         $this->setPassedVariablesToGlobal($amount, $user_id, $user_first_name, $user_last_name, $user_email, $user_phone, $source);
-        $this->checkRequiredFields(['amount'], 'TotalPay Direct');
+        $this->checkRequiredFields(['amount'], 'N-Genius Direct');
 
-        if (!$this->totalpay_api_key || !$this->totalpay_outlet_id) {
-            return $this->failedPayResponse((string) ($this->payment_id ?: ''), 'TotalPay credentials are missing');
+        if (!$this->ngenius_api_key || !$this->ngenius_outlet_id) {
+            return $this->failedPayResponse((string) ($this->payment_id ?: ''), 'N-Genius credentials are missing');
         }
 
         if (!is_array($this->source)) {
-            throw new MissingPaymentInfoException('source (card details)', 'TotalPay Direct');
+            throw new MissingPaymentInfoException('source (card details)', 'N-Genius Direct');
         }
 
         $card = $this->resolveCardDetails();
         foreach (['pan', 'expiry', 'cvv', 'cardholderName'] as $field) {
             if (empty($card[$field])) {
-                throw new MissingPaymentInfoException($field, 'TotalPay Direct');
+                throw new MissingPaymentInfoException($field, 'N-Genius Direct');
             }
         }
 
@@ -51,7 +51,7 @@ class TotalPayDirectPayment extends TotalPayPayment
         }
 
         $verifyUrl = route($this->verify_route_name, [
-            'payment' => 'totalpaydirect',
+            'payment' => 'ngeniusdirect',
             'payment_id' => $paymentId,
         ]);
 
@@ -144,7 +144,7 @@ class TotalPayDirectPayment extends TotalPayPayment
         ];
     }
 
-    public function resolveTotalPayLookupIds(Request $request, ?array $verifyResult = null): array
+    public function resolveNgeniusLookupIds(Request $request, ?array $verifyResult = null): array
     {
         $paymentId = $verifyResult['payment_id'] ?? null;
 
@@ -162,6 +162,10 @@ class TotalPayDirectPayment extends TotalPayPayment
     public function getThreeDsSession(string $paymentId): ?array
     {
         $session = Cache::get($this->threeDsCacheKey($paymentId));
+
+        if (!is_array($session)) {
+            $session = Cache::get('totalpay_3ds_' . $paymentId);
+        }
 
         return is_array($session) ? $session : null;
     }
@@ -305,7 +309,7 @@ class TotalPayDirectPayment extends TotalPayPayment
     {
         $token = $this->requestAccessToken();
 
-        if (!$token || !$this->totalpay_outlet_id) {
+        if (!$token || !$this->ngenius_outlet_id) {
             return null;
         }
 
@@ -313,7 +317,7 @@ class TotalPayDirectPayment extends TotalPayPayment
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/vnd.ni-payment.v2+json',
         ])->timeout(30)->get(
-            $this->totalpay_gateway_url . '/transactions/outlets/' . $this->totalpay_outlet_id . '/orders/' . $orderReference
+            $this->ngenius_gateway_url . '/transactions/outlets/' . $this->ngenius_outlet_id . '/orders/' . $orderReference
         )->json();
 
         return is_array($response) ? $response : null;
@@ -391,7 +395,7 @@ class TotalPayDirectPayment extends TotalPayPayment
 
     protected function outletOrdersUrl(): string
     {
-        return $this->totalpay_gateway_url . '/transactions/outlets/' . $this->totalpay_outlet_id . '/orders';
+        return $this->ngenius_gateway_url . '/transactions/outlets/' . $this->ngenius_outlet_id . '/orders';
     }
 
     protected function rememberOrderReference(string $paymentId, string $orderReference): void
@@ -403,16 +407,20 @@ class TotalPayDirectPayment extends TotalPayPayment
     {
         $reference = Cache::get($this->orderReferenceCacheKey($paymentId));
 
+        if (!is_string($reference) || $reference === '') {
+            $reference = Cache::get('totalpay_order_' . $paymentId);
+        }
+
         return is_string($reference) && $reference !== '' ? $reference : null;
     }
 
     protected function orderReferenceCacheKey(string $paymentId): string
     {
-        return 'totalpay_order_' . $paymentId;
+        return 'ngenius_order_' . $paymentId;
     }
 
     protected function threeDsCacheKey(string $paymentId): string
     {
-        return 'totalpay_3ds_' . $paymentId;
+        return 'ngenius_3ds_' . $paymentId;
     }
 }

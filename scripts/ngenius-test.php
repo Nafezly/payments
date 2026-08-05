@@ -2,11 +2,11 @@
 <?php
 
 /**
- * TotalPay hosted checkout smoke test (no Laravel required).
+ * N-Genius hosted checkout smoke test (no Laravel required).
  *
  * Usage:
- *   TOTALPAY_API_KEY=xxx TOTALPAY_OUTLET_ID=xxx php scripts/totalpay-test.php
- *   TOTALPAY_API_KEY=xxx TOTALPAY_OUTLET_ID=xxx php scripts/totalpay-test.php verify ORDER_ID
+ *   NGENIUS_API_KEY=xxx NGENIUS_OUTLET_ID=xxx php scripts/ngenius-test.php
+ *   NGENIUS_API_KEY=xxx NGENIUS_OUTLET_ID=xxx php scripts/ngenius-test.php verify ORDER_ID
  */
 
 declare(strict_types=1);
@@ -87,14 +87,14 @@ function data_get($target, ?string $key, $default = null)
     return $target;
 }
 
-$apiKey = env('TOTALPAY_API_KEY', env('NGENIUS_API_KEY'));
-$outletId = env('TOTALPAY_OUTLET_ID', env('NGENIUS_OUTLET_ID'));
-$realm = env('TOTALPAY_REALM', env('NGENIUS_REALM', 'NetworkInternational'));
-$gatewayUrl = env('TOTALPAY_GATEWAY_URL', env('NGENIUS_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com'));
-$currency = strtoupper(env('TOTALPAY_CURRENCY', env('NGENIUS_CURRENCY', 'AED')));
+$apiKey = env('NGENIUS_API_KEY', env('TOTALPAY_API_KEY'));
+$outletId = env('NGENIUS_OUTLET_ID', env('TOTALPAY_OUTLET_ID'));
+$realm = env('NGENIUS_REALM', env('TOTALPAY_REALM', 'NetworkInternational'));
+$gatewayUrl = env('NGENIUS_GATEWAY_URL', env('TOTALPAY_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com'));
+$currency = strtoupper(env('NGENIUS_CURRENCY', env('TOTALPAY_CURRENCY', 'AED')));
 
 if (!$apiKey || !$outletId) {
-    fwrite(STDERR, "Set TOTALPAY_API_KEY and TOTALPAY_OUTLET_ID.\n");
+    fwrite(STDERR, "Set NGENIUS_API_KEY and NGENIUS_OUTLET_ID.\n");
     exit(1);
 }
 
@@ -103,7 +103,7 @@ $command = $argv[1] ?? 'pay';
 if ($command === 'verify') {
     $orderId = $argv[2] ?? null;
     if (!$orderId) {
-        fwrite(STDERR, "Usage: php scripts/totalpay-test.php verify ORDER_ID\n");
+        fwrite(STDERR, "Usage: php scripts/ngenius-test.php verify ORDER_ID\n");
         exit(1);
     }
 
@@ -122,8 +122,8 @@ if ($command === 'verify') {
     exit($response['http_code'] >= 200 && $response['http_code'] < 300 ? 0 : 1);
 }
 
-$amount = (float) env('TOTALPAY_TEST_AMOUNT', '10.00');
-$email = env('TOTALPAY_TEST_EMAIL', 'test@example.com');
+$amount = (float) env('NGENIUS_TEST_AMOUNT', '10.00');
+$email = env('NGENIUS_TEST_EMAIL', 'test@example.com');
 $orderId = 'tpy_test_' . time();
 $token = accessToken($gatewayUrl, $apiKey, $realm);
 
@@ -138,7 +138,7 @@ $response = request(
         ],
         'emailAddress' => $email,
         'merchantAttributes' => [
-            'redirectUrl' => 'https://example.com/payments/verify/totalpay?payment_id=' . $orderId,
+            'redirectUrl' => 'https://example.com/payments/verify/ngenius?payment_id=' . $orderId,
         ],
     ],
     [
