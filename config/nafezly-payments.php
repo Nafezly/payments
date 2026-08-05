@@ -295,6 +295,20 @@ return [
     'KORAPAY_CURRENCY'=>env('KORAPAY_CURRENCY','USD'),
     'KORAPAY_WEBHOOK_URL'=>env('KORAPAY_WEBHOOK_URL'),
 
+    #TOTALPAY (TotalPay hosted checkout — separate from N-Genius)
+    /*
+    * Documentation: https://docs.totalpay.global/checkout_integration
+    * Checkout host: https://checkout.totalpay.global
+    * Register notification_url in TotalPay dashboard (Configuration → Merchants).
+    * Example: https://accept.nafezly.com/payments/verify/totalpay
+    */
+    'TOTALPAY_MERCHANT_KEY'=>env('TOTALPAY_MERCHANT_KEY'),
+    'TOTALPAY_PASSWORD'=>env('TOTALPAY_PASSWORD'),
+    'TOTALPAY_CHECKOUT_URL'=>env('TOTALPAY_CHECKOUT_URL','https://checkout.totalpay.global'),
+    'TOTALPAY_CURRENCY'=>env('TOTALPAY_CURRENCY','AED'),
+    'TOTALPAY_OPERATION'=>env('TOTALPAY_OPERATION','purchase'),
+    'TOTALPAY_WEBHOOK_URL'=>env('TOTALPAY_WEBHOOK_URL'),
+
     #FAWATERAK
     /*
     * Documentation: https://fawaterak-api.readme.io/
