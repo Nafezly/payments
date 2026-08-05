@@ -2,11 +2,11 @@
 <?php
 
 /**
- * TotalPay / N-Genius hosted checkout smoke test (no Laravel required).
+ * TotalPay hosted checkout smoke test (no Laravel required).
  *
  * Usage:
- *   NGENIUS_API_KEY=xxx NGENIUS_OUTLET_ID=xxx php scripts/totalpay-test.php
- *   NGENIUS_API_KEY=xxx NGENIUS_OUTLET_ID=xxx php scripts/totalpay-test.php verify ORDER_ID
+ *   TOTALPAY_API_KEY=xxx TOTALPAY_OUTLET_ID=xxx php scripts/totalpay-test.php
+ *   TOTALPAY_API_KEY=xxx TOTALPAY_OUTLET_ID=xxx php scripts/totalpay-test.php verify ORDER_ID
  */
 
 declare(strict_types=1);
@@ -87,14 +87,14 @@ function data_get($target, ?string $key, $default = null)
     return $target;
 }
 
-$apiKey = env('NGENIUS_API_KEY');
-$outletId = env('NGENIUS_OUTLET_ID');
-$realm = env('NGENIUS_REALM', 'NetworkInternational');
-$gatewayUrl = env('NGENIUS_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com');
-$currency = strtoupper(env('NGENIUS_CURRENCY', env('TOTALPAY_CURRENCY', 'AED')));
+$apiKey = env('TOTALPAY_API_KEY', env('NGENIUS_API_KEY'));
+$outletId = env('TOTALPAY_OUTLET_ID', env('NGENIUS_OUTLET_ID'));
+$realm = env('TOTALPAY_REALM', env('NGENIUS_REALM', 'NetworkInternational'));
+$gatewayUrl = env('TOTALPAY_GATEWAY_URL', env('NGENIUS_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com'));
+$currency = strtoupper(env('TOTALPAY_CURRENCY', env('NGENIUS_CURRENCY', 'AED')));
 
 if (!$apiKey || !$outletId) {
-    fwrite(STDERR, "Set NGENIUS_API_KEY and NGENIUS_OUTLET_ID.\n");
+    fwrite(STDERR, "Set TOTALPAY_API_KEY and TOTALPAY_OUTLET_ID.\n");
     exit(1);
 }
 

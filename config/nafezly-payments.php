@@ -312,21 +312,18 @@ return [
     'FAWATERAK_WEBHOOK_URL'=>env('FAWATERAK_WEBHOOK_URL'),
     'FAWATERAK_PAYMENT_METHOD_ID'=>env('FAWATERAK_PAYMENT_METHOD_ID'), // optional: 2=Visa/MC, 3=Fawry, 4=Meeza
 
-    #TOTALPAY / N-GENIUS (Network International)
+    #TOTALPAY (Network International hosted checkout)
     /*
-    * TotalPay merchants use N-Genius Online hosted payment page.
-    * Portal: https://portal.ngenius-payments.com
-    * Docs: https://docs.ngenius-payments.com/reference/create-an-order-paypage
-    * Use Merchant Service Account API key (not Hosted Session key) to create orders.
+    * TotalPay uses Network International hosted payment page.
+    * Legacy env names NGENIUS_* are still supported as fallbacks.
     */
-    'NGENIUS_API_KEY'=>env('NGENIUS_API_KEY'),
-    'NGENIUS_HOSTED_SESSION_API_KEY'=>env('NGENIUS_HOSTED_SESSION_API_KEY'),
-    'NGENIUS_OUTLET_ID'=>env('NGENIUS_OUTLET_ID'),
-    'NGENIUS_REALM'=>env('NGENIUS_REALM','NetworkInternational'),
-    'NGENIUS_GATEWAY_URL'=>env('NGENIUS_GATEWAY_URL','https://api-gateway.ngenius-payments.com'),
-    'NGENIUS_PAYPAGE_URL'=>env('NGENIUS_PAYPAGE_URL','https://paypage.ngenius-payments.com'),
-    'NGENIUS_CURRENCY'=>env('NGENIUS_CURRENCY', env('TOTALPAY_CURRENCY', 'AED')),
-    'TOTALPAY_CURRENCY'=>env('TOTALPAY_CURRENCY','AED'),
+    'TOTALPAY_API_KEY'=>env('TOTALPAY_API_KEY', env('NGENIUS_API_KEY')),
+    'TOTALPAY_HOSTED_SESSION_API_KEY'=>env('TOTALPAY_HOSTED_SESSION_API_KEY', env('NGENIUS_HOSTED_SESSION_API_KEY')),
+    'TOTALPAY_OUTLET_ID'=>env('TOTALPAY_OUTLET_ID', env('NGENIUS_OUTLET_ID')),
+    'TOTALPAY_REALM'=>env('TOTALPAY_REALM', env('NGENIUS_REALM', 'NetworkInternational')),
+    'TOTALPAY_GATEWAY_URL'=>env('TOTALPAY_GATEWAY_URL', env('NGENIUS_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com')),
+    'TOTALPAY_PAYPAGE_URL'=>env('TOTALPAY_PAYPAGE_URL', env('NGENIUS_PAYPAGE_URL', 'https://paypage.ngenius-payments.com')),
+    'TOTALPAY_CURRENCY'=>env('TOTALPAY_CURRENCY', env('NGENIUS_CURRENCY', 'AED')),
     'TOTALPAY_OPERATION'=>env('TOTALPAY_OPERATION','purchase'),
     'TOTALPAY_DIRECT_MUST_3DS'=>env('TOTALPAY_DIRECT_MUST_3DS', true),
     'TOTALPAY_PAYPAGE_SLIM'=>env('TOTALPAY_PAYPAGE_SLIM', false),

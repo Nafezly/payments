@@ -28,8 +28,8 @@ class TotalPayDirectPayment extends TotalPayPayment
         $this->setPassedVariablesToGlobal($amount, $user_id, $user_first_name, $user_last_name, $user_email, $user_phone, $source);
         $this->checkRequiredFields(['amount'], 'TotalPay Direct');
 
-        if (!$this->ngenius_api_key || !$this->ngenius_outlet_id) {
-            return $this->failedPayResponse((string) ($this->payment_id ?: ''), 'TotalPay (N-Genius) credentials are missing');
+        if (!$this->totalpay_api_key || !$this->totalpay_outlet_id) {
+            return $this->failedPayResponse((string) ($this->payment_id ?: ''), 'TotalPay credentials are missing');
         }
 
         if (!is_array($this->source)) {
@@ -305,7 +305,7 @@ class TotalPayDirectPayment extends TotalPayPayment
     {
         $token = $this->requestAccessToken();
 
-        if (!$token || !$this->ngenius_outlet_id) {
+        if (!$token || !$this->totalpay_outlet_id) {
             return null;
         }
 
@@ -313,7 +313,7 @@ class TotalPayDirectPayment extends TotalPayPayment
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/vnd.ni-payment.v2+json',
         ])->timeout(30)->get(
-            $this->ngenius_gateway_url . '/transactions/outlets/' . $this->ngenius_outlet_id . '/orders/' . $orderReference
+            $this->totalpay_gateway_url . '/transactions/outlets/' . $this->totalpay_outlet_id . '/orders/' . $orderReference
         )->json();
 
         return is_array($response) ? $response : null;
@@ -391,7 +391,7 @@ class TotalPayDirectPayment extends TotalPayPayment
 
     protected function outletOrdersUrl(): string
     {
-        return $this->ngenius_gateway_url . '/transactions/outlets/' . $this->ngenius_outlet_id . '/orders';
+        return $this->totalpay_gateway_url . '/transactions/outlets/' . $this->totalpay_outlet_id . '/orders';
     }
 
     protected function rememberOrderReference(string $paymentId, string $orderReference): void
@@ -408,11 +408,11 @@ class TotalPayDirectPayment extends TotalPayPayment
 
     protected function orderReferenceCacheKey(string $paymentId): string
     {
-        return 'totalpay_ngenius_order_' . $paymentId;
+        return 'totalpay_order_' . $paymentId;
     }
 
     protected function threeDsCacheKey(string $paymentId): string
     {
-        return 'totalpay_ngenius_3ds_' . $paymentId;
+        return 'totalpay_3ds_' . $paymentId;
     }
 }
