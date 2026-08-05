@@ -87,11 +87,11 @@ function data_get($target, ?string $key, $default = null)
     return $target;
 }
 
-$apiKey = env('NGENIUS_API_KEY', env('TOTALPAY_API_KEY'));
-$outletId = env('NGENIUS_OUTLET_ID', env('TOTALPAY_OUTLET_ID'));
-$realm = env('NGENIUS_REALM', env('TOTALPAY_REALM', 'NetworkInternational'));
-$gatewayUrl = env('NGENIUS_GATEWAY_URL', env('TOTALPAY_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com'));
-$currency = strtoupper(env('NGENIUS_CURRENCY', env('TOTALPAY_CURRENCY', 'AED')));
+$apiKey = env('NGENIUS_API_KEY');
+$outletId = env('NGENIUS_OUTLET_ID');
+$realm = env('NGENIUS_REALM', 'NetworkInternational');
+$gatewayUrl = env('NGENIUS_GATEWAY_URL', 'https://api-gateway.ngenius-payments.com');
+$currency = strtoupper(env('NGENIUS_CURRENCY', 'AED'));
 
 if (!$apiKey || !$outletId) {
     fwrite(STDERR, "Set NGENIUS_API_KEY and NGENIUS_OUTLET_ID.\n");

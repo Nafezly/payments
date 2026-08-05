@@ -159,7 +159,6 @@ class NgeniusPayment extends BaseController implements PaymentInterface
             $request->input('order_number'),
             data_get($verifyResult, 'process_data.reference'),
             data_get($verifyResult, 'process_data.ngenius_order_reference'),
-            data_get($verifyResult, 'process_data.totalpay_order_reference'),
         ], fn ($value) => is_string($value) && trim($value) !== '')));
     }
 

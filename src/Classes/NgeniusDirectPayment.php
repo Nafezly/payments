@@ -163,10 +163,6 @@ class NgeniusDirectPayment extends NgeniusPayment
     {
         $session = Cache::get($this->threeDsCacheKey($paymentId));
 
-        if (!is_array($session)) {
-            $session = Cache::get('totalpay_3ds_' . $paymentId);
-        }
-
         return is_array($session) ? $session : null;
     }
 
@@ -406,10 +402,6 @@ class NgeniusDirectPayment extends NgeniusPayment
     protected function resolveStoredOrderReference(string $paymentId): ?string
     {
         $reference = Cache::get($this->orderReferenceCacheKey($paymentId));
-
-        if (!is_string($reference) || $reference === '') {
-            $reference = Cache::get('totalpay_order_' . $paymentId);
-        }
 
         return is_string($reference) && $reference !== '' ? $reference : null;
     }
