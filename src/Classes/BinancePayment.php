@@ -81,7 +81,7 @@ class BinancePayment extends BaseController implements PaymentInterface
         $binance_pay_key = $this->binance_api;
         $binance_pay_secret = $this->binance_secret;
         $signature = strtoupper(hash_hmac('SHA512',$payload,$binance_pay_secret));
-        $response = \Http::withHeaders([
+        $response = Http::withHeaders([
             "Content-Type"=>"application/json",
             "BinancePay-Timestamp"=>$timestamp,
             "BinancePay-Nonce"=>$nonce,

@@ -60,7 +60,7 @@ class PaycecPayment extends BaseController implements PaymentInterface
 
         try{
 
-            $country = \Http::get('http://ip-api.com/json/'.$this->get_ip())->json();
+            $country = Http::get('http://ip-api.com/json/'.$this->get_ip())->json();
             $params =  [
                 'merchantName' => $this->paycec_merchant_username,
                 'merchantSecretKey' => $this->paycec_merchant_secret,
@@ -180,7 +180,7 @@ class PaycecPayment extends BaseController implements PaymentInterface
         else
             $ipaddress = 'UNKNOWN';
         if($ipaddress=="127.0.0.1"){
-            $ip = \Http::get('https://api.ipify.org/?format=json')->json();
+            $ip = Http::get('https://api.ipify.org/?format=json')->json();
             return $ip['ip'];
         }
         return $ipaddress;

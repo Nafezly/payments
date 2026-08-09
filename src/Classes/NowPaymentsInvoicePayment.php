@@ -77,7 +77,7 @@ class NowPaymentsInvoicePayment extends BaseController implements PaymentInterfa
     {
         $invoice_id = $request->NP_id??$request->payment_id;
         
-        $response = \Http::withHeaders([
+        $response = Http::withHeaders([
             'x-api-key'=>$this->nowpayments_api_key
         ])->get('https://api.nowpayments.io/v1/invoice/'.$invoice_id)->json();
 

@@ -89,7 +89,7 @@ class PayopPayment extends BaseController implements PaymentInterface
             "failPath" => route($this->verify_route_name,['payment'=>"payop",'payment_id'=>$unique_id]),
         ];
  
-        $response = \Http::withHeaders([
+        $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post('https://api.payop.com/v1/invoices/create', $payload);
         $json_response = $response->json();
@@ -130,7 +130,7 @@ class PayopPayment extends BaseController implements PaymentInterface
         }
 
         if($invoice_id != ""){
-            $response = \Http::get('https://api.payop.com/v1/invoices/'.$invoice_id);
+            $response = Http::get('https://api.payop.com/v1/invoices/'.$invoice_id);
             $response_json = $response->json();
             if(isset($response_json['data']['status']) && in_array($response_json['data']['status'], ['success','paid'])){
                 return [

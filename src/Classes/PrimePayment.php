@@ -79,7 +79,7 @@ class PrimePayment extends BaseController implements PaymentInterface
         $secret1 = $this->prime_secret_word_1;
         $data['sign'] =md5($secret1.$data['action'].$data['project'].$data['sum'].$data['currency'].$data['innerID'].$data['email'].$data['payWay']);
 
-        $response = \Http::asForm()->post('https://pay.primepayments.io/API/v2/',$data)->json();
+        $response = Http::asForm()->post('https://pay.primepayments.io/API/v2/',$data)->json();
         dd($response);
 
 

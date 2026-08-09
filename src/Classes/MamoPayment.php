@@ -62,7 +62,7 @@ class MamoPayment extends BaseController implements PaymentInterface
         ];
 
         try{
-            $response = \Http::withToken($this->mamopayment_api_key)
+            $response = Http::withToken($this->mamopayment_api_key)
             ->post($this->mamopayment_base_url."/manage_api/v1/links",$payload);
             if ($response->failed()) {
                 return [
@@ -111,7 +111,7 @@ class MamoPayment extends BaseController implements PaymentInterface
         $payment_id = cache('mamo_payment_'.$request['payment_id']);
 
         if(isset($payment_id)){
-            $response = \Http::withToken($this->mamopayment_api_key)
+            $response = Http::withToken($this->mamopayment_api_key)
                 ->get($this->mamopayment_base_url."/manage_api/v1/links/".$payment_id);
             if ($response->failed()) {
                 return [

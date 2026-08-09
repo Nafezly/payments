@@ -53,7 +53,7 @@ class WisePayment extends BaseController implements PaymentInterface
             if(is_array($this->source))
                 $selectedPaymentMethods_init=$this->source;
         
-            $init = \Http::withHeaders([
+            $init = Http::withHeaders([
                 'Cookie'=>"oauthToken=".$this->wise_api_key,
                 'Authorization'=>"Bearer ".$this->wise_api_key
             ])->get('https://wise.com/gateway/v3/profiles/'.$this->wise_profile_id.'/acquiring/payment-methods', [
@@ -67,7 +67,7 @@ class WisePayment extends BaseController implements PaymentInterface
                 if(in_array($check_available_method,collect($init->json()['content'])->where('available',true)->pluck('paymentMethodType')->toArray()))
                     $available_payment_methods[]=$check_available_method;
 
-            $create_payment = \Http::withHeaders([
+            $create_payment = Http::withHeaders([
                 'Host' => 'wise.com',
                 'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0',
                 'Accept' => 'application/json, text/plain, */*',
@@ -94,7 +94,7 @@ class WisePayment extends BaseController implements PaymentInterface
                 'selectedPaymentMethods' => $available_payment_methods,
             ]);
             $create_payment_response = $create_payment->json();
-            $publish_payment_response = \Http::withHeaders([
+            $publish_payment_response = Http::withHeaders([
                 'Host' => 'wise.com',
                 'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0',
                 'Accept' => 'application/json, text/plain, */*',
