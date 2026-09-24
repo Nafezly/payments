@@ -79,8 +79,9 @@ class PayzinkPayment extends BaseController implements PaymentInterface
             ],
         ];
 
-        if ($this->user_email) {
-            $payload['customer'] = ['email' => $this->user_email];
+        $customer = $this->buildHostedCustomerPayload();
+        if (!empty($customer)) {
+            $payload['customer'] = $customer;
         }
 
         $response = Http::withHeaders([
@@ -249,6 +250,57 @@ class PayzinkPayment extends BaseController implements PaymentInterface
             'message' => __('nafezly::messages.PAYMENT_FAILED'),
             'process_data' => $response ?? $request->all(),
         ];
+    }
+
+    /**
+     * Build Payzink hosted checkout customer payload.
+     *
+     * Sending email + emailVerified skips OTP; sending full customer details
+     * lands the payer directly on the card form.
+     */
+    protected function buildHostedCustomerPayload(): array
+    {
+        if (!$this->user_email) {
+            return [];
+        }
+
+        $source = is_array($this->source) ? $this->source : [];
+        $customer = [
+            'email' => $this->user_email,
+        ];
+
+        $emailVerified = $source['emailVerified'] ?? $source['email_verified'] ?? false;
+        $customer['emailVerified'] = filter_var($emailVerified, FILTER_VALIDATE_BOOLEAN);
+
+        if ($this->user_first_name !== null && $this->user_first_name !== '') {
+            $customer['firstName'] = (string) $this->user_first_name;
+        }
+
+        if ($this->user_last_name !== null && $this->user_last_name !== '') {
+            $customer['lastName'] = (string) $this->user_last_name;
+        }
+
+        if ($this->user_phone !== null && $this->user_phone !== '') {
+            $customer['phoneNumber'] = (string) $this->user_phone;
+        }
+
+        foreach (['country', 'city', 'address'] as $field) {
+            if (!empty($source[$field])) {
+                $customer[$field] = (string) $source[$field];
+            }
+        }
+
+        $zipCode = $source['zipCode'] ?? $source['zip_code'] ?? $source['zip'] ?? null;
+        if ($zipCode !== null && $zipCode !== '') {
+            $customer['zipCode'] = (string) $zipCode;
+        }
+
+        if ($this->language) {
+            $language = strtolower((string) $this->language);
+            $customer['language'] = in_array($language, ['ar', 'en'], true) ? $language : 'en';
+        }
+
+        return $customer;
     }
 
     protected function getAccessToken(): ?string
