@@ -106,7 +106,7 @@ class YallaPayPayment extends BaseController implements PaymentInterface
             }
         }elseif(isset($request['trx_id'])){
 
-            $res = \Http::post('https://yallapay.net/api/transaction/verify',[
+            $res = Http::post('https://yallapay.net/api/transaction/verify',[
                 'private_key'=>$this->yallapay_secret_key,
                 'trx_id'=>  $payment_id
             ]);

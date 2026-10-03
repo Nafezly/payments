@@ -51,13 +51,13 @@ class PaylinkPayment extends BaseController implements PaymentInterface
         else
             $payment_id = $this->payment_id;
 
-        $get_token_id = \Http::post($url."/api/auth",[
+        $get_token_id = Http::post($url."/api/auth",[
             'apiId'=>$this->paylink_app_id,
             'secretKey'=>$this->paylink_api_key,
             'persistToken'=>false
         ])->json();
         if(isset($get_token_id['id_token'])){
-            $response = \Http::withHeaders([
+            $response = Http::withHeaders([
                 'Authorization'=>"Bearer ".$get_token_id['id_token'],
                 'Content-Type'=>"application/JSON",
             ])->post($url."/api/addInvoice",[
@@ -104,13 +104,13 @@ class PaylinkPayment extends BaseController implements PaymentInterface
             $url = "https://restpilot.paylink.sa";
 
         $payment_id = uniqid().rand(10000,99999);
-        $get_token_id = \Http::post($url."/api/auth",[
+        $get_token_id = Http::post($url."/api/auth",[
             'apiId'=>$this->paylink_app_id,
             'secretKey'=>$this->paylink_api_key,
             'persistToken'=>false
         ])->json();
         if(isset($get_token_id['id_token'])){
-            $response = \Http::withHeaders([
+            $response = Http::withHeaders([
                 'Authorization'=>"Bearer ".$get_token_id['id_token'],
                 'Content-Type'=>"application/json",
             ])->get($url."/api/getInvoice/".$request['transactionNo'])->json();

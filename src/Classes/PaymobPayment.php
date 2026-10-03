@@ -58,7 +58,7 @@ class PaymobPayment extends BaseController implements PaymentInterface
         else
             $unique_id = $this->payment_id;
 
-        $res = \Http::withHeaders([
+        $res = Http::withHeaders([
             'Authorization'=>"Token ".$this->paymob_secret_key,
         ])->post('https://accept.paymob.com/v1/intention/',[
             'amount'=>$this->amount*100,
